@@ -146,6 +146,7 @@ mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 mkdocs-section-index = { pip = true }
 mkdocs-mermaid2-plugin = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
+termynal = { pip = true }
 
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]
