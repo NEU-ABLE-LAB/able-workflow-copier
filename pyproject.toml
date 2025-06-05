@@ -35,16 +35,13 @@ docs = [
   "mkdocs-inline-select-svg-plugin>=0.1.0",
   "termynal>=0.13.0",
   "pymdown-extensions>=10.15",
-  "graphviz>=0.20.3",
-  "snakemake>=9.3.3",
   "mike>=2.1.3",
   "notebook>=7.4.2",
 ]
 
 lint = [
-  "black>=24.3,<25.0", # Currently being held back by `snakefmt`
+  "black>=24.3,<25.0",
   "ruff>=0.11.8",
-  "snakefmt>=0.11.0",
 ]
 
 test = [
@@ -145,7 +142,6 @@ channels = [
 template_python = "environment-py{py}-{env}"
 
 [tool.pyproject2conda.dependencies]
-# Install GraphViz to visualize the Snakemake DAG
 mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 mkdocs-section-index = { pip = true }
 mkdocs-mermaid2-plugin = { pip = true }
