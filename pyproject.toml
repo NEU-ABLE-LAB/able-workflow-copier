@@ -1,0 +1,180 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "able_workflow_copier"
+dynamic = ["version"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.11,<3.13"
+
+dependencies = [
+  "copier>=9.7.1",
+]
+
+[dependency-groups]
+
+docs = [
+  "lxml>=5.4.0",
+  "mkdocs>=1.6.1",
+  "mkdocs-material>=9.6.14",
+  "mkdocstrings-python>=1.16.10",
+  "mkdocs-click>=0.9.0",
+  "mkdocs-gen-files>=0.5.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2.9",
+  "mkdocs-jupyter>=0.25.1",
+  "mkdocs-macros-plugin>=1.3.7",
+  "mkdocs-literate-nav>=0.6.2",
+  "mkdocs-section-index>=0.3.10",
+  "mkdocs-mermaid2-plugin>=1.2.1",
+  "mkdocs-inline-select-svg-plugin>=0.1.0",
+  "termynal>=0.13.0",
+  "pymdown-extensions>=10.15",
+  "graphviz>=0.20.3",
+  "snakemake>=9.3.3",
+  "mike>=2.1.3",
+  "notebook>=7.4.2",
+]
+
+lint = [
+  "black>=24.3,<25.0", # Currently being held back by `snakefmt`
+  "ruff>=0.11.8",
+  "snakefmt>=0.11.0",
+]
+
+test = [
+  "pytest>=8.3.5",
+  "pytest-cov>=6.1.1",
+  "pytest-sugar>=1.0.0",
+  "pytest-order>=1.3.0",
+]
+
+tox = [
+  "tox>=4.25.0",
+]
+
+typecheck = [
+  "mypy>=1.15.0",
+  # stubs
+  "loguru>=0.7.2",
+  "pandas>=2.2.3",
+  "pandas-stubs>=2.2.3",
+  "pandera>=0.24",
+  "pydantic>=2.11.4",
+  "types-tqdm>=4.67.0",
+  "types-openpyxl>=3.1.5",
+  "typer>=0.15.3",
+]
+
+dev = [
+  "pip>=25.1.1",
+  "pre-commit>=4.2.0",
+  "pyproject2conda>=0.19.1",
+  { include-group = "docs" },
+  { include-group = "lint" },
+  { include-group = "test" },
+  { include-group = "tox" },
+  { include-group = "typecheck" },
+]
+
+[tool.coverage.run]
+parallel = true
+source = [
+  "weh_interviews",
+  "workflow/scripts/rules",
+  "workflow/scripts/utils",
+]
+omit   = [
+  "tests/*",                       # skip everything in tests/
+  "**/conftest.py",                # skip pytest helpers
+  "**/__init__.py",                # often trivial
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == \"__main__\":",
+]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = [
+  # https://pandera.readthedocs.io/en/stable/mypy_integration.html
+  "pandera.mypy",
+  # https://docs.pydantic.dev/1.10/mypy_plugin/
+  "pydantic.mypy",
+]
+strict = true
+exclude = '(^|/)(tests|template)/.*\\.py$'
+files = ["weh_interviews"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "template.*"
+ignore_errors = true
+
+[tool.pydantic-mypy]
+# With this, the plugin makes the generated `__init__` for Pydantic models
+# require exact types (no coercion allowed in type checking). For example, if
+# a field is `age: int` and you call `User(age="123")`, Mypy will error
+# because `"123"` is a str (even though Pydantic might coerce it at runtime).
+# This is useful to enforce correct types at compile time.
+warn_untyped_fields = true
+# Mypy will error if any Pydantic model field is not annotated with a type.
+# This ensures you  don't accidentally leave a field without a type, which
+# would be treated as `Any`.
+init_typed          = true
+# Ensures that if you pass an unexpected field to a model’s constructor,
+# Mypy will flag it (even if Pydantic might allow it due to `extra` settings).
+# This aligns with using  `extra="forbid"` at runtime.
+init_forbid_extra   = true
+
+[tool.pyproject2conda]
+channels = [
+  "conda-forge",
+]
+template_python = "environment-py{py}-{env}"
+
+[tool.pyproject2conda.dependencies]
+# Install GraphViz to visualize the Snakemake DAG
+mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
+mkdocs-section-index = { pip = true }
+mkdocs-mermaid2-plugin = { pip = true }
+mkdocs-inline-select-svg-plugin = { pip = true }
+
+[tool.pyproject2conda.envs."dev"]
+style = ["yaml"]
+header = true
+python = "highest"
+extras_or_groups = ["dev"]
+
+[tool.ruff]
+line-length = 79
+exclude = [
+  "template",
+]
+
+[tool.ruff.lint]
+extend-select = [
+    "I",  # Import sorting
+    "T201",  # Do not allow `print()` statements. Encourage `loguru` instead.
+]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"logging".msg  = "Use Loguru instead."
+"warnings".msg = "Use Loguru instead."
+
+[tool.setuptools_scm]
+# accept both annotated and lightweight tags that start with “v”
+tag_regex = "^v(?P<version>[0-9]+\\.[0-9]+\\.[0-9]+.*)$"
+# optional: strip local-version details on dirty builds
+local_scheme = "no-local-version"
