@@ -27,9 +27,6 @@ dependencies:
   - mkdocstrings-python>=1.16.10
   - mypy>=1.15.0
   - notebook>=7.4.2
-  - pandas-stubs>=2.2.3
-  - pandas>=2.2.3
-  - pandera>=0.24
   - pip>=25.1.1
   - pre-commit>=4.2.0
   - pydantic>=2.11.4
@@ -43,12 +40,12 @@ dependencies:
   - ruamel.yaml>=0.18.12
   - ruff>=0.11.8
   - tox>=4.25.0
-  - typer>=0.15.3
-  - types-openpyxl>=3.1.5
-  - types-tqdm>=4.67.0
+  - types-Jinja2>=2.11.9
+  - types-jsonschema>=4.24.0.20250528
   - pip
   - pip:
       - copier-templates-extensions>=0.3.1
+      - jinja2-jsonschema>=0.3.0
       - mkdocs-inline-select-svg-plugin>=0.1.0
       - mkdocs-mermaid2-plugin>=1.2.1
       - mkdocs-section-index>=0.3.10

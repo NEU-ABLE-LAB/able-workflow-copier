@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id":    "https://example.com/schemas/project-authors.schema.json",
+
+  "title":      "PEP 621 `authors` field",
+  "description": "Valid JSON value for `[project].authors` when stored as a JSON string in pyproject.toml.",
+
+  "type":  "array",
+  "minItems": 1,
+
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+
+    "properties": {
+      "name":  { "type": "string", "minLength": 1 },
+      "email": { "type": "string", "format": "email" }
+    },
+    "anyOf": [
+      { "required": [ "name"  ] },
+      { "required": [ "email" ] }
+    ]
+  }
+}

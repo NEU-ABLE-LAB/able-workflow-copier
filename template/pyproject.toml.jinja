@@ -6,10 +6,10 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "{{project_name}}"
+name = "{{ project_name }}"
 dynamic = ["version"]
-description = "{{project_description}}"
-authors = {{authors_toml}}
+description = "{{ project_description }}"
+authors = {{ project_authors | to_json | to_toml_authors }}
 license-files = ["LICENSE"]
 readme = "README.md"
 classifiers = [
@@ -139,9 +139,18 @@ dev = [
   { include-group = "workflow" },
 ]
 
-
+{% if repository_url or documentation_url or homepage_url %}
 [project.urls]
-Repository = "https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews"
+{% if repository_url %}
+Repository = "{{ repository_url }}"
+{% endif %}
+{% if documentation_url %}
+Documentation = "{{ documentation_url}}"
+{% endif %}
+{% if homepage_url %}
+Homepage = "{{ homepage_url}}"
+{% endif %}
+{% endif %}
 
 [tool.coverage.run]
 parallel = true

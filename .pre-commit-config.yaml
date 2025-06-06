@@ -44,6 +44,8 @@ repos:
       - id: mypy
         exclude: "^(tests/)|(docs/)|(template/)"
         additional_dependencies:
+          - types-Jinja2==2.11.9
+          - typing-extensions==4.13.2
+          - types-jsonschema==4.24.0.20250528
           - loguru==0.7.2
           - pydantic[mypy]==2.11.4
-          - typing-extensions==4.13.2

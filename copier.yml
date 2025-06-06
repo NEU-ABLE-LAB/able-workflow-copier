@@ -1,6 +1,8 @@
 # Configurations
 _jinja_extensions:
   - "copier_templates_extensions.TemplateExtensionLoader"
+  - "extensions/authors_filter.py:AuthorsFilter"
+  - "jinja2_jsonschema.JsonSchemaExtension"
 
 _subdirectory: "template"
 
@@ -14,14 +16,38 @@ project_name:
       {% if not (project_name | regex_search('^[a-z][a-z0-9\-]+$')) %}
       project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
       {% endif %}
-  # default: >-
-  #   {{ project_name | default('able-workflow') }}
+
+repository_url:
+  type: str
+  help: The URL of the project's repository. (Must be a valid URL or blank.)
+  validator: >-
+      {% if repository_url and not (repository_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+      repository_url must be a valid URL.
+      {% endif %}
+
+documentation_url:
+  type: str
+  help: The URL of the project's documentation. (Must be a valid URL or blank.)
+  validator: >-
+      {% if (documentation_url) and not (documentation_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+      documentation_url must be a valid URL.
+      {% endif %}
+  default: >-
+    {{ documentation_url | default(repository_url) }}
+
+homepage_url:
+  type: str
+  help: The URL of the project's homepage. (Must be a valid URL or blank.)
+  validator: >-
+      {% if (homepage_url) and not (homepage_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+      homepage_url must be a valid URL.
+      {% endif %}
+  default: >-
+    {{ homepage_url | default(documentation_url) }}
 
 project_description:
   type: str
   help: Describe the project in a sentence or two.
-  # default: >-
-  #   {{ project_description | default('A snakemake workflow with an associated python package containing modules for datasets, features, and models.') }}
 
 project_authors:
   type: json
@@ -46,8 +72,10 @@ project_authors:
       },{
         "name": "Carol NoEmail"
       }]
-  # default: >-
-  #   {{ project_authors | default('[{"name": "Michael Kane", "email": "mi.kane@northeastern.edu"}]') }}
+  validator: >-
+    {{ project_authors | jsonschema('schemas/project-authors.schema.json') }}
+  default: >-
+    {{ project_authors | default('[{"name": "Michael Kane", "email": "mi.kane@northeastern.edu"}]') }}
 
 package_name:
   type: str
@@ -56,5 +84,4 @@ package_name:
       {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$') ) %}
       package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
       {% endif %}
-  # default: >-
-  #   {{ package_name | default('able') }}
+  default: "{{ project_name | lower | replace('-', '_') }}"
