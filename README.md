@@ -1,5 +1,9 @@
 # ABLE Workflow Copier
 
+[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-purple.json)](https://github.com/copier-org/copier)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.
 
 ## Contributing
@@ -31,3 +35,15 @@ The following instructions assume you are working on Linux (or with WSL on Windo
    ```bash
    (able-workflow-copier-dev) pre-commit install
    ```
+
+4. Play around in the sandbox. (The `sandbox/` directory is in `.gitignore` and is a good place to explore how to use the template.)
+
+   ```bash
+   copier copy --trust --vcs-ref HEAD --pretend "./" "sandbox/example"
+   ```
+
+   - `--trust`: Required to run this "untrusted" `copier` template under development.
+   - `--vcs-ref HEAD`: Use the `HEAD` of the git repo, not a tagged release version.
+   - `--pretend`: Do not modify any files, just ask the questions.
+   - `"./"`: The `copier.yaml` file is located in the current directory. When working in production, this will be replaced with the github link to `able-workflow-copier`.
+   - `"sandbox/example"`: The directory to place the rendered template, if we were not pretending.

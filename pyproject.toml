@@ -15,6 +15,9 @@ requires-python = ">=3.11,<3.13"
 
 dependencies = [
   "copier>=9.7.1",
+  "copier-templates-extensions>=0.3.1",
+  "loguru>=0.7.2",
+  "ruamel.yaml>=0.18.12"
 ]
 
 [dependency-groups]
@@ -46,9 +49,10 @@ lint = [
 
 test = [
   "pytest>=8.3.5",
+  "pytest-copie>=0.2.2",
   "pytest-cov>=6.1.1",
-  "pytest-sugar>=1.0.0",
   "pytest-order>=1.3.0",
+  "pytest-sugar>=1.0.0",
 ]
 
 tox = [
@@ -142,6 +146,7 @@ channels = [
 template_python = "environment-py{py}-{env}"
 
 [tool.pyproject2conda.dependencies]
+copier-templates-extensions = { pip = true }
 mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 mkdocs-section-index = { pip = true }
 mkdocs-mermaid2-plugin = { pip = true }

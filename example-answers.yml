@@ -1,0 +1,7 @@
+package_name: able
+project_authors:
+-   email: mi.kane@northeastern.edu
+    name: Michael Kane
+project_description: A snakemake workflow with an associated python package containing
+    modules for datasets, features, and models.
+project_name: able-workflow

@@ -1,0 +1,60 @@
+# Configurations
+_jinja_extensions:
+  - "copier_templates_extensions.TemplateExtensionLoader"
+
+_subdirectory: "template"
+
+_answers_file: .copier-answers.yml
+
+# Questions
+project_name:
+  type: str
+  help: A name for the project. (Must be a valid github project name.)
+  validator: >-
+      {% if not (project_name | regex_search('^[a-z][a-z0-9\-]+$')) %}
+      project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
+      {% endif %}
+  # default: >-
+  #   {{ project_name | default('able-workflow') }}
+
+project_description:
+  type: str
+  help: Describe the project in a sentence or two.
+  # default: >-
+  #   {{ project_description | default('A snakemake workflow with an associated python package containing modules for datasets, features, and models.') }}
+
+project_authors:
+  type: json
+  help: |
+    Provide the project authors as a JSON array. Each author object must include a "name" field (string) and may optionally include an "email" field (string).
+
+    For example:
+
+    - Single author:
+      [{ "name": "Alice Example", "email": "alice@example.com" }]
+
+    - Multiple authors:
+      [{
+        "name": "Alice Example", "email": "alice@example.com"
+      },{
+        "name": "Bob Contributor", "email": "bob@contrib.org"
+      }]
+
+    - Authors without email:
+      [{
+        "name": "Alice Example"
+      },{
+        "name": "Carol NoEmail"
+      }]
+  # default: >-
+  #   {{ project_authors | default('[{"name": "Michael Kane", "email": "mi.kane@northeastern.edu"}]') }}
+
+package_name:
+  type: str
+  help: The name for the python package within this project. (Must be a valid python package name.)
+  validator: >-
+      {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$') ) %}
+      package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
+      {% endif %}
+  # default: >-
+  #   {{ package_name | default('able') }}
