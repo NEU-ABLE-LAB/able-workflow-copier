@@ -1,6 +1,7 @@
 """Integration tests for the 'generate example' command."""
 
 from pathlib import Path
+import subprocess
 from typing import Any, Dict, cast
 
 from pytest_copie.plugin import Copie
@@ -35,3 +36,9 @@ def test_template(copie: Copie) -> None:
     assert result.exception is None
     assert isinstance(result.project_dir, Path)
     assert result.project_dir.is_dir()
+
+    # Run the *inner* tox; fail fast if it errors
+    completed = subprocess.run(
+        ["tox", "-q"], cwd=result.project_dir, capture_output=True, text=True
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr

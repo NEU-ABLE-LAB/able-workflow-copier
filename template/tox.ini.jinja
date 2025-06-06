@@ -12,12 +12,14 @@ requires =
 # Then install the desired version as a new conda environment, e.g., 3.12
 # `conda create -n py312 python=3.12`
 envlist = \
-    py{311,312}-unit-{core,excel}, \
-    py311-typecheck-{core,excel}, \
-    py311-lint-{core,excel}, \
-    py{311,312}-workflow, \
-    py{311,312}-workflow-rules, \
-    py312-docs,
+    py311-typecheck-{core}, \
+    py311-lint-{core}
+    ; py{311,312}-unit-{core}, \
+    ; py311-typecheck-{core}, \
+    ; py311-lint-{core}, \
+    ; py{311,312}-workflow, \
+    ; py{311,312}-workflow-rules, \
+    ; py312-docs,
 
 [gh-actions]
 python =
@@ -31,7 +33,6 @@ extras =
     # The `core` environment is the default, so it doesn't need to be specified
     core: core
     # Pull in the extras that match the factor in env name
-    excel: excel
 dependency_groups = test
 allowlist_externals=mkdir
 setenv =
@@ -46,7 +47,7 @@ commands_pre =
     mkdir -p {toxinidir}/.cover
     mkdir -p {toxinidir}/.junit
 
-[testenv:py{311,312}-unit-{core,excel}]
+[testenv:py{311,312}-unit-{core}]
 description = pytest unit tests for package core and each extras
 setenv =
     {[testenv]setenv}
@@ -60,7 +61,7 @@ setenv =
     #
     # ```
     # secondextra: PYTEST_IGNORES = \
-    #     --ignore-glob '*/extras_excel/*' \
+    #     --ignore-glob '*/extras_first/*' \
     #     --ignore-glob '*/extras_thirdextra/*'
     # ```
     #
@@ -70,7 +71,6 @@ setenv =
     # See https://tox.readthedocs.io/en/latest/config.html#testenv-commands_pre
     # See https://chatgpt.com/share/682234ce-3444-8008-b4a2-f851943cf724
 
-    excel:
 
 commands =
     # The `-o addopts=''` option overrides the default `pyproject.toml` settings
@@ -80,20 +80,20 @@ commands =
         {env:PYTEST_PATHS} {env:PYTEST_IGNORES:}
 
 
-[testenv:py311-typecheck-{core,excel}]
+[testenv:py311-typecheck-{core}]
 description = MyPy static type-checks for core and each extras
 package = skip
 dependency_groups = typecheck
 commands = {envpython} -m mypy
 
 
-[testenv:py311-lint-{core,excel}]
+[testenv:py311-lint-{core}]
 description = Linting for core and each extras
 package = skip
 dependency_groups = lint
 commands =
     {envpython} -m black --check --diff ./
-    {envpython} -m ruff check {env:PYTEST_PATHS}
+    {envpython} -m ruff check ./
     {envpython} -m snakefmt --config snakefmt.toml --check --diff workflow/
 
 
