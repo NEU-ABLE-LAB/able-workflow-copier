@@ -1,5 +1,6 @@
 # Configurations
 _jinja_extensions:
+  - "cookiecutter.extensions.SlugifyExtension"
   - "copier_templates_extensions.TemplateExtensionLoader"
   - "extensions/authors_filter.py:AuthorsFilter"
   - "jinja2_jsonschema.JsonSchemaExtension"
@@ -13,25 +14,51 @@ project_name:
   type: str
   help: A name for the project. (Must be a valid github project name.)
   validator: >-
-      {% if not (project_name | regex_search('^[a-z][a-z0-9\-]+$')) %}
-      project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
-      {% endif %}
+    {% if not (project_name | regex_search('^[a-z][a-z0-9\-]+$')) %}
+    project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
+    {% endif %}
+  default: "{{ project_name | default('able-workflow') }}"
+
+project_description:
+  type: str
+  help: Describe the project in a sentence or two.
+
+organization_name:
+  type: str
+  help: The name of the organization or individual that owns the project.
+  default: "{{ organization_name | default('Northeastern University ABLE Lab') }}"
+
+organization_slug:
+  type: str
+  help: The github organization or individual that owns the project. (Must be a valid github organization name.)
+  validator: >-
+    {% if not (organization_slug | regex_search('^[a-zA-Z][a-zA-Z0-9\-]+$')) %}
+    organization must start with a letter, followed one or more letters, digits or dash.
+    {% endif %}
+  default: >-
+    {% if 'Northeastern University ABLE Lab' == organization_name -%}
+    {{ organization_slug | default('NEU-ABLE-LAB') }}
+    {%- else -%}
+    {{ organization_slug | default(organization_name | slugify) }}
+    {%- endif %}
 
 repository_url:
   type: str
   help: The URL of the project's repository. (Must be a valid URL or blank.)
   validator: >-
-      {% if repository_url and not (repository_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
-      repository_url must be a valid URL.
-      {% endif %}
+    {% if repository_url and not (repository_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    repository_url must be a valid URL.
+    {% endif %}
+  default: >-
+    {{ repository_url | default('https://github.com/' ~ organization_slug ~ '/' ~ project_name) }}
 
 documentation_url:
   type: str
   help: The URL of the project's documentation. (Must be a valid URL or blank.)
   validator: >-
-      {% if (documentation_url) and not (documentation_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
-      documentation_url must be a valid URL.
-      {% endif %}
+    {% if (documentation_url) and not (documentation_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    documentation_url must be a valid URL.
+    {% endif %}
   default: >-
     {{ documentation_url | default(repository_url) }}
 
@@ -39,15 +66,11 @@ homepage_url:
   type: str
   help: The URL of the project's homepage. (Must be a valid URL or blank.)
   validator: >-
-      {% if (homepage_url) and not (homepage_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
-      homepage_url must be a valid URL.
-      {% endif %}
+    {% if (homepage_url) and not (homepage_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    homepage_url must be a valid URL.
+    {% endif %}
   default: >-
     {{ homepage_url | default(documentation_url) }}
-
-project_description:
-  type: str
-  help: Describe the project in a sentence or two.
 
 project_authors:
   type: json

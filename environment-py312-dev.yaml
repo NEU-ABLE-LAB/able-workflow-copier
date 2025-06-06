@@ -12,6 +12,7 @@ channels:
 dependencies:
   - python=3.12
   - black<25.0,>=24.3
+  - cookiecutter>=2.6.0
   - copier>=9.7.1
   - loguru>=0.7.2
   - lxml>=5.4.0

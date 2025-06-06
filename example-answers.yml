@@ -1,3 +1,7 @@
+documentation_url: https://github.com/NEU-ABLE-LAB/able-workflow
+homepage_url: https://github.com/NEU-ABLE-LAB/able-workflow
+organization_name: Northeastern University ABLE Lab
+organization_slug: NEU-ABLE-LAB
 package_name: able
 project_authors:
 -   email: mi.kane@northeastern.edu
@@ -5,3 +9,4 @@ project_authors:
 project_description: A snakemake workflow with an associated python package containing
     modules for datasets, features, and models.
 project_name: able-workflow
+repository_url: https://github.com/NEU-ABLE-LAB/able-workflow
