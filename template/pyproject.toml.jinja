@@ -155,7 +155,7 @@ Homepage = "{{ homepage_url}}"
 [tool.coverage.run]
 parallel = true
 source = [
-    "weh_interviews",
+    "{{ package_name }}",
     "workflow/scripts/rules",
     "workflow/scripts/utils",
 ]
@@ -182,7 +182,7 @@ plugins = [
 ]
 strict = true
 exclude = '(^|/)tests/.*\.py$'
-files = ["weh_interviews"]
+files = ["{{ package_name }}"]
 
 [[tool.mypy.overrides]]
 # Snakemake does not provide type hints for its modules,
@@ -215,8 +215,8 @@ init_forbid_extra   = true
 channels = [
     "conda-forge",
 ]
-template_python = "workflow/envs/pyproject2conda/weh_interviews-py{py}-{env}"
-template = "workflow/envs/pyproject2conda/weh_interviews-{env}"
+template_python = "workflow/envs/pyproject2conda/{{ package_name }}-py{py}-{env}"
+template = "workflow/envs/pyproject2conda/{{ package_name }}-{env}"
 
 [tool.pyproject2conda.dependencies]
 # Install GraphViz to visualize the Snakemake DAG
@@ -244,23 +244,11 @@ header = true
 python = "highest"
 extras_or_groups = ["dev"]
 
-[tool.pyproject2conda.envs."dev-excel"]
-style = ["yaml"]
-header = true
-python = "highest"
-extras_or_groups = ["dev", "excel"]
-
 [tool.pyproject2conda.envs."docs"]
 style = ["yaml"]
 header = true
 python = "highest"
 extras_or_groups = ["docs"]
-
-[tool.pyproject2conda.envs."excel"]
-style = ["yaml"]
-header = true
-python = "highest"
-extras_or_groups = ["excel"]
 
 [tool.pyproject2conda.envs."notebook"]
 style = ["yaml"]
@@ -292,15 +280,14 @@ addopts = """--ignore-glob=*/extras_*"""
 markers = [
     "env_workflow: Snakemake workflow utilities, module integration tests, and non-conda unit tests to be run in `workflow/envs/py*-workflow.yaml`",
     "env_core: Snakemake rule scripts to be run in `workflow/envs/*/py*-core.yaml",
-    "env_excel: Snakemake rule scripts to be run in `workflow/envs/*/py*-excel.yaml"
 ]
 
 [tool.ruff]
 line-length = 79
-src = ["weh_interviews", "workflow/scripts"]
+src = ["{{ package_name }}", "workflow/scripts"]
 include = [
     "pyproject.toml",
-    "weh_interviews/**/*.py",
+    "{{ package_name }}/**/*.py",
     "tests/**/*.py",
     "workflow/scripts/**/*.py",
 ]
@@ -316,7 +303,7 @@ extend-select = [
 "warnings".msg = "Use Loguru instead."
 
 [tool.setuptools.packages.find]
-include = ["weh_interviews*"]
+include = ["{{ package_name }}*"]
 
 [tool.setuptools_scm]
 # accept both annotated and lightweight tags that start with “v”
