@@ -1,0 +1,82 @@
+"""
+Generate stub API reference pages under docs/api/ recursively.
+CLI docs still rely on mkdocs-click; API docs on mkdocstrings.
+
+Run automatically via mkdocs-gen-files during `mkdocs build`.
+"""
+
+import pkgutil
+import textwrap
+from importlib import import_module
+from pathlib import Path
+from typing import Iterator
+
+import mkdocs_gen_files
+
+API_ROOT = Path("docs/api")
+API_ROOT.mkdir(parents=True, exist_ok=True)
+
+# Top-level packages for which you want API docs
+PACKAGES = ["{{ package_name }}"]
+
+
+def iter_modules(package_name: str) -> Iterator[str]:
+    """Yield fully-qualified names of *package_name* and all its sub-modules."""
+    root_pkg = import_module(package_name)
+    if root_pkg.__file__ is None:
+        raise ValueError(f"Package {package_name} does not have a __file__ attribute.")
+    root_path = Path(root_pkg.__file__).parent
+    root_path = Path(root_pkg.__file__).parent
+
+    # Include the root package itself
+    yield package_name
+
+    # Recursively walk sub-modules / sub-packages
+    for finder, mod_name, _ in pkgutil.walk_packages(
+        [str(root_path)], prefix=f"{package_name}."
+    ):
+        yield mod_name
+
+
+for package in PACKAGES:
+    for mod_name in iter_modules(package):
+        # Put one page per *directory* so that links like `api/foo/` resolve
+        rel_md_path = Path("api") / mod_name.replace(".", "/") / "index.md"
+        file_key = rel_md_path.as_posix()  # mkdocs-gen-files uses POSIX keys
+
+        with mkdocs_gen_files.open(file_key, "w") as f:
+            f.write(
+                textwrap.dedent(
+                    f"""
+                # `{mod_name}`
+
+                ::: {mod_name}
+
+                :::
+                """
+                )
+            )
+
+        # So “Edit this page” links back to the generator script
+        mkdocs_gen_files.set_edit_path(file_key, "gen_ref_pages.py")
+
+# ------------------------------------------------------------------
+# Top-level landing page so `[API Reference](api/)` works
+# ------------------------------------------------------------------
+TOP = Path("api/index.md")
+with mkdocs_gen_files.open(TOP, "w") as f:
+    f.write(
+        textwrap.dedent(
+            """
+        # API Reference
+
+        ::: {{ package_name }}
+
+        :::
+        """
+        )
+    )
+mkdocs_gen_files.set_edit_path(TOP, "gen_ref_pages.py")
+
+
+# TODO Implement typer API documentation with mkdocs-click
