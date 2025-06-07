@@ -19,7 +19,7 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 
 ```
 
-### Resulting files
+### Resulting files of project
 
 ```txt
 {{ project_name }}
@@ -34,16 +34,16 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 │       └── release.yml
 │
 ├── .vscode/
-│   ├── extensions.json                         
-│   ├── launch.json                             
-│   └── settings.json                           
+│   ├── extensions.json
+│   ├── launch.json
+│   └── settings.json
 │
-├── config/                                     
-│   ├── config.yaml                                                
-│   ├── config.local.example.yaml                                                  
+├── config/
+│   ├── config.yaml
+│   ├── config.local.example.yaml
 │   └── README.md
 │
-├── data/                                       
+├── data/
 │   └── README.md
 │
 ├── docs/
@@ -96,120 +96,120 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 ├── hooks/
 │   └── snakemake_pyproject2conda.py
 │
-├── features/                                       
+├── features/
 │   └── README.md
 │
-├── logs/rules/                                 
+├── logs/rules/
 │   └── README.md
 │
-├── models/                                       
+├── models/
 │   └── README.md
-│                                               
-├── notebooks/                                       
-│   └── README.md 
-│                                               
-├── references/                                       
+│
+├── notebooks/
 │   └── README.md
-│                                               
-├── reports/                                       
-│   ├── datasets/          
-│   │   └── .gitkeep                             
-│   ├── features/            
-│   │   └── .gitkeep                                   
-│   ├── models/             
-│   │   └── .gitkeep                                 
+│
+├── references/
+│   └── README.md
+│
+├── reports/
+│   ├── datasets/
+│   │   └── .gitkeep
+│   ├── features/
+│   │   └── .gitkeep
+│   ├── models/
+│   │   └── .gitkeep
 │   ├── notebook_templates/
 │   │   ├── datasets/
 │   │   ├── features/
-│   │   └── models/                             
-│   └── publications/         
-│       └── .gitkeep                                           
+│   │   └── models/
+│   └── publications/
+│       └── .gitkeep
 │
 ├── {{ package_name }}
-│   ├── datasets/                      
-│   │   └── __init__.py 
-│   ├── features/           
-│   │   └── __init__.py 
-│   ├── models/           
-│   │   └── __init__.py 
-│   ├── utils/           
-│   │   ├── __init__.py  
-│   │   └── logging.py 
+│   ├── datasets/
+│   │   └── __init__.py
+│   ├── features/
+│   │   └── __init__.py
+│   ├── models/
+│   │   └── __init__.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   └── logging.py
 │   ├── __init__.py
-│   └── config.py            
+│   └── config.py
 │
-├── tests/                                    
-│   ├── docs/                                  
-│   │   └── test_dag.py 
-│   ├── {{ package_name }}/   
-│   │   ├── datasets/   
-│   │   │   └── .gitkeep    
-│   │   ├── features/   
-│   │   │   └── .gitkeep    
-│   │   ├── models/   
-│   │   │   └── .gitkeep    
-│   │   ├── utils/        
-│   │   │   └── .gitkeep                                  
-│   │   └── README.md                                     
+├── tests/
+│   ├── docs/
+│   │   └── test_dag.py
+│   ├── {{ package_name }}/
+│   │   ├── datasets/
+│   │   │   └── .gitkeep
+│   │   ├── features/
+│   │   │   └── .gitkeep
+│   │   ├── models/
+│   │   │   └── .gitkeep
+│   │   ├── utils/
+│   │   │   └── .gitkeep
+│   │   └── README.md
 │   └── worflow/
-│       ├── rules/   
-│       │   ├── conftext.py 
-│       │   └── READMEmd                                      
+│       ├── rules/
+│       │   ├── conftext.py
+│       │   └── READMEmd
 │       └── scripts/
-│           ├── rules/ 
-│           │   ├── test_conda_localize_file.py 
-│           │   └── test_pyproject2conda.py 
-│           ├── utils/ 
-│           │   └── test_snakemake_helpers.py 
-│           └── README.md     
+│           ├── rules/
+│           │   ├── test_conda_localize_file.py
+│           │   └── test_pyproject2conda.py
+│           ├── utils/
+│           │   └── test_snakemake_helpers.py
+│           └── README.md
 │
 ├── workflow/
 │   ├── envs/
 │   │   ├── localized/
 │   │   ├── pyproject2conda/
-│   │   ├── py312-tox.yaml                      
-│   │   └── py312-workflow.yaml                 
+│   │   ├── py312-tox.yaml
+│   │   └── py312-workflow.yaml
 │   │
 │   ├── profiles/
-│   │   ├── default/    
-│   │   │   └── config.yaml                         
-│   │   └── slurm/                              
+│   │   ├── default/
+│   │   │   └── config.yaml
+│   │   └── slurm/
 │   │
 │   ├── rules/
 │   │   ├── datasets/
 │   │   │   └── README.md
 │   │   ├── features/
 │   │   │   └── README.md
-│   │   ├── models/      
+│   │   ├── models/
 │   │   │   └── README.md
-│   │   ├── build.smk 
-│   │   ├── dev.smk 
-│   │   ├── docs.smk 
-│   │   ├── reports.smk                           
-│   │   └── utils.smk                             
+│   │   ├── build.smk
+│   │   ├── dev.smk
+│   │   ├── docs.smk
+│   │   ├── reports.smk
+│   │   └── utils.smk
 │   │
 │   ├── schemas/
 │   │   ├── datasets/
-│   │   │   └── .gitkeep  
+│   │   │   └── .gitkeep
 │   │   ├── features/
-│   │   │   └── .gitkeep  
-│   │   ├── models/      
-│   │   │   └── .gitkeep  
-│   │   ├── config.schema.json                  
-│   │   └── config.local.schema.json           
+│   │   │   └── .gitkeep
+│   │   ├── models/
+│   │   │   └── .gitkeep
+│   │   ├── config.schema.json
+│   │   └── config.local.schema.json
 │   │
 │   ├── scripts/
 │   │   ├── rules/
-│   │   │   ├── __init__.py   
-│   │   │   ├── conda_localize_file.py   
-│   │   │   ├── dag_svg.py   
-│   │   │   ├── pyproject2conda.py              
-│   │   │   └── weh_interviews_rules.py          
-│   │   └── utils/                              
-│   │       ├── __init__.py                 
-│   │       └── config_loader.py      
+│   │   │   ├── __init__.py
+│   │   │   ├── conda_localize_file.py
+│   │   │   ├── dag_svg.py
+│   │   │   ├── pyproject2conda.py
+│   │   │   └── weh_interviews_rules.py
+│   │   └── utils/
+│   │       ├── __init__.py
+│   │       └── config_loader.py
 │   │
-│   └── Snakefile                               
+│   └── Snakefile
 │
 ├── .env.example
 ├── .copier-answers.yml
@@ -280,7 +280,7 @@ After the user answer the questions and copier creates the module, copier should
 
 ```
 
-### Resulting files
+### Resulting files of module
 
 The following files are added to the project
 
@@ -289,18 +289,18 @@ The following files are added to the project
 ├── .copier-answers/
 │   └── .copier-answers.module-{{ module_type }}-{{ module_name }}.yml
 │
-├── config/                                 
-│   ├── datasets/          
+├── config/
+│   ├── datasets/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
 │   │       └── config.yaml
-│   ├── features/               
-│   │   └── {{ module_name }}/     # IF {{ module_type }} == feature  
-│   │       └── config.yaml      
-│   └── models/                
+│   ├── features/
+│   │   └── {{ module_name }}/     # IF {{ module_type }} == feature
+│   │       └── config.yaml
+│   └── models/
 │       └── {{ module_name }}/     # IF {{ module_type }} == model
 │           └── config.yaml
 │
-├── data/   
+├── data/
 │   └── {{ module_name }}/         # IF {{ module_type }} == dataset
 │       ├── external/
 │       ├── interim/
@@ -323,68 +323,68 @@ The following files are added to the project
 │               ├── index.md
 │               └── SUMMARY.md
 │
-├── features/   
+├── features/
 │   └── {{ module_name }}/         # IF {{ module_type }} == feature
 │       └── README.md
 │
-├── models/   
+├── models/
 │   └── {{ module_name }}/         # IF {{ module_type }} == model
 │       └── README.md
 │
-├── reports/                                       
-│   ├── datasets/          
+├── reports/
+│   ├── datasets/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
 │   │       └── README.md
-│   ├── features/            
+│   ├── features/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == feature
 │   │       └── README.md
-│   ├── models/             
+│   ├── models/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == model
 │   │       └── README.md
 │   └── notebook_templates/
-│       ├── datasets/          
+│       ├── datasets/
 │       │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
 │       │       └── README.md
-│       ├── features/            
+│       ├── features/
 │       │   └── {{ module_name }}/     # IF {{ module_type }} == feature
 │       │       └── README.md
-│       └── models/             
+│       └── models/
 │           └── {{ module_name }}/     # IF {{ module_type }} == model
 │               └── README.md
 │
 ├── {{ package_name }}
-│   ├── datasets/            
+│   ├── datasets/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
 │   │       └── __init__.py
-│   ├── features/             
+│   ├── features/
 │   │   └── {{ module_name }}/     # IF {{ module_type }} == feature
 │   │       └── __init__.py
-│   └── models/              
+│   └── models/
 │       └── {{ module_name }}/     # IF {{ module_type }} == model
 │           └── __init__.py
 │
 └── workflow/
     ├── rules/
-    │   ├── datasets/           
+    │   ├── datasets/
     │   │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
     │   │       └── README.md
     │   ├── features/
     │   │   └── {{ module_name }}/     # IF {{ module_type }} == feature
     │   │       └── README.md
-    │   └── models/      
+    │   └── models/
     │       └── {{ module_name }}/     # IF {{ module_type }} == model
     │           └── README.md
     │
     └── schemas/
-        ├── datasets/           
+        ├── datasets/
         │   └── {{ module_name }}/     # IF {{ module_type }} == dataset
         │       └── README.md
         ├── features/
         │   └── {{ module_name }}/     # IF {{ module_type }} == feature
         │       └── README.md
-        └── models/      
+        └── models/
             └── {{ module_name }}/     # IF {{ module_type }} == model
-                └── README.md 
+                └── README.md
 ```
 
 ### Hypothetical `whole_energy_homes_interviews/.copier-answers/module-dataset-coding_matrix.yml
@@ -451,7 +451,7 @@ optional-dependencies:
   help: "Provide a valid JSON list of extra packages and minimal versions required by this module. For example: `['openpyxl>=3.1.5']`"
 ```
 
-### Resulting files
+### Resulting files of ETL step
 
 The following files are added to the project
 
@@ -460,22 +460,22 @@ The following files are added to the project
 ├── .copier-answers/
 │   └── .copier-answers.module-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml
 │
-├── config/                                 
-│   └── datasets/ OR features/ OR models/       
+├── config/
+│   └── datasets/ OR features/ OR models/
 │       └── {{ module_name }}/
 │           └── {{ etl_name }}/
 │               └── config.yaml
 │
 ├── docs/
 │   └── docs/
-│       └── datasets/ OR features/ OR models/     
+│       └── datasets/ OR features/ OR models/
 │           └── {{ module_type }}/
 │               └── {{ etl_name }}/
 │                   ├── index.md
 │                   └── SUMMARY.md
 │
 ├── {{ package_name }}
-│   └── datasets/ OR features/ OR models/     
+│   └── datasets/ OR features/ OR models/
 │       └── {{ module_name }}/
 │           ├── {{ etl_name }}/  # IF {{ requires_extras }}
 │           │   ├── extras_{{ extras_name }}/
@@ -499,8 +499,8 @@ The following files are added to the project
 │               └── utils.py
 │
 ├── tests/
-│   └── {{ package_name }}/   
-│       └── datasets/ OR features/ OR models/         
+│   └── {{ package_name }}/
+│       └── datasets/ OR features/ OR models/
 │           └── {{ module_name }}/
 │               ├── {{ etl_name }}/  # IF {{ requires_extras }}
 │               │   ├── extras_{{ extras_name }}/
