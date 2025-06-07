@@ -11,7 +11,8 @@ from __future__ import annotations
 import subprocess
 import pytest
 from pathlib import Path
-from conftest import answer_sets
+
+from .conftest import answer_sets
 
 
 ###############################################################################
