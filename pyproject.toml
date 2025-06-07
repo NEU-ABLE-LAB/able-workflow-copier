@@ -88,9 +88,8 @@ dev = [
 [tool.coverage.run]
 parallel = true
 source = [
-  "weh_interviews",
-  "workflow/scripts/rules",
-  "workflow/scripts/utils",
+  "extensions",
+  "hooks",
 ]
 omit   = [
   "tests/*",                       # skip everything in tests/
