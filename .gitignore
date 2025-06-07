@@ -4,6 +4,9 @@
 # Logs
 /logs/
 
+# Local sandbox to play in
+/sandbox/
+
 # Snakemake stuff
 .snakemake/
 .snakemake_timestamp
@@ -12,8 +15,8 @@
 /workflow/envs/pyproject2conda/*
 /config/config.local.yaml
 
-# Local sandbox to play in
-/sandbox/
+# Ansible lint stuff
+.ansible
 
 # --- General Python stuff ---------------------------------------------------
 

@@ -1,0 +1,140 @@
+# **Why `tox.ini` instead of `pyproject.toml`?**:
+# Currently, `tox` only has partial support for `pyproject.toml` and
+# cannot programmatically create a matrix of test environments.
+# See https://tox.readthedocs.io/en/latest/config.html#pyproject-toml
+
+[tox]
+requires =
+    tox>=4.25
+    tox-gh-actions>=3.3.0
+    tox-uv>=1.25.0
+# If you get `ERROR: Package '*' requires a different Python:`
+# Then install the desired version as a new conda environment, e.g., 3.12
+# `conda create -n py312 python=3.12`
+envlist = \
+    py311-typecheck-{core}, \
+    py311-lint-{core}
+    ; py{311,312}-unit-{core}, \
+    ; py311-typecheck-{core}, \
+    ; py311-lint-{core}, \
+    ; py{311,312}-workflow, \
+    ; py{311,312}-workflow-rules, \
+    ; py312-docs,
+
+[gh-actions]
+python =
+    3.11: py311
+    3.12: py312
+
+[testenv]
+description = Generic test environment
+package = editable    # Faster than building a wheel for each run
+extras =
+    # The `core` environment is the default, so it doesn't need to be specified
+    core: core
+    # Pull in the extras that match the factor in env name
+dependency_groups = test
+allowlist_externals=mkdir
+setenv =
+    PROJECT_NAME = {{ '{' }}{{ package_name }}{{ '}' }}
+    COV_CORE_DATAFILE = {toxinidir}/.cover/.coverage.{envname}
+    COVERAGE_FILE = {toxinidir}/.cover/.coverage.{envname}
+    JUNIT_XML = {toxinidir}/.junit/junit.{envname}.xml
+    PYTEST_PATHS = tests/
+
+commands_pre =
+    # Create .cover/ and .junit/ directories if they don't exist
+    mkdir -p {toxinidir}/.cover
+    mkdir -p {toxinidir}/.junit
+
+[testenv:py{311,312}-unit-{core}]
+description = pytest unit tests for package core and each extras
+setenv =
+    {[testenv]setenv}
+    PYTEST_PATHS = tests/{{ package_name }}/
+
+    # Directory glob that should be *ignored* when we're *not* testing an extra
+    core:   PYTEST_IGNORES = --ignore-glob '*/extras_*'
+
+    # When adding new extras, add them to the `envlist` above, then
+    # configure each extra to ignore every other extra:
+    #
+    # ```
+    # secondextra: PYTEST_IGNORES = \
+    #     --ignore-glob '*/extras_first/*' \
+    #     --ignore-glob '*/extras_thirdextra/*'
+    # ```
+    #
+    # If many more extras are added, consider building --ignore-glob
+    # patterns dynamically with a `commands_pre` script.
+    #
+    # See https://tox.readthedocs.io/en/latest/config.html#testenv-commands_pre
+    # See https://chatgpt.com/share/682234ce-3444-8008-b4a2-f851943cf724
+
+
+commands =
+    # The `-o addopts=''` option overrides the default `pyproject.toml` settings
+    {envpython} -m pytest --cov \
+        --junitxml={env:JUNIT_XML} -o junit_family=legacy \
+        -o addopts='' \
+        {env:PYTEST_PATHS} {env:PYTEST_IGNORES:}
+
+
+[testenv:py311-typecheck-{core}]
+description = MyPy static type-checks for core and each extras
+package = skip
+dependency_groups = typecheck
+commands = {envpython} -m mypy
+
+
+[testenv:py311-lint-{core}]
+description = Linting for core and each extras
+package = skip
+dependency_groups = lint
+commands =
+    {envpython} -m black --check --diff ./
+    {envpython} -m ruff check ./
+    {envpython} -m snakefmt --config snakefmt.toml --check --diff workflow/
+
+
+[testenv:py{311,312}-workflow]
+description = Snakemake unit tests for workflow utilities and rule scripts that do not require a custom conda environment
+package = skip
+extras =
+dependency_groups = workflow,test
+setenv =
+    {[testenv]setenv}
+    PYTEST_PATHS = tests/workflow/scripts/
+commands =
+    # Workflow script unit tests
+    # The `-o addopts=''` option overrides the default `pyproject.toml` settings
+    {envpython} -m pytest --cov \
+        --junitxml={env:JUNIT_XML} -o junit_family=legacy \
+        -o addopts='' -m "env_workflow" \
+        {env:PYTEST_PATHS}
+
+[testenv:py{311,312}-workflow-rules]
+description = Snakemake rule integration tests. Requires network connection to build snakemake conda environment caches
+package = skip
+extras =
+dependency_groups = workflow,test
+setenv =
+    {[testenv]setenv}
+    PYTEST_PATHS = tests/workflow/rules/
+commands_pre =
+    {[testenv]commands_pre}
+commands =
+    {envpython} -m pytest -o addopts='' {env:PYTEST_PATHS}
+
+[testenv:py312-docs]
+description = Unit tests for documentation
+package = skip
+extras =
+dependency_groups = docs,test
+setenv =
+    {[testenv]setenv}
+    PYTEST_PATHS = tests/docs/
+commands_pre =
+    {[testenv]commands_pre}
+commands =
+    {envpython} -m pytest -o addopts='' {env:PYTEST_PATHS}

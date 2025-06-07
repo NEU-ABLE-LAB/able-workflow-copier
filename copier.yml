@@ -14,7 +14,7 @@ project_name:
   type: str
   help: A name for the project. (Must be a valid github project name.)
   validator: >-
-    {% if not (project_name | regex_search('^[a-z][a-z0-9\-]+$')) %}
+    {% if not (project_name | regex_search('^[a-z][a-z0-9\-_]+$')) %}
     project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
     {% endif %}
   default: "{{ project_name | default('able-workflow') }}"
