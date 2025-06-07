@@ -113,7 +113,7 @@ plugins = [
 ]
 strict = true
 exclude = '(^|/)(tests|template)/.*\\.py$'
-files = ["weh_interviews"]
+files = ["hooks", "extensions"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
