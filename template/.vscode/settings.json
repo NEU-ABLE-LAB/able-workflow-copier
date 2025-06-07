@@ -1,0 +1,124 @@
+{
+    "logViewer.logLevel": "warn",
+    "logViewer.options": {},
+    "logViewer.showStatusBarItemOnChange": true,
+    "logViewer.watch": [
+        {
+            "title": ".snakemake",
+            "pattern": "${workspaceFolder}/.snakemake/log/*.log",
+        },
+        {
+            "title": "snakemake",
+            "pattern": "${workspaceFolder}/logs/**/*.log",
+        },
+        {
+            "groupName": "snakemake rules",
+            "watches": [
+                {
+                    "title": "pyproject2conda_package_file",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/pyproject2conda_package_file/**/*.log",
+                        "${workspaceFolder}/logs/rules/pyproject2conda_package_file.log"
+                    ]
+                },
+                {
+                    "title": "pyproject2conda_meta_file",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/pyproject2conda_meta_file/**/*.log",
+                        "${workspaceFolder}/logs/rules/pyproject2conda_meta_file.log"
+                    ]
+                },
+                {
+                    "title": "conda_localize_file",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/conda_localize_file/**/*.log",
+                        "${workspaceFolder}/logs/rules/conda_localize_file.log"
+                    ]
+                },
+                {
+                    "title": "conda_update_yaml",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/conda_update_yaml/**/*.log",
+                        "${workspaceFolder}/logs/rules/conda_update_yaml.log"
+                    ]
+                },
+                {
+                    "title": "logs_to_watch",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/logs_to_watch/**/*.log",
+                        "${workspaceFolder}/logs/rules/logs_to_watch.log"
+                    ]
+                },
+                {
+                    "title": "precommit",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/precommit/**/*.log",
+                        "${workspaceFolder}/logs/rules/precommit.log"
+                    ]
+                },
+                {
+                    "title": "docs_deploy",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/docs_deploy/**/*.log",
+                        "${workspaceFolder}/logs/rules/docs_deploy.log"
+                    ]
+                },
+                {
+                    "title": "docs_serve_mike",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/docs_serve_mike/**/*.log",
+                        "${workspaceFolder}/logs/rules/docs_serve_mike.log"
+                    ]
+                },
+                {
+                    "title": "docs_serve",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/docs_serve/**/*.log",
+                        "${workspaceFolder}/logs/rules/docs_serve.log"
+                    ]
+                },
+                {
+                    "title": "notebook_to_report",
+                    "pattern": [
+                        "${workspaceFolder}/logs/rules/notebook_to_report/**/*.log",
+                        "${workspaceFolder}/logs/rules/notebook_to_report.log"
+                    ]
+                }
+            ]
+        }
+    ],
+    "mypy-type-checker.ignorePatterns": [
+        "**/tests/**",
+        "**/docs/**",
+        "**/.snakemake/**",
+        "**/.tox/**",
+        "**/.venv/**",
+        "**/.env/**",
+        "**/.eggs/**",
+        "**/build/**",
+        "**/dist/**",
+        "**/logs/**"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python-envs.pythonProjects": [],
+    "notebook.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "yaml.schemas": {
+        "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
+    },
+    "yaml.customTags": [
+        "!ENV scalar",
+        "!ENV sequence",
+        "!relative scalar",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji",
+        "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format",
+        "tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify mapping"
+    ]
+}

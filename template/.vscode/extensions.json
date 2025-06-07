@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "adamviola.parquet-explorer",
+        "charliermarsh.ruff",
+        "davidanson.vscode-markdownlint",
+        "github.vscode-github-actions",
+        "mechatroner.rainbow-csv",
+        "ms-python.black-formatter",
+        "ms-python.mypy-type-checker",
+        "ms-python.python",
+        "ms-toolsai.datawrangler",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "redhat.vscode-yaml",
+        "snakemake.snakemake-lang",
+        "tamasfe.even-better-toml",
+        "yzhang.markdown-all-in-one",
+        "gruntfuggly.todo-tree",
+        "davidwang.ini-for-vscode"
+    ]
+}
