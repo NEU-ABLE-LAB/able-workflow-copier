@@ -52,10 +52,11 @@ def to_toml_authors(authors_json: str, *, indent: int = 4) -> str:
     """
     logger.debug(f"Converting authors JSON: {authors_json!r}")
     data = json.loads(authors_json)
-    _validate(data)
 
     if not isinstance(data, list):
         raise TypeError("`authors_json` must decode to a JSON list")
+
+    _validate(data)
 
     body = ",\n".join(textwrap.indent(_toml_repr(item), " " * indent) for item in data)
     return "[\n" + body + "\n]"
