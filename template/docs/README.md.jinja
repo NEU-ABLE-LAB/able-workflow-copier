@@ -1,0 +1,33 @@
+# {{ project_name }} documentation
+
+The documentation for this project uses [MkDocs](https://www.mkdocs.org/) and the
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
+
+The documentation source files are located in the `docs/docs/` directory.
+
+The navigation structure is spcified with
+[`literate-nav`](https://pypi.org/project/mkdocs-literate-nav/) in the
+`SUMMARY.md` file within the `docs/docs/` directory and each subdirectory.
+
+## Building the documentation locally
+
+    Before `mkdocs` can build the documentation, source files must be generated
+    by snakemake. From the root directory of the project, run:
+
+    ```bash
+    snakemake docs_build
+    ```
+
+    The assumes that you have already set up the minimal environment for running
+    the workflow with snakemake. See the main `README.md` file for instructions.
+
+## Serving the documentation locally
+
+    ```bash`
+    snakemake docs_serve
+    ```
+
+## More information
+
+For more information on developing the documentation, see the
+`docs/contributing/docs.md` file or the equivalent in the hosted documentation.
