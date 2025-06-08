@@ -1,0 +1,6 @@
+# Update the conda environment file `environment-py312-dev.yaml`
+# to reflect any changes to pyproject.toml
+./hooks/pyproject2conda.py pyproject.toml
+
+# Update the conda environment
+conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune

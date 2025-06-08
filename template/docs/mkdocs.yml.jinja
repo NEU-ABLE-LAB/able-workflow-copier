@@ -48,8 +48,8 @@ theme:
     - search.suggest
     - search.highlight
 
-  logo: images/logo.png
-  favicon: images/logo.png
+  logo: _images/logo.png
+  favicon: _images/logo.png
 
 extra:
   project_version: "{% raw %}{{ import('importlib.metadata').version('{% endraw %}{{ package_name }}{% raw %}') }}{% endraw %}"
@@ -102,7 +102,7 @@ markdown_extensions:
       custom_checkbox: true
 
 extra_javascript:
-  - js/mathjax.js
+  - _js/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 validation:

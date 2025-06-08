@@ -48,10 +48,9 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 │
 ├── docs/
 │   ├── docs/
-│   │   ├── assets/
-│   │   │   ├── css/
-│   │   │   ├── images/
-│   │   │   └── js/
+│   │   ├── _css/
+│   │   ├── _images/
+│   │   ├── _js/
 │   │   ├── contributing/
 │   │   │   ├── docs.md
 │   │   │   ├── etl.md
