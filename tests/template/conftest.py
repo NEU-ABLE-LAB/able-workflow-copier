@@ -1,21 +1,9 @@
-"""
-Global fixtures & helpers for testing a Copier template with:
-
-▪ multiple answer-sets (variants)
-▪ one pytest test *per* tox env inside each rendered variant
-"""
-
-from __future__ import annotations
 from pathlib import Path
-import subprocess
-import pytest
 from typing import Any, Dict, cast
+import pytest
+from loguru import logger
+
 from ruamel.yaml import YAML
-
-
-###############################################################################
-# 1.  Define every permutation of answers you want to exercise
-###############################################################################
 
 ANSWERS_YAMLS = [
     Path("example-answers-able.yml"),
@@ -47,8 +35,9 @@ for answers_yaml in ANSWERS_YAMLS:
     }
     answer_sets.append(answer_set)
 
+
 ###############################################################################
-# 2.  Session-scoped Copier rendering — *one per answer-set*
+# Session-scoped Copier rendering — *one per answer-set*
 ###############################################################################
 
 
@@ -57,32 +46,15 @@ def rendered(request, copie_session):
     """
     Render the template once for each variant and return (project_dir, answers_id)
     """
+
     variant = request.param
+
+    # Generate the session scoped-project
     result = copie_session.copy(extra_answers=variant["answers"])
+
+    # Basic smoke-tests
     if result.exit_code != 0 or result.exception:
         pytest.fail(f"Copier failed for {variant['id']}: {result.exception}")
+
+    logger.debug(f"Rendered variant {variant['id']} at {result.project_dir}")
     return result.project_dir, variant["id"]
-
-
-###############################################################################
-# 3.  Return the list of tox envs for *that* rendered project
-###############################################################################
-
-
-def _list_tox_envs(project_dir: Path) -> list[str]:
-    out = subprocess.check_output(["tox", "-qq", "-l"], cwd=project_dir, text=True)
-    return [line.strip() for line in out.splitlines() if line.strip()]
-
-
-@pytest.fixture(scope="session")
-def env_matrix(rendered) -> dict[str, list[str]]:
-    """
-    Cache {variant_id: [toxenv1, toxenv2, …]} for all variants.
-    """
-    project_dir, var_id = rendered
-    # Build the cache lazily the first time each variant appears
-    _matrix = getattr(env_matrix, "_cache", {})
-    if var_id not in _matrix:
-        _matrix[var_id] = _list_tox_envs(project_dir)
-        env_matrix._cache = _matrix
-    return _matrix

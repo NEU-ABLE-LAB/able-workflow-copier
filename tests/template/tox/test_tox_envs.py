@@ -8,12 +8,14 @@ gets its own, independent pytest test.
 """
 
 from __future__ import annotations
+
 import subprocess
-import pytest
 from pathlib import Path
+import pytest
+
+from loguru import logger
 
 from .conftest import answer_sets
-
 
 ###############################################################################
 # 1.  Dynamic parametrisation --------------------------------------------------
@@ -38,14 +40,16 @@ def pytest_generate_tests(metafunc):
             # Lazily copy template just once per variant *at collection time*
             if var_id not in env_matrix:
 
+                import shutil
+                import tempfile
+
                 from copier import run_copy
-                import tempfile, shutil, textwrap, os
 
                 tmpdir: Path = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
                 try:
                     run_copy(
                         src_path=str(
-                            Path(__file__).resolve().parents[2]
+                            Path(__file__).resolve().parents[3]
                         ),  # template root
                         dst_path=str(tmpdir),
                         data=entry["answers"],
@@ -59,6 +63,9 @@ def pytest_generate_tests(metafunc):
                 finally:
                     shutil.rmtree(tmpdir, ignore_errors=True)
 
+            if not env_matrix[var_id]:
+                logger.warning(f"No tox envs found for {var_id}, skipping")
+
             for env in env_matrix[var_id]:
                 argvalues.append((var_id, env))
                 argids.append(f"{var_id}:{env}")
@@ -69,6 +76,9 @@ def pytest_generate_tests(metafunc):
 
         # Stash matrix for later reuse by fixtures
         metafunc.config._env_matrix_cache = env_matrix
+
+    else:
+        logger.warning(f"Skipping dynamic param for {metafunc.function}")
 
 
 ###############################################################################
@@ -90,7 +100,7 @@ def test_inner_tox_env_passes(copie_session, variant_id, env_name):
     result = copie_session.copy(extra_answers=answers)
 
     completed = subprocess.run(
-        ["tox", "-qq", "-e", env_name],
+        ["tox", "run-parallel", "--quiet", "-e", env_name],
         cwd=result.project_dir,
         capture_output=True,
         text=True,

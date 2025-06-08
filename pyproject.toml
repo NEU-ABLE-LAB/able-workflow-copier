@@ -163,7 +163,7 @@ extras_or_groups = ["dev"]
 testpaths = [
   "tests/extensions",
   "tests/hooks",
-  # "tests/template",
+  "tests/template",
 ]
 # Help with module resolution and avoids some common import errors.
 addopts = "--import-mode=importlib"
