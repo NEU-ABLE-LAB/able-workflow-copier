@@ -38,7 +38,7 @@ dependencies = [
 # Extras for each module in the package that requires large or strict
 # dependencies for full workflow functionality.
 
-# TODO Add copier template to add extras for ETL templates
+# TODO-copier-etl Add copier template to add extras for ETL templates
 
 [dependency-groups]
 # Optional dependencies for development, CI, and Jupyter workflows
@@ -139,18 +139,18 @@ dev = [
   { include-group = "workflow" },
 ]
 
-{% if repository_url or documentation_url or homepage_url %}
+{% if repository_url or documentation_url or homepage_url -%}
 [project.urls]
-{% if repository_url %}
+{% if repository_url -%}
 Repository = "{{ repository_url }}"
-{% endif %}
-{% if documentation_url %}
+{%- endif %}
+{% if documentation_url -%}
 Documentation = "{{ documentation_url}}"
-{% endif %}
-{% if homepage_url %}
+{%- endif %}
+{% if homepage_url -%}
 Homepage = "{{ homepage_url}}"
-{% endif %}
-{% endif %}
+{%- endif %}
+{%- endif %}
 
 [tool.coverage.run]
 parallel = true
@@ -238,11 +238,15 @@ style = ["yaml"]
 header = true
 python = "highest"
 
+# TODO-copier-etl Add ETL extra groups here
+
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]
 header = true
 python = "highest"
 extras_or_groups = ["dev"]
+
+# TODO-copier-etl Add ETL extra dev groups here
 
 [tool.pyproject2conda.envs."docs"]
 style = ["yaml"]
@@ -280,6 +284,7 @@ addopts = """--ignore-glob=*/extras_*"""
 markers = [
     "env_workflow: Snakemake workflow utilities, module integration tests, and non-conda unit tests to be run in `workflow/envs/py*-workflow.yaml`",
     "env_core: Snakemake rule scripts to be run in `workflow/envs/*/py*-core.yaml",
+    # TODO-copier-etl Add ETL extra markers here
 ]
 
 [tool.ruff]

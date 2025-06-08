@@ -1,4 +1,4 @@
-# {{ project_name }} documentation
+# ABLE Workflow copier template documentation
 
 The documentation for this project uses [MkDocs](https://www.mkdocs.org/) and the
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
@@ -11,20 +11,17 @@ The navigation structure is specified with
 
 ## Building the documentation locally
 
-    Before `mkdocs` can build the documentation, source files must be generated
-    by snakemake. From the root directory of the project, run:
-
     ```bash
-    snakemake docs_build
+    mkdocs build  --config-file docs/mkdocs.yml
     ```
 
-    The assumes that you have already set up the minimal environment for running
-    the workflow with snakemake. See the main `README.md` file for instructions.
+    The assumes that you have already set up the development environment.
+    See the main `README.md` file for instructions.
 
 ## Serving the documentation locally
 
     ```bash`
-    snakemake docs_serve
+    mkdocs serve --config-file docs/mkdocs.yml
     ```
 
 ## More information
