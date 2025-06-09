@@ -1,4 +1,4 @@
-# Development and contributing
+# Navigation outline for literate-nav
 
 - [Configuring VSCode](vscode.md)
 - [Adding an ETL process](etl.md)
