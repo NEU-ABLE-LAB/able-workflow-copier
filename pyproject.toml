@@ -17,6 +17,7 @@ dependencies = [
   "copier>=9.7.1",
   "loguru>=0.7.2",
   "ruamel.yaml>=0.18.12",
+  "typer>=0.16.0",
 
   # jinja2 extensions
   "cookiecutter>=2.6.0",
