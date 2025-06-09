@@ -42,7 +42,9 @@ theme:
     code: Space Mono
 
   features:
+    - content.code.annotate
     - content.code.copy
+    - content.code.select
     - navigation.sections
     - navigation.top
     - search.suggest
@@ -78,17 +80,21 @@ plugins:
 
 markdown_extensions:
   - admonition
-  - def_list
   - attr_list
+  - def_list
   - toc:
       toc_depth: 3
       permalink: true
   - pymdownx.arithmatex:
       generic: true
-  - pymdownx.highlight
   - pymdownx.blocks.html
-  - pymdownx.emoji
   - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
   - pymdownx.snippets:
       check_paths: True
   - pymdownx.superfences:

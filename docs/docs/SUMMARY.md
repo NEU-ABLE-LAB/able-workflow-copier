@@ -1,4 +1,5 @@
 # Navigation outline for literate-nav
 
-- [Overview](index.md)
+- [Home](index.md)
+- [Overview](overview/)
 - [Contributing](contributing/)

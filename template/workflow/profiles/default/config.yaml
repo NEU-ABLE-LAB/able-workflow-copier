@@ -1,0 +1,21 @@
+__use_yte__: true
+__definitions__:
+  - from pathlib import Path
+
+# This default snakemake profile is for running snakemake
+# within VSCode on a local machine (within WSL on Windows).
+
+# Hardware configuration
+cores: 4
+
+# Conda configuration
+software-deployment-method: conda
+use-conda: true
+
+# Configuration files
+# TODO-copier-package see if this can be moved to a shared location between profiles
+configfile:
+  - "config/config.yaml"
+  # Load the local configuration file if it exists
+  - ?("config/config.local.yaml" if Path("config/config.local.yaml").is_file() else SKIP)
+  # TODO-copier-etl add SLURM config files
