@@ -120,3 +120,50 @@ def test_authors_filter_extension_registers_filter() -> None:
 
     assert "to_toml_authors" in env.filters
     assert env.filters["to_toml_authors"] is authors_filter.to_toml_authors
+
+    # the new helper is exported too
+    assert "author_names_csv" in env.filters
+    assert env.filters["author_names_csv"] is authors_filter.author_names_csv
+
+
+# ---------------------------------------------------------------------------
+# author_names_csv helper
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "authors_json, expected",
+    [
+        (
+            # plain names → comma-separated
+            "[{'name': 'Alice'}, {'name': 'Bob'}]".replace("'", '"'),
+            "Alice, Bob",
+        ),
+        (
+            # any name with a comma → semicolon-separated
+            "[{'name': 'Doe, John'}, {'name': 'Alice'}]".replace("'", '"'),
+            "Doe, John; Alice",
+        ),
+    ],
+)
+def test_author_names_csv_delimiters(authors_json, expected):
+    assert authors_filter.author_names_csv(authors_json) == expected
+
+
+def test_author_names_csv_warns_on_mixed_delimiters(recwarn):
+    """
+    A name containing *both* ',' and ';' triggers a warning.
+    """
+    mixed = "[{'name': 'Doe, John; Jr.'}]".replace("'", '"')
+
+    authors_filter.author_names_csv(mixed)
+
+    # Grab the most-recent warning object
+    w = recwarn.pop()
+    assert issubclass(w.category, UserWarning)
+    assert "contain both commas and semicolons" in str(w.message)
+
+
+def test_author_names_csv_accepts_list():
+    authors_list = [{"name": "Alice"}, {"name": "Bob"}]
+    assert authors_filter.author_names_csv(authors_list) == "Alice, Bob"

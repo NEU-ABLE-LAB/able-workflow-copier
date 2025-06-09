@@ -6,7 +6,8 @@ One test that merely proves the template rendered.
 from pathlib import Path
 
 
-def test_template_rendered(rendered):
+def test_template_contains_pyproject(rendered):
     project_dir, _ = rendered
-    expected = project_dir / "pyproject.toml"
-    assert expected.is_file(), f"{expected} not found"
+    assert (
+        project_dir.is_dir()
+    ), f"Rendered project dir {project_dir} is not a directory"

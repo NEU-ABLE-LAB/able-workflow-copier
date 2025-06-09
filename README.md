@@ -28,6 +28,8 @@ The following instructions assume you are working on Linux (or with WSL on Windo
     conda activate able-workflow-copier-dev
     ```
 
+    Alternatively, run the script `scripts/conda_update.sh`.
+
     Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
 3. Install pre-commit into the repo to run checks on every commit

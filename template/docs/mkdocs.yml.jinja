@@ -1,0 +1,110 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: {{ project_name }}
+site_author: {{ project_authors | author_names_csv }}
+docs_dir: docs
+repo_name: "{{ organization_slug}}/{{ project_name }}/"
+repo_url: "https://github.com/{{ organization_slug }}/{{ project_name }}/"
+edit_uri: edit/main/docs/docs  # enables “Edit on GitHub”
+
+theme:
+  name: material
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  font:
+    text: Work Sans
+    code: Space Mono
+
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+
+  logo: _images/logo.png
+  favicon: _images/logo.png
+
+extra:
+  project_version: "{% raw %}{{ import('importlib.metadata').version('{% endraw %}{{ package_name }}{% raw %}') }}{% endraw %}"
+  version:
+    provider: mike
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+  - macros
+  - gen-files:
+      scripts:
+        - gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+      implicit_index: true
+  - section-index
+  - mkdocs-jupyter:
+      include_source: false
+  - termynal
+  - git-revision-date-localized
+  - mike
+  - inline-select-svg
+
+markdown_extensions:
+  - admonition
+  - def_list
+  - attr_list
+  - toc:
+      toc_depth: 3
+      permalink: true
+  - mkdocs-click
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
+  - pymdownx.blocks.html
+  - pymdownx.snippets:
+      check_paths: True
+  - pymdownx.emoji
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_javascript:
+  - _js/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+validation:
+  links:
+    unrecognized_links: ignore
