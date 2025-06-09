@@ -9,13 +9,13 @@ rule pyproject2conda_package_file:
     output:
         # This should be placed in the parent workflow directory if this
         # workflow is imported as a module.
-        {% raw %}
+        {% raw -%}
         yaml=str(
             Path("workflow")
             / config["CONDA"]["PYPROJECT2CONDA_DIR"]
             / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
         ),
-        {% endraw %}
+        {%- endraw %}
     wildcard_constraints:
         environment="|".join(config["CONDA"]["ENVS"].values()),
     params:
@@ -31,7 +31,7 @@ rule pyproject2conda_package_all:
     """Generate all the environment YAMLs that include the package"""
     localrule: True
     input:
-        {% raw %}
+        {% raw -%}
         expand(
             str(
                 Path("workflow")
@@ -40,7 +40,7 @@ rule pyproject2conda_package_all:
             ),
             environment=config["CONDA"]["ENVS"].values(),
         ),
-        {% endraw %}
+        {%- endraw %}
 
 
 rule pyproject2conda_meta_file:
@@ -49,13 +49,13 @@ rule pyproject2conda_meta_file:
     input:
         toml=workflow.source_path("../../pyproject.toml"),
     output:
-        {% raw %}
+        {% raw -%}
         yaml=str(
             Path("workflow")
             / "envs"
             / f"{config['CONDA']['PYTHON']}-{{environment}}.yaml"
         ),
-        {% endraw %}
+        {%- endraw %}
     wildcard_constraints:
         environment="(tox)|(workflow)",
     params:
@@ -71,7 +71,7 @@ rule pyproject2conda_meta_all:
     """Generate both the workflow and tox environment YAMLs."""
     localrule: True
     input:
-        {% raw %}
+        {% raw -%}
         expand(
             str(
                 Path("workflow")
@@ -80,7 +80,7 @@ rule pyproject2conda_meta_all:
             ),
             environment=["tox", "workflow"],
         ),
-        {% endraw %}
+        {%- endraw %}
 
 
 rule pyproject2conda_all:

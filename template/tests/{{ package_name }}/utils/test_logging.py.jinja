@@ -1,0 +1,75 @@
+"""
+Unit-tests for ``{{ package_name }}.utils.logging``.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+import pytest
+
+from {{ package_name }}.utils.logging import _serialise_ctx, configure_file_logger
+
+
+# ---------------------------------------------------------------------------
+# _serialise_ctx
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, "-"),
+        ("job-42", "job-42"),
+        ({"a": "1", "b": "2"}, "a=1,b=2"),
+    ],
+)
+def test_serialise_ctx(value, expected):
+    """All branches of _serialise_ctx should yield the documented result."""
+    assert _serialise_ctx(value) == expected
+
+
+# ---------------------------------------------------------------------------
+# configure_file_logger
+# ---------------------------------------------------------------------------
+def test_configure_file_logger_writes_expected_lines(tmp_path: Path):
+    """
+    * Directory is auto-created.
+    * Context appears on **every** emitted line.
+    * Format matches the documented template.
+    """
+    log_path = tmp_path / "logs" / "run.log"
+    ctx = {"sample": "1"}
+
+    logger = configure_file_logger(
+        log_path,
+        context=ctx,
+        enqueue=False,  # synchronous => file flushed immediately
+        log_level="INFO",
+    )
+
+    # Emit two lines to prove the bound context persists
+    messages = ["hello world", "second line"]
+    for msg in messages:
+        logger.info(msg)
+
+    # ---------- Assertions --------------------------------------------------
+    assert log_path.is_file()
+
+    lines = log_path.read_text().strip().splitlines()
+    assert len(lines) == len(messages)
+
+    fmt_re = re.compile(
+        r"\d{4}-\d{2}-\d{2} "  # date
+        r"\d{2}:\d{2}:\d{2}\.\d{3} \| "  # time
+        r"[A-Z]{4,8}\s+\| "  # level
+        r"sample=1\s+\| "  # ctx (padded to 25 chars)
+        r".*"  # message
+    )
+
+    for line, msg in zip(lines, messages):
+        # right message, right context, right level
+        assert msg in line
+        assert "sample=1" in line
+        assert "INFO" in line
+        # full formatting regex
+        assert fmt_re.fullmatch(line)

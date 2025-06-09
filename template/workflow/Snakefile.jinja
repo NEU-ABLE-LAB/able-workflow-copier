@@ -22,11 +22,6 @@ import shutil
 
 from loguru import logger
 
-from scripts.utils.snakemake_helpers import (
-    get_code_files,
-)
-
-
 # --- PATHS ------------------------------------------------------------------
 
 # This is helper path to get the `workflow/` directory of this workflow
@@ -68,17 +63,20 @@ include: "rules/utils.smk"
 include: "rules/build.smk"
 include: "rules/dev.smk"
 include: "rules/docs.smk"
-# Data processing rules
-include: "rules/data/coding_matrix/raw.smk"
 # Reporting rules
 include: "rules/reports.smk"
+
+
+# Datasets, features, and modeling rules
+# TODO-copier-module Add rules for modules here
 
 
 # --- DAG ROOT ----------------------------------------------------------------
 rule all_data:
     """Run all data rules."""
     input:
-        *rules.d_coding_matrix.output,
+        # TODO-copier-etl Add data ouputs here
+        "data/README.md",  # TODO-copier-etl Delete this dummy input
 
 
 rule all_reports:

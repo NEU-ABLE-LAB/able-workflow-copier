@@ -158,8 +158,6 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 │           ├── rules/
 │           │   ├── test_conda_localize_file.py
 │           │   └── test_pyproject2conda.py
-│           ├── utils/
-│           │   └── test_snakemake_helpers.py
 │           └── README.md
 │
 ├── workflow/

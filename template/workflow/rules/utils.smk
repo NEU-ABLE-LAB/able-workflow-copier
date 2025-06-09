@@ -1,7 +1,20 @@
 """
 Helpers for rules in the workflow.
 """
+
 # TODO-copier-package Should this be moved to a pure python file under `workflow/scripts/utils/`?
+
+
+rule log_config:
+    """
+    Log the configuration of the workflow.
+    """
+    log:
+        loguru=LOG_DIR / "log_config.log",
+        config=LOG_DIR / "config.yaml",
+    script:
+        str(WORKFLOW_BASE / "scripts/rules/log_config.py")
+
 
 def get_localized_conda(env_name: str) -> str:
     """

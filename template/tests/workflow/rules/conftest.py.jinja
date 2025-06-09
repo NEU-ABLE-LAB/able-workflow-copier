@@ -1,0 +1,77 @@
+import shutil
+import textwrap
+from pathlib import Path
+
+import pytest
+from loguru import logger
+
+from {{ package_name }}.config import get_project_root
+
+# one workspace per parameter for the whole run
+_WORKSPACES: dict[str, Path] = {}
+
+
+@pytest.fixture(params=["proj_root", "workflow"])
+def workspace(
+    tmp_path_factory: pytest.TempPathFactory,
+    request: pytest.FixtureRequest,
+) -> Path:
+    """
+    One disposable Snakemake working directory.
+
+    The fixture is parameterised so every test is executed twice:
+
+    `request.param` can be either:
+    ─ `"proj_root"`: Snakefile at 〈tmp〉/Snakefile
+    ─ `"workflow"`:  Snakefile at 〈tmp〉/workflow/Snakefile
+    """
+    snakefile_loc = request.param
+    test_module = request.module.__name__
+    basename = f"{test_module}_{snakefile_loc}"
+
+    # reuse the directory if it already exists
+    if basename in _WORKSPACES:
+        return _WORKSPACES[basename]
+
+    tmp_path = tmp_path_factory.mktemp(
+        basename=basename,
+        numbered=False,
+    )
+    logger.debug(f"Working in a temporary project root: {tmp_path}")
+
+    repo_root = get_project_root()
+
+    # Copy the repo’s config and profile
+    shutil.copytree(repo_root / "config", tmp_path / "config")
+
+    # Decide where the local Snakefile lives
+    if snakefile_loc == "proj_root":
+        snakefile_dir = tmp_path
+        shutil.copytree(repo_root / "workflow" / "profiles", tmp_path / "profiles")
+    elif snakefile_loc == "workflow":
+        snakefile_dir = tmp_path / "workflow"
+        snakefile_dir.mkdir()
+        shutil.copytree(
+            repo_root / "workflow" / "profiles", tmp_path / "workflow" / "profiles"
+        )
+    else:
+        raise ValueError(f"Unknown location: {snakefile_loc}")
+
+    # Minimal Snakefile that imports the real workflow
+    (snakefile_dir / "Snakefile").write_text(
+        textwrap.dedent(
+            f"""\
+        module {{ package_name }}:
+            snakefile: "{repo_root / 'workflow' / 'Snakefile'}"
+            config: config
+
+        use rule * from {{ package_name }}
+        """
+        )
+    )
+
+    # Create the expected input file so Snakemake can build the DAG
+    # TODO-copier-etl: Add test input data for rules to be tested.
+
+    _WORKSPACES[basename] = tmp_path
+    return tmp_path

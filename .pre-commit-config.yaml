@@ -56,3 +56,4 @@ repos:
           - types-jsonschema==4.24.0.20250528
           - loguru==0.7.2
           - pydantic[mypy]==2.11.4
+          - typer==0.15.3

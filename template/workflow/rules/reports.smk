@@ -10,6 +10,7 @@ TEMPLATES = glob_wildcards(
 # TODO-copier-package Write helper function to read inputs from notebooks
 # `parameters` cell and add them to the rule below.
 
+
 # ---------------------------------------------------------------------------
 #  One-to-one rule
 # ---------------------------------------------------------------------------

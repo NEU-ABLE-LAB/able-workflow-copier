@@ -1,0 +1,121 @@
+"""Generic Snakemake wrapper for calling `*/main.py:run` in `{{ package_name }}`."""
+
+import importlib
+import sys
+from pathlib import Path
+from typing import Any, Callable, Dict
+
+from loguru import logger
+from snakemake.io import Namedlist
+from snakemake.script import Snakemake, snakemake
+
+# ---------------------------------------------------------------------------
+# Helper converters
+# ---------------------------------------------------------------------------
+
+
+def _namedlist_to_dict(
+    nl: "Namedlist",
+    convert: Callable[[Any], Any],
+    typename: str,
+) -> Dict[str, Any]:
+    """Convert *nl* into an insertion-ordered ``dict[str, Any]``.
+
+    * The dict preserves the order of items in *nl*.
+    * If an element has a user-defined name, that name becomes the key; otherwise
+      the element's positional index is stringified and used as the key.
+    * The guard attributes ``sort`` and ``index`` are skipped.
+    * ``convert`` is applied to each element.  Any failure raises :class:`TypeError`.
+    """
+    result: Dict[str, Any] = {}
+
+    for idx, (name, item) in enumerate(nl._allitems()):
+        # Skip the two reserverd guard names, if present.
+        if name in {"sort", "index"}:
+            continue
+
+        key = name if name is not None else str(idx)
+        try:
+            result[key] = convert(item)
+        except Exception as exc:  # pragma: no cover – bubble up with context
+            raise TypeError(
+                f"Element '{key}' ({item!r}) cannot be converted to {typename}."
+            ) from exc
+
+    return result
+
+
+def namedlist_to_dict_str(nl: "Namedlist") -> Dict[str, str]:
+    """Return an ordered mapping whose **values** are :class:`str`.
+
+    Any element that is not directly convertible via :pyfunc:`str` triggers
+    :class:`TypeError`.
+    """
+    return _namedlist_to_dict(nl, convert=str, typename="str")
+
+
+def _to_path(item: Any) -> Path:
+    if isinstance(item, Path):
+        return item
+    if isinstance(item, str):
+        return Path(item)
+    raise TypeError
+
+
+def namedlist_to_dict_path(nl: "Namedlist") -> Dict[str, Path]:
+    """Return an ordered mapping whose **values** are :class:`pathlib.Path`.
+
+    Valid element types
+    -------------------
+    * ``pathlib.Path`` - kept as-is.
+    * ``str``          - converted with ``Path(str_value)``.
+    """
+    return _namedlist_to_dict(nl, convert=_to_path, typename="Path")
+
+
+def _to_path_or_dict(files: Namedlist) -> Dict[str, Path] | Path:
+    """
+    Convert input or output files to a dictionary of Paths or a single Path.
+    If the input is a single file (string), return a Path object.
+    If the input is a dictionary, convert each value to a Path object.
+    """
+    if len(files) == 1:
+        return Path(files[0])
+    else:
+        return namedlist_to_dict_path(files)
+
+
+# ---------------------------------------------------------------------------
+# Main entry point
+# ---------------------------------------------------------------------------
+
+
+def main(smk: Snakemake) -> None:
+    """Import and invoke the target function specified by ``smk.params:func``."""
+    func_path = smk.params.func
+    mod_path, func_name = func_path.rsplit(":", 1)
+    module = importlib.import_module(mod_path)
+    func: Callable[..., Any] = getattr(module, func_name)
+
+    func(
+        input=_to_path_or_dict(smk.input),
+        output=_to_path_or_dict(smk.output),
+        params=namedlist_to_dict_str(smk.params),
+        wildcards=namedlist_to_dict_str(smk.wildcards),
+        threads=smk.threads,
+        resources=namedlist_to_dict_str(smk.resources),
+        log={name: Path(str(p)) for name, p in smk.log.items()},
+        config=smk.config,
+        rulename=smk.rule,
+    )
+
+
+if __name__ == "__main__":  # pragma: no cover - entry point for Snakemake
+    try:
+        main(snakemake)
+    except NameError:  # pragma: no cover - executed outside Snakemake
+        logger.error(
+            "This script is designed to be run as part of a Snakemake workflow."
+            " Please run it through Snakemake."
+        )
+        sys.exit(0)

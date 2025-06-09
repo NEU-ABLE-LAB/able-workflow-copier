@@ -108,3 +108,30 @@ package_name:
       package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
       {% endif %}
   default: "{{ project_name | lower | replace('-', '_') }}"
+
+conda_update_workflow_env:
+  type: bool
+  help: Whether to create/update the conda environment for the workflow.
+  default: false
+
+conda_localize:
+  type: bool
+  help: Whether to run `snakemake conda_localize` to localize the conda environment yaml files.
+  default: false
+
+git_init:
+  type: bool
+  help: Whether to initialize a git repository in the project directory. This is required to build the package since `setuptools_scm`` requires a git repository.
+  default: true
+
+# Post-generation hooks
+_tasks:
+  - command: >-
+      conda env update --name "{{ package_name }}_py312_workflow" --file "workflow/envs/py312-workflow.yaml"
+    when: "{{ conda_update_workflow_env }}"
+  - command: >-
+      conda run --name "weh_interviews_py312_workflow" snakemake conda_localize
+    when: "{{ conda_localize }}"
+  - command: >-
+      git init --initial-branch=main
+    when: "{{ git_init }}"

@@ -83,7 +83,6 @@ docs = [
   "mkdocs-section-index>=0.3.10",
   "mkdocs-mermaid2-plugin>=1.2.1",
   "mkdocs-inline-select-svg-plugin>=0.1.0",
-  "termynal>=0.13.0",
   "pymdown-extensions>=10.15",
   "graphviz>=0.20.3",
   "snakemake>=9.3.3",
@@ -227,7 +226,6 @@ mkdocs-mermaid2-plugin = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
 snakemake = { channel = "bioconda"}
 snakefmt = { channel = "bioconda"}
-termynal = { pip = true }
 
 # --- PyProject2Conda environments ---
 # When adding a new environment, add it to
@@ -306,6 +304,9 @@ extend-select = [
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "logging".msg  = "Use Loguru instead."
 "warnings".msg = "Use Loguru instead."
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ package_name }}"]
 
 [tool.setuptools.packages.find]
 include = ["{{ package_name }}*"]
