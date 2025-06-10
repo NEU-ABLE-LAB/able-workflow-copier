@@ -1,3 +1,3 @@
-[submodule "able-workflow-templates/able-workflow-rule-copier-dev"]
-	path = able-workflow-templates/able-workflow-rule-copier-dev
+[submodule "able-workflow/rule-copier"]
+	path = able-workflow/rule-copier
 	url = https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev.git
