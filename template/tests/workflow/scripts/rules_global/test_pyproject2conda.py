@@ -7,8 +7,6 @@ from types import SimpleNamespace
 
 import pytest
 
-pytestmark = pytest.mark.env_workflow
-
 ROOT = Path(__file__).parents[4]
 SCRIPT = ROOT / "workflow/scripts/rules/pyproject2conda.py"
 if not SCRIPT.exists():

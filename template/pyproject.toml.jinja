@@ -47,10 +47,13 @@ dependencies = [
 # Minimal snakemake workflow dependencies
 # Replaces `workflow/envs/global.yaml` since `global.yaml`
 # cannot be cached before a workflow goes offline.
+snakemake = [
+  "snakemake>=9.3.3",
+]
 workflow = [
+  { include-group = "snakemake" },
   "json5>=0.12.0",
   "loguru>=0.7.2",
-  "snakemake>=9.3.3",
   "graphviz>=0.20.3",
   "pandas>=2.2.3",
   "pyproject2conda>=0.19.1",
@@ -279,11 +282,6 @@ template = "workflow/envs/{env}"
 [tool.pytest.ini_options]
 # Ignore extras when running default pytest in VSCode
 addopts = """--ignore-glob=*/extras_*"""
-markers = [
-    "env_workflow: Snakemake workflow utilities, module integration tests, and non-conda unit tests to be run in `workflow/envs/py*-workflow.yaml`",
-    "env_core: Snakemake rule scripts to be run in `workflow/envs/*/py*-core.yaml",
-    # TODO-copier-etl Add ETL extra markers here
-]
 
 [tool.ruff]
 line-length = 79

@@ -1,0 +1,151 @@
+"""
+Unit-tests for `workflow/scripts/rules/{{ package_name }}_rules.py`.
+
+Key ideas
+---------
+* Provide a *very* small stand-in for Snakemake’s ``Namedlist`` plus a fake
+  ``snakemake`` module so the unconditional import in the wrapper succeeds.
+* Dynamically import the wrapper under test from its file path.
+* Build a dummy target module *on-the-fly* whose ``run()`` function simply
+  records the keyword arguments it receives so that we can assert that the
+  wrapper converts and forwards everything correctly.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import sys
+import types
+from collections import OrderedDict
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Dict
+
+import pytest
+from snakemake.utils import Namedlist
+
+# --------------------------------------------------------------------------- #
+# Load the wrapper module                                                     #
+# --------------------------------------------------------------------------- #
+
+ROOT = Path(__file__).parents[4]
+SCRIPT = ROOT / "workflow/scripts/rules/{{ package_name }}_rules.py"
+if not SCRIPT.exists():
+    pytest.skip(f"Cannot find {SCRIPT}", allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location("{{ package_name }}_rules", SCRIPT)
+RULES = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(RULES)  # type: ignore[arg-type]
+
+# --------------------------------------------------------------------------- #
+# Helper factories                                                            #
+# --------------------------------------------------------------------------- #
+
+
+def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False):
+    """
+    Build the *snakemake* stand-in expected by ``main()``.
+    """
+    if multiple_io:
+        inputs = Namedlist([("one", str(tmp_path / "a.txt")), ("two", "b.dat")])
+        outputs = Namedlist([("result", str(tmp_path / "out" / "c.txt"))])
+    else:
+        inputs = Namedlist([str(tmp_path / "in.txt")])
+        outputs = Namedlist([str(tmp_path / "out.txt")])
+
+    params = Namedlist(fromdict=OrderedDict([("func", func_path), ("alpha", 42)]))
+    wildcards = Namedlist([("sample", "X1")])
+    resources = Namedlist([("mem_mb", 1024)])
+
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir()
+    log = {"loguru": str(log_dir / "wrapper.log")}
+
+    return SimpleNamespace(
+        input=inputs,
+        output=outputs,
+        params=params,
+        wildcards=wildcards,
+        resources=resources,
+        threads=8,
+        log=log,
+        config={"answer": 42},
+        rule="dummy_rule",
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Tests                                                                       #
+# --------------------------------------------------------------------------- #
+
+
+def test_namedlist_converters_roundtrip():
+    """A tiny sanity-check for the helper converter trio."""
+    # one *named* item, one positional, plus the two guard names
+    nl = Namedlist(fromdict=OrderedDict([("x", 1), ("sort", 99), ("index", 123)]))
+    nl.append("y")  # positional -> auto-key "1"
+    as_str = RULES.namedlist_to_dict_str(nl)
+    assert list(as_str.keys()) == ["x", "1"]  # guard names skipped, idx 1 auto-keyed
+    assert as_str["x"] == "1" and as_str["1"] == "y"
+
+    nl_path = Namedlist([("p", "foo/bar.txt")])
+    as_path = RULES.namedlist_to_dict_path(nl_path)
+    assert isinstance(as_path["p"], Path) and as_path["p"].name == "bar.txt"
+
+
+@pytest.mark.parametrize("multiple_io", [False, True])
+def test_main_forwards_converted_objects(tmp_path, multiple_io):
+    """
+    Run the wrapper's ``main()`` once with *single* IO and once with *multiple*
+    IO files and check that the dummy target receives properly converted args.
+    """
+
+    # ------------------------------------------------------------------ target
+    captured: Dict[str, Any] = {}
+
+    def _dummy_run(**kwargs):
+        captured.update(kwargs)
+
+    dummy_mod = types.ModuleType("dummy_target")
+    dummy_mod.run = _dummy_run
+    sys.modules["dummy_target"] = dummy_mod
+    func_path = "dummy_target:run"
+
+    # ----------------------------------------------------------- fake snakemake
+    smk = _fake_snakemake(tmp_path, func_path=func_path, multiple_io=multiple_io)
+
+    # ---------------------------------------------------------------- execute
+    RULES.main(smk)
+
+    # ---------------------------------------------------------------- asserts
+    # 1. Every expected kwarg got through
+    expected_keys = {
+        "input",
+        "output",
+        "params",
+        "wildcards",
+        "threads",
+        "resources",
+        "log",
+        "config",
+        "rulename",
+    }
+    assert expected_keys == set(captured)
+
+    # 2. IO conversion logic
+    if multiple_io:
+        assert isinstance(captured["input"], dict) and len(captured["input"]) == 2
+        assert isinstance(captured["output"], dict)
+    else:
+        assert (
+            isinstance(captured["input"], Path) and captured["input"].name == "in.txt"
+        )
+        assert (
+            isinstance(captured["output"], Path)
+            and captured["output"].name == "out.txt"
+        )
+
+    # 3. Other simple pass-throughs
+    assert captured["threads"] == 8
+    assert captured["rulename"] == "dummy_rule"
+    assert captured["params"]["alpha"] == "42"  # converted to str
