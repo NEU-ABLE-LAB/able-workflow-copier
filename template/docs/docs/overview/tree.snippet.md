@@ -5,18 +5,17 @@ Copier uses a jinja2 syntax for rendering templates with the answers to the temp
 - [`able-workflow-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
   - **`{{ project_name }}`**: The name of the project being created.
   - **`{{ package_name }}`**: The name of the Python package being created.
+
 - [`able-workflow-module-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
   - **`{{ module_type }}`**: The type of module being created (e.g., `datasets`, `features`, or `models`).
   - **`{{ module_name }}`**: The name of the module being created.
+
 - [`able-workflow-etl-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
   - **`{{ etl_name }}`**: The name of the ETL process being created.
   - **`{{ requires_extras }}`**: Whether the ETL requires extra dependencies (boolean).
   - **`{{ extras_name }}`**: The name of the extras package (if `requires_extras` is `true`).
   - **`{{ conda_env_key }}`**: The key for the Conda environment from the workflow config (e.g., `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]`).
-  - Requires specification of the following variables:
-    - `{{ module_type }}`
-    - `{{ module_name }}`
-    - 
+
 - [`able-workflow-rule-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev)
   - **`{{ is_package_rule }}`**: The rule uses the package.
   - **`{{ rule_name }}`**: The name of the Snakemake rule being created
@@ -38,7 +37,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
  +  │   ├── module-{{ module_type }}-{{ module_name }}.yml
   + │   ├── etl-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml
    +│   └── rule-{{ module_type }}-{{ module_name }}-{{ rule_name }}.yml
-    │  
+    │
 +   ├── .github/
 +   │   ├── ISSUE_TEMPLATE/
   + │   │   ├── post-copier-etl.md
