@@ -16,7 +16,7 @@ rule dag_svg:
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     script:
-        str(WORKFLOW_BASE / "scripts/rules/dag_svg.py")
+        str(WORKFLOW_BASE / "scripts/rules_conda_docs/dag_svg.py")
 
 
 rule docs_build:

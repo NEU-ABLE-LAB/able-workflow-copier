@@ -13,7 +13,7 @@ rule log_config:
         loguru=LOG_DIR / "log_config.log",
         config=LOG_DIR / "config.yaml",
     script:
-        str(WORKFLOW_BASE / "scripts/rules/log_config.py")
+        str(WORKFLOW_BASE / "scripts/rules_global/log_config.py")
 
 
 def get_localized_conda(env_name: str) -> str:

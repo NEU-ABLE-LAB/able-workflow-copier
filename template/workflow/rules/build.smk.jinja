@@ -24,7 +24,7 @@ rule pyproject2conda_package_file:
         loguru=LOG_DIR / "pyproject2conda/{environment}.loguru.log",
         stdout=LOG_DIR / "pyproject2conda/{environment}.stdout.log",
     script:
-        str(WORKFLOW_BASE / "scripts/rules/pyproject2conda.py")
+        str(WORKFLOW_BASE / "scripts/rules_global/pyproject2conda.py")
 
 
 rule pyproject2conda_package_all:
@@ -64,7 +64,7 @@ rule pyproject2conda_meta_file:
         loguru=LOG_DIR / "pyproject2conda/{environment}.log",
         stdout=LOG_DIR / "pyproject2conda/{environment}.stdout.log",
     script:
-        str(WORKFLOW_BASE / "scripts/rules/pyproject2conda.py")
+        str(WORKFLOW_BASE / "scripts/rules_global/pyproject2conda.py")
 
 
 rule pyproject2conda_meta_all:

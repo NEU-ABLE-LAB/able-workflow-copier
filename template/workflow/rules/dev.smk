@@ -39,7 +39,7 @@ rule conda_localize_file:
     log:
         loguru=LOG_DIR / "conda_localize_file/{environment}.log",
     script:
-        str(WORKFLOW_BASE / "scripts/rules/conda_localize_file.py")
+        str(WORKFLOW_BASE / "scripts/rules_global/conda_localize_file.py")
 
 
 rule conda_update_yaml:

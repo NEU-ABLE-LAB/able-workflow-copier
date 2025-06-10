@@ -12,7 +12,7 @@ A [copier](https://copier.readthedocs.io/en/stable/) template for generating a s
 - [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
 - [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
 - `able-workflow-rule-script-copier`
-  - TODO-copier-package create this repo to template python scripts used as snakemake rules (e.g., `workflow/scripts/rules/conda_localize_file.py` and `template/workflow/scripts/rules/dag_svg.py`). And their associated unit tests which need the requirements specifed by the `conda:` directive the script is used in.
+  - TODO-copier-package create this repo to template python scripts used as snakemake rules (e.g., `workflow/scripts/rules_global/conda_localize_file.py` and `template/workflow/scripts/rules_conda_docs/dag_svg.py`). And their associated unit tests which need the requirements specifed by the `conda:` directive the script is used in.
 
 ## Contributing
 
