@@ -156,10 +156,10 @@ Homepage = "{{ homepage_url}}"
 
 [tool.coverage.run]
 parallel = true
+# TODO-copier-package Add docs and hooks python
 source = [
     "{{ package_name }}",
-    "workflow/scripts/rules",
-    "workflow/scripts/utils",
+    "workflow/scripts",
 ]
 omit   = [
     "tests/*",                       # skip everything in tests/

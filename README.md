@@ -62,15 +62,15 @@ The following instructions assume you are working on Linux (or with WSL on Windo
 
 3. Create a development environment with conda
 
-    ```bash
-    # Create the environment (or update and prune if it already exists)
-    conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune
-    conda activate able-workflow-copier-dev
-    ```
+   ```bash
+   # Create the environment (or update and prune if it already exists)
+   conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune
+   conda activate able-workflow-copier-dev
+   ```
 
-    Alternatively, run the script `scripts/conda_update.sh`.
+   Alternatively, run the script `scripts/conda_update.sh`.
 
-    Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
+   Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
 4. Install pre-commit into the repo to run checks on every commit
 

@@ -16,4 +16,4 @@
 
 ## The `able-workflow` project template tree
 
---8<-- "template/docs/docs/overview/tree.snippet.md.jinja"
+--8<-- "template/docs/docs/overview/tree.snippet.md"
