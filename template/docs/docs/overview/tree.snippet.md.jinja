@@ -1,0 +1,159 @@
+Special fields filled in by Copier templates
+
+- [`able-workflow-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
+    - **`{{ project_name }}`**: The name of the project being created.
+    - **`{{ package_name }}`**: The name of the Python package being created.
+- [`able-workflow-module-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
+    - **`{{ module_type }}`**: The type of module being created (e.g., `datasets`, `features`, or `models`).
+    - **`{{ module_name }}`**: The name of the module being created.
+- [`able-workflow-etl-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
+    - **`{{ etl_name }}`**: The name of the ETL process being created.
+    - **`{{ requires_extras }}`**: Whether the ETL requires extra dependencies (boolean).
+    - **`{{ extras_name }}`**: The name of the extras package (if `requires_extras` is `true`).
+    - **`{{ conda_env_key }}`**: The key for the Conda environment from the workflow config (e.g., `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]`).
+- [`able-workflow-rule-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev)
+
+```yaml
+{{ project_name }}
+├── .copier-answers/
+│   ├── .copier-answers.module-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml # (1)
+│   └── .copier-answers.module-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml # (2)
+│
+├── config/ # (3)
+│   └── datasets/ OR features/ OR models/ # (4)
+│       └── {{ module_name }}/ # (5)
+│           └── {{ etl_name }}/ # (6)
+│               └── config.yaml # (7)
+│
+├── docs/ # (8)
+│   └── docs/ # (9)
+│       └── datasets/ OR features/ OR models/ # (10)
+│           └── {{ module_type }}/ # (11)
+│               └── {{ etl_name }}/ # (12)
+│                   ├── index.md # (13)
+│                   └── SUMMARY.md # (14)
+│
+├── {{ package_name }} # (15)
+│   └── datasets/ OR features/ OR models/ # (16)
+│       └── {{ module_name }}/ # (17)
+│           ├── {{ etl_name }}/ # (18)  # IF {{ requires_extras }}
+│           │   ├── extras_{{ extras_name }}/ # (19)
+│           │   │   ├── __init__.py # (20)
+│           │   │   ├── extract_external.py # (21)
+│           │   │   ├── load.py # (22)
+│           │   │   ├── main.py # (23)
+│           │   │   └── transform.py # (24)
+│           │   ├── __init__.py # (25)
+│           │   ├── extract.py # (26)
+│           │   ├── schema.py # (27)
+│           │   └── utils.py # (28)
+│           └── {{ etl_name }}/ # (29)  # IF NOT {{ requires_extras }}
+│               ├── __init__.py # (30)
+│               ├── extract.py # (31)
+│               ├── extract_external.py # (32)
+│               ├── load.py # (33)
+│               ├── main.py # (34)
+│               ├── schema.py # (35)
+│               ├── transform.py # (36)
+│               └── utils.py # (37)
+│
+├── tests/ # (38)
+│   └── {{ package_name }}/ # (39)
+│       └── datasets/ OR features/ OR models/ # (40)
+│           └── {{ module_name }}/ # (41)
+│               ├── {{ etl_name }}/ # (42)  # IF {{ requires_extras }}
+│               │   ├── extras_{{ extras_name }}/ # (43)
+│               │   │   ├── test_extract_external.py # (44)
+│               │   │   ├── test_load.py # (45)
+│               │   │   ├── test_main.py # (46)
+│               │   │   └── test_transform.py # (47)
+│               │   ├── test_extract.py # (48)
+│               │   ├── test_schema.py # (49)
+│               │   └── test_utils.py # (50)
+│               └── {{ etl_name }}/ # (51)  # IF NOT {{ requires_extras }}
+│                   ├── test_extract.py # (52)
+│                   ├── test_extract_external.py # (53)
+│                   ├── test_load.py # (54)
+│                   ├── test_main.py # (55)
+│                   ├── test_schema.py # (56)
+│                   ├── test_transform.py # (57)
+│                   └── test_utils.py # (58)
+│
+├── workflow/ # (59)
+│   └── rules_conda_{{ conda_env_key }}/ # (60)
+│       └── datasets/ OR features/ OR models/ # (61)
+│           └── {{ etl_name }}.smk/ # (62)
+│
+├── .gitignore # (63)
+├── .copier-answers.yml # (64)
+├── LICENSE
+├── pyproject.toml
+├── README.md
+├── snakefmt.toml
+├── tox.ini
+```
+
+1. **Template answers file** capturing Copier inputs for this module.
+2. **Duplicate answers file** (from a second Copier run; safe to deduplicate).
+3. **Global `config/` dir** for all runtime settings.
+4. **Domain sub-folder** (`datasets | features | models`) within `config`.
+5. **Module config folder** for `{{ module_name }}`.
+6. **ETL-level config folder** for `{{ etl_name }}`.
+7. **`config.yaml`** with parameters consumed by the ETL.
+8. **Top-level `docs/`** project documentation root.
+9. **Source docs dir** rendered by MkDocs.
+10. **Domain docs section** (`datasets | features | models`).
+11. **Module-type docs** (`{{ module_type }}`).
+12. **ETL docs section** for `{{ etl_name }}`.
+13. **`index.md`** landing page for the ETL docs.
+14. `literal-nav` table of contents.
+15. **`{{ package_name }}`** Python source root.
+16. **Domain sub-package** for datasets / features / models.
+17. **Module sub-package** for `{{ module_name }}`.
+18. **ETL package (extras flavour)** when `requires_extras` is `true`.
+19. **`extras_…/`** implementation that pulls in extra dependencies.
+20. **`__init__.py`** for the extras package.
+21. **`extract_external.py`** fetches data via extra deps.
+22. **`load.py`** writes cleaned data to storage.
+23. **`main.py`** orchestration entry-point (extras).
+24. **`transform.py`** cleans / engineers features (extras).
+25. **`__init__.py`** for the core ETL (extras path).
+26. **`extract.py`** base extractor.
+27. **`schema.py`** type & shape validation (Pandera / PyArrow).
+28. **`utils.py`** helper functions.
+29. **ETL package (no-extras flavour)** when `requires_extras` is `false`.
+30. **`__init__.py`** (no-extras variant).
+31. **`extract.py`** (no-extras).
+32. **`extract_external.py`** (no-extras).
+33. **`load.py`** (no-extras).
+34. **`main.py`** (no-extras).
+35. **`schema.py`** (no-extras).
+36. **`transform.py`** (no-extras).
+37. **`utils.py`** (no-extras).
+38. **Top-level `tests/`** for all unit tests.
+39. **Project test package** mirrors source tree.
+40. **Domain test folder** (`datasets | features | models`).
+41. **Module test folder** for `{{ module_name }}`.
+42. **ETL tests (extras flavour)**.
+43. **Extras test sub-package**.
+44. **Test: extract_external (extras)**.
+45. **Test: load (extras)**.
+46. **Test: main (extras)**.
+47. **Test: transform (extras)**.
+48. **Test: extract (core)**.
+49. **Test: schema (core)**.
+50. **Test: utils (core)**.
+51. **ETL tests (no-extras flavour)**.
+52. **Test: extract (no-extras)**.
+53. **Test: extract_external (no-extras)**.
+54. **Test: load (no-extras)**.
+55. **Test: main (no-extras)**.
+56. **Test: schema (no-extras)**.
+57. **Test: transform (no-extras)**.
+58. **Test: utils (no-extras)**.
+59. **`workflow/`** Snakemake workflow root.
+60. **`rules/`** folder for individual rule sets.
+61. **Domain rules dir** (`datasets | features | models`).
+62. **`{{ etl_name }}.smk`** rule file invoked by the pipeline.
+63. **`.gitignore`** VCS exclusions.
+64. **`.copier-answers.yml`** project-wide template answers snapshot.

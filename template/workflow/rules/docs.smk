@@ -15,10 +15,8 @@ rule dag_svg:
         stderr=str(LOG_DIR / "dag_svg" / "stderr.log"),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
-    params:
-        script=str(WORKFLOW_BASE / "scripts/rules/dag_svg.py"),
     script:
-        "{params.script}"
+        str(WORKFLOW_BASE / "scripts/rules/dag_svg.py")
 
 
 rule docs_build:

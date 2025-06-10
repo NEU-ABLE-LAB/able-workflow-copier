@@ -36,11 +36,10 @@ rule conda_localize_file:
         environment=RE_VALID_FNAME_STEM,
     params:
         project_root=str((WORKFLOW_BASE / "..").resolve()),
-        script=str(WORKFLOW_BASE / "scripts/rules/conda_localize_file.py"),
     log:
         loguru=LOG_DIR / "conda_localize_file/{environment}.log",
     script:
-        "{params.script}"
+        str(WORKFLOW_BASE / "scripts/rules/conda_localize_file.py")
 
 
 rule conda_update_yaml:
