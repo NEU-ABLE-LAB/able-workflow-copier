@@ -41,7 +41,7 @@ jobs:
         run: tox run-parallel --parallel auto --parallel-no-spinner --notest --skip-missing-interpreters false
 
       - name: Run tox
-        run: tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
+        run: tox run --skip-pkg-install
 
       - name: Build XML coverage
         if: always()
