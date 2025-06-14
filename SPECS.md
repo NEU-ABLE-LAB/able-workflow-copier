@@ -158,8 +158,6 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 │           ├── rules/
 │           │   ├── test_conda_localize_file.py
 │           │   └── test_pyproject2conda.py
-│           ├── utils/
-│           │   └── test_snakemake_helpers.py
 │           └── README.md
 │
 ├── workflow/
@@ -452,78 +450,7 @@ optional-dependencies:
 
 ### Resulting files of ETL step
 
-The following files are added to the project
-
-```txt
-{{ project_name }}
-├── .copier-answers/
-│   └── .copier-answers.module-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml
-│
-├── config/
-│   └── datasets/ OR features/ OR models/
-│       └── {{ module_name }}/
-│           └── {{ etl_name }}/
-│               └── config.yaml
-│
-├── docs/
-│   └── docs/
-│       └── datasets/ OR features/ OR models/
-│           └── {{ module_type }}/
-│               └── {{ etl_name }}/
-│                   ├── index.md
-│                   └── SUMMARY.md
-│
-├── {{ package_name }}
-│   └── datasets/ OR features/ OR models/
-│       └── {{ module_name }}/
-│           ├── {{ etl_name }}/  # IF {{ requires_extras }}
-│           │   ├── extras_{{ extras_name }}/
-│           │   │   ├── __init__.py
-│           │   │   ├── extract_external.py
-│           │   │   ├── load.py
-│           │   │   ├── main.py
-│           │   │   └── transform.py
-│           │   ├── __init__.py
-│           │   ├── extract.py
-│           │   ├── schema.py
-│           │   └── utils.py
-│           └── {{ etl_name }}/  # IF NOT {{ requires_extras }}
-│               ├── __init__.py
-│               ├── extract.py
-│               ├── extract_external.py
-│               ├── load.py
-│               ├── main.py
-│               ├── schema.py
-│               ├── transform.py
-│               └── utils.py
-│
-├── tests/
-│   └── {{ package_name }}/
-│       └── datasets/ OR features/ OR models/
-│           └── {{ module_name }}/
-│               ├── {{ etl_name }}/  # IF {{ requires_extras }}
-│               │   ├── extras_{{ extras_name }}/
-│               │   │   ├── test_extract_external.py
-│               │   │   ├── test_load.py
-│               │   │   ├── test_main.py
-│               │   │   └── test_transform.py
-│               │   ├── test_extract.py
-│               │   ├── test_schema.py
-│               │   └── test_utils.py
-│               └── {{ etl_name }}/  # IF NOT {{ requires_extras }}
-│                   ├── test_extract.py
-│                   ├── test_extract_external.py
-│                   ├── test_load.py
-│                   ├── test_main.py
-│                   ├── test_schema.py
-│                   ├── test_transform.py
-│                   └── test_utils.py
-│
-└── workflow/
-    └── rules/
-        └── datasets/ OR features/ OR models/
-            └── {{ etl_name }}.smk/
-```
+See `template/docs/docs/overview/tree.snippet.md.jinja` for resulting directory tree.
 
 ### Hypothetical `whole_energy_homes_interviews/weh_interviews/datasets/coding_matrix/raw.copier-answers.yml`
 

@@ -6,13 +6,53 @@
 
 A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.
 
+## Overview of ABLE Workflow copier templates
+
+- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
+- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
+- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
+- `able-workflow-rule-script-copier`
+  - TODO-copier-package create this repo to template python scripts used as snakemake rules (e.g., `workflow/scripts/rules_global/conda_localize_file.py` and `template/workflow/scripts/rules_conda_DOCS/dag_svg.py`). And their associated unit tests which need the requirements specifed by the `conda:` directive the script is used in.
+
 ## Contributing
 
 ### Environment configuration
 
 The following instructions assume you are working on Linux (or with WSL on Windows) and have [conda](https://github.com/conda-forge/miniforge) and [vscode](https://code.visualstudio.com/download).
 
-1. Install the recommended VSCode extensions for this project.:
+1. Check/install `conda`
+
+   Check that you have conda installed:
+
+   ```bash
+   conda info
+   ```
+
+   You should see a list of parameters and values, which should include something like the following:
+
+   ```bash
+   base environment : /home/<USERNAME>/miniforge3
+   ```
+
+   If not, install [miniforge3](https://github.com/conda-forge/miniforge).
+
+   1. Download miniforge
+
+      ```bash
+      wget "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+      ```
+
+   2. Run the install script
+
+      ```bash
+      bash Miniforge3-$(uname)-$(uname -m).sh
+      ```
+
+      The interactive installation will prompt you to initialize conda with your shell. Do NOT do this if you are on a SLURM HPC. If you are on your personal computer it should be fine.
+
+      TODO-copier-package point to docs for more info.
+
+2. Install the recommended VSCode extensions for this project.:
 
    1. **Open the Command Palette**: On macOS: `Cmd+Shift+P` On Windows/Linux: `Ctrl+Shift+P`.
 
@@ -20,25 +60,25 @@ The following instructions assume you are working on Linux (or with WSL on Windo
 
    3. Click the Install button for each recommended extension listed above.
 
-2. Create a development environment with conda
+3. Create a development environment with conda
 
-    ```bash
-    # Create the environment (or update and prune if it already exists)
-    conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune
-    conda activate able-workflow-copier-dev
-    ```
+   ```bash
+   # Create the environment (or update and prune if it already exists)
+   conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune
+   conda activate able-workflow-copier-dev
+   ```
 
-    Alternatively, run the script `scripts/conda_update.sh`.
+   Alternatively, run the script `scripts/conda_update.sh`.
 
-    Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
+   Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
-3. Install pre-commit into the repo to run checks on every commit
+4. Install pre-commit into the repo to run checks on every commit
 
    ```bash
    (able-workflow-copier-dev) pre-commit install
    ```
 
-4. Play around in the sandbox. (The `sandbox/` directory is in `.gitignore` and is a good place to explore how to use the template.)
+5. Play around in the sandbox. (The `sandbox/` directory is in `.gitignore` and is a good place to explore how to use the template.)
 
    ```bash
    copier copy --trust --vcs-ref HEAD --pretend "./" "sandbox/example"

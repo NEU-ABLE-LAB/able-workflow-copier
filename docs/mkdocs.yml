@@ -6,6 +6,7 @@ docs_dir: docs
 repo_name: "NEU-ABLE-LAB/able-workflow-copier-dev/"
 repo_url: "https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/"
 edit_uri: edit/main/docs/docs  # enables “Edit on GitHub”
+dev_addr: '127.0.0.1:8001'
 
 theme:
   name: material
@@ -42,7 +43,9 @@ theme:
     code: Space Mono
 
   features:
+    - content.code.annotate
     - content.code.copy
+    - content.code.select
     - navigation.sections
     - navigation.top
     - search.suggest
@@ -56,39 +59,45 @@ extra:
     provider: mike
 
 plugins:
-  - search
+  - asciinema-player
+  - git-revision-date-localized
+  - inline-select-svg
+  - literate-nav:
+      nav_file: SUMMARY.md
+      implicit_index: true
+      tab_length: 2
+  - macros
+  - mike
+  - mkdocs-jupyter:
+      include_source: false
+  - mkdocs-typer2:
+      pretty: true
   - mkdocstrings:
       handlers:
         python:
           options:
             docstring_style: numpy
-  - mkdocs-typer2:
-      pretty: true
-  - macros
-  - literate-nav:
-      nav_file: SUMMARY.md
-      implicit_index: true
+  - search
   - section-index
-  - mkdocs-jupyter:
-      include_source: false
-  - termynal
-  - git-revision-date-localized
-  - mike
-  - inline-select-svg
 
 markdown_extensions:
   - admonition
-  - def_list
   - attr_list
+  - def_list
   - toc:
       toc_depth: 3
       permalink: true
   - pymdownx.arithmatex:
       generic: true
-  - pymdownx.highlight
   - pymdownx.blocks.html
-  - pymdownx.emoji
   - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
   - pymdownx.snippets:
       check_paths: True
   - pymdownx.superfences:

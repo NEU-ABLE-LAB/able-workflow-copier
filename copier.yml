@@ -7,7 +7,7 @@ _jinja_extensions:
 
 _subdirectory: "template"
 
-_answers_file: .copier-answers.yml
+_answers_file: .copier-answers/project.yml
 
 # Questions
 project_name:
@@ -108,3 +108,37 @@ package_name:
       package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
       {% endif %}
   default: "{{ project_name | lower | replace('-', '_') }}"
+
+conda_update_workflow_env:
+  type: bool
+  help: Whether to create/update the conda environment for the workflow.
+  default: false
+
+conda_localize:
+  type: bool
+  help: Whether to run `snakemake conda_localize` to localize the conda environment yaml files.
+  default: false
+
+git_init:
+  type: bool
+  help: Whether to initialize a git repository in the project directory. This is required to build the package since `setuptools_scm`` requires a git repository.
+  default: true
+
+# Post-generation hooks
+_tasks:
+  # Create conda environment for the workflow
+  - command: >-
+      conda env update --name "{{ package_name }}_py312_workflow" --file "workflow/envs/py312-workflow.yaml"
+    when: "{{ conda_update_workflow_env }}"
+  # Localize conda environment files
+  - command: >-
+      conda run --name "weh_interviews_py312_workflow" snakemake conda_localize
+    when: "{{ conda_localize }}"
+  # Initialize git repository
+  - command: >-
+      git init --initial-branch=main
+    when: "{{ git_init }}"
+  # Create a git commit with the initial project files
+  - command: >-
+      git add . && git commit -m "Initial commit"
+    when: "{{ git_init }}"

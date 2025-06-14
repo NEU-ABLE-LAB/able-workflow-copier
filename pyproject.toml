@@ -29,22 +29,22 @@ dependencies = [
 
 docs = [
   "lxml>=5.4.0",
+  "mike>=2.1.3",
   "mkdocs>=1.6.1",
+  "mkdocs-asciinema-player>=0.17.0",
   "mkdocs-material>=9.6.14",
-  "mkdocstrings-python>=1.16.10",
+  "mkdocs-inline-select-svg-plugin>=0.1.0",
+  "mkdocs-jupyter>=0.25.1",
   "mkdocs-gen-files>=0.5.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.9",
-  "mkdocs-jupyter>=0.25.1",
-  "mkdocs-macros-plugin>=1.3.7",
   "mkdocs-literate-nav>=0.6.2",
-  "mkdocs-section-index>=0.3.10",
+  "mkdocs-macros-plugin>=1.3.7",
   "mkdocs-mermaid2-plugin>=1.2.1",
-  "mkdocs-inline-select-svg-plugin>=0.1.0",
+  "mkdocs-section-index>=0.3.10",
   "mkdocs-typer2>=0.1.5",
-  "termynal>=0.13.0",
-  "pymdown-extensions>=10.15",
-  "mike>=2.1.3",
+  "mkdocstrings-python>=1.16.10",
   "notebook>=7.4.2",
+  "pymdown-extensions>=10.15",
 ]
 
 lint = [
@@ -148,12 +148,12 @@ template_python = "environment-py{py}-{env}"
 [tool.pyproject2conda.dependencies]
 copier-templates-extensions = { pip = true }
 jinja2-jsonschema = { pip = true }
-mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
-mkdocs-section-index = { pip = true }
-mkdocs-mermaid2-plugin = { pip = true }
+mkdocs-asciinema-player = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
+mkdocs-mermaid2-plugin = { pip = true }
+mkdocs-section-index = { pip = true }
 mkdocs-typer2 = { pip = true }
-termynal = { pip = true }
+mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]

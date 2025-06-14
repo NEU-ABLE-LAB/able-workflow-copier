@@ -1,0 +1,173 @@
+"""Generic Snakemake wrapper for calling `*/main.py:run` in `{{ package_name }}`."""
+
+import importlib
+import sys
+from pathlib import Path
+from typing import Any, Callable, Dict
+
+import snakemake
+from loguru import logger
+from snakemake.io import Namedlist
+from snakemake.script import Snakemake
+
+# ---------------------------------------------------------------------------
+# Helper converters
+# ---------------------------------------------------------------------------
+
+
+def _namedlist_to_dict(  # works with every Snakemake version
+    nl: "Namedlist",
+    convert: Callable[[Any], Any],
+    typename: str,
+) -> Dict[str, Any]:
+    """
+    Convert *nl* to an insertion-ordered dict.
+
+    * skips the guard names ``sort`` and ``index``;
+    * auto-keys positional items with their index as a string.
+    """
+    # Fast, bullet-proof route: Snakemake ≥ 6 always provides _allitems().
+    if hasattr(nl, "_allitems"):
+        items_iter = list(nl._allitems())  # names already resolved
+    else:  # plain list fallback
+        items_iter = []
+        for v in nl:
+            # If the list element itself looks like (name, value) we honour it
+            if isinstance(v, tuple) and len(v) == 2:
+                name, val = v
+            else:
+                name, val = None, v
+            items_iter.append((name, val))
+
+    result: Dict[str, Any] = {}
+
+    for raw_idx, (name, item) in enumerate(items_iter):
+        if name in {"sort", "index"}:
+            continue  # skip guard names
+        if (
+            name is None
+            and isinstance(item, tuple)
+            and len(item) == 2
+            and isinstance(item[0], str)
+        ):
+            name, item = item
+        key = name if name is not None else str(len(result))
+        try:
+            result[key] = convert(item)
+        except Exception as exc:
+            raise TypeError(
+                f"Element '{key}' ({item!r}) cannot be converted to {typename}."
+            ) from exc
+    return result
+
+
+def namedlist_to_dict_str(nl: "Namedlist") -> Dict[str, str]:
+    """Return an ordered mapping whose **values** are :class:`str`.
+
+    Any element that is not directly convertible via :pyfunc:`str` triggers
+    :class:`TypeError`.
+    """
+    return _namedlist_to_dict(nl, convert=str, typename="str")
+
+
+def _to_path(item: Any) -> Path:
+    if isinstance(item, Path):
+        return item
+    if isinstance(item, str):
+        return Path(item)
+    raise TypeError
+
+
+def namedlist_to_dict_path(nl: "Namedlist") -> Dict[str, Path]:
+    """Return an ordered mapping whose **values** are :class:`pathlib.Path`.
+
+    Valid element types
+    -------------------
+    * ``pathlib.Path`` - kept as-is.
+    * ``str``          - converted with ``Path(str_value)``.
+    """
+    return _namedlist_to_dict(nl, convert=_to_path, typename="Path")
+
+
+def _to_path_or_dict(files: Namedlist) -> Dict[str, Path] | Path:
+    """
+    Convert input or output files to a dictionary of Paths or a single Path.
+    If the input is a single file (string), return a Path object.
+    If the input is a dictionary, convert each value to a Path object.
+    """
+    # ­­­­­­­­­­­­­­­­­ single-item logic ­­­­­­­­­­­­­­­­­
+    if len(files) == 1:
+        file_item = files[0]
+
+        # ── case 1 ── tuple-style fake-naming  (('result', 'out/c.txt'),)
+        if (
+            isinstance(file_item, tuple)
+            and len(file_item) == 2
+            and isinstance(file_item[0], str)
+        ):
+            name, val = file_item
+            return {name: _to_path(val)}
+
+        # ── case 2 ── “real” Namedlist name (created via fromdict=...)
+        real_names = [k for k in files.keys() if k not in {"sort", "index"}]
+        if real_names:
+            return namedlist_to_dict_path(files)
+
+        # ── case 3 ── truly anonymous single file
+        return Path(file_item)
+
+    # multi-file → dict[Path]
+    return namedlist_to_dict_path(files)
+
+
+# ---------------------------------------------------------------------------
+# Main entry point
+# ---------------------------------------------------------------------------
+
+
+def main(smk: Snakemake) -> None:
+    """Import and invoke the target function whose dotted path is given in ``smk.params.func``."""
+
+    # Make **sure** we can always find the dotted path
+    try:
+        func_path = smk.params.func  # modern Snakemake
+    except AttributeError:
+        params = namedlist_to_dict_str(smk.params)  # falls back to dict view
+        func_path = params.pop("func", None)
+        if func_path is None:
+            raise AttributeError(
+                "No «func» entry found in smk.params - did the rule forget to set it?"
+            )
+    else:
+        # Convert the rest of the params *after* pulling out «func»
+        params = namedlist_to_dict_str(smk.params)
+        params.pop("func", None)  # don’t forward it
+
+    # Import the target callable
+    mod_path, func_name = func_path.rsplit(":", 1)
+    module = importlib.import_module(mod_path)
+    func: Callable[..., Any] = getattr(module, func_name)
+
+    # Call the target callable with converted arguments
+    func(
+        input=_to_path_or_dict(smk.input),
+        output=_to_path_or_dict(smk.output),
+        params=params,
+        wildcards=namedlist_to_dict_str(smk.wildcards),
+        threads=smk.threads,
+        resources=namedlist_to_dict_str(smk.resources),
+        log={name: Path(str(p)) for name, p in smk.log.items()},
+        config=smk.config,
+        rulename=smk.rule,
+    )
+
+
+if __name__ == "__main__":  # pragma: no cover - entry point for Snakemake
+    try:
+        main(snakemake)
+    except NameError:  # pragma: no cover - executed outside Snakemake
+        logger.error(
+            "This script is designed to be run as part of a Snakemake workflow."
+            " Please run it through Snakemake."
+        )
+        sys.exit(0)

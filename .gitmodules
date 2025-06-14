@@ -1,0 +1,9 @@
+[submodule "rule-copier"]
+	path = able-workflow/rule-copier
+	url = https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev.git
+[submodule "etl-copier"]
+	path = able-workflow/etl-copier
+	url = https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev.git
+[submodule "module-copier"]
+	path = able-workflow/module-copier
+	url = https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev.git

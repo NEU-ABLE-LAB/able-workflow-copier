@@ -63,7 +63,7 @@ def _render_example(answers_yml: Path) -> None:
         answers_dict = yaml.load(fp) or {}
 
     # --- 2. build a minimal copier configuration ------------------------------
-    copier_cfg = _create_copier_config(dest_dir)
+    copier_cfg = _create_copier_config(dest_dir / ".copier_config")
 
     # --- 3. run the copy through pytest-copie ---------------------------------
     copie = Copie(TEMPLATE_DIR, dest_dir, copier_cfg)

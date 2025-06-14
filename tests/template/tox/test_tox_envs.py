@@ -53,6 +53,7 @@ def pytest_generate_tests(metafunc):
                         ),  # template root
                         dst_path=str(tmpdir),
                         data=entry["answers"],
+                        defaults=True,
                         quiet=True,
                         unsafe=True,
                     )

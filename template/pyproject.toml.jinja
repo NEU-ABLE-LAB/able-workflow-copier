@@ -47,10 +47,13 @@ dependencies = [
 # Minimal snakemake workflow dependencies
 # Replaces `workflow/envs/global.yaml` since `global.yaml`
 # cannot be cached before a workflow goes offline.
+snakemake = [
+  "snakemake>=9.3.3",
+]
 workflow = [
+  { include-group = "snakemake" },
   "json5>=0.12.0",
   "loguru>=0.7.2",
-  "snakemake>=9.3.3",
   "graphviz>=0.20.3",
   "pandas>=2.2.3",
   "pyproject2conda>=0.19.1",
@@ -83,7 +86,6 @@ docs = [
   "mkdocs-section-index>=0.3.10",
   "mkdocs-mermaid2-plugin>=1.2.1",
   "mkdocs-inline-select-svg-plugin>=0.1.0",
-  "termynal>=0.13.0",
   "pymdown-extensions>=10.15",
   "graphviz>=0.20.3",
   "snakemake>=9.3.3",
@@ -154,10 +156,10 @@ Homepage = "{{ homepage_url}}"
 
 [tool.coverage.run]
 parallel = true
+# TODO-copier-package Add docs and hooks python
 source = [
     "{{ package_name }}",
-    "workflow/scripts/rules",
-    "workflow/scripts/utils",
+    "workflow/scripts",
 ]
 omit   = [
     "tests/*",                       # skip everything in tests/
@@ -227,7 +229,6 @@ mkdocs-mermaid2-plugin = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
 snakemake = { channel = "bioconda"}
 snakefmt = { channel = "bioconda"}
-termynal = { pip = true }
 
 # --- PyProject2Conda environments ---
 # When adding a new environment, add it to
@@ -281,11 +282,6 @@ template = "workflow/envs/{env}"
 [tool.pytest.ini_options]
 # Ignore extras when running default pytest in VSCode
 addopts = """--ignore-glob=*/extras_*"""
-markers = [
-    "env_workflow: Snakemake workflow utilities, module integration tests, and non-conda unit tests to be run in `workflow/envs/py*-workflow.yaml`",
-    "env_core: Snakemake rule scripts to be run in `workflow/envs/*/py*-core.yaml",
-    # TODO-copier-etl Add ETL extra markers here
-]
 
 [tool.ruff]
 line-length = 79
@@ -306,6 +302,9 @@ extend-select = [
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "logging".msg  = "Use Loguru instead."
 "warnings".msg = "Use Loguru instead."
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ package_name }}"]
 
 [tool.setuptools.packages.find]
 include = ["{{ package_name }}*"]
