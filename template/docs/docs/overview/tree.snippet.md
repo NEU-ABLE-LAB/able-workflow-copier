@@ -24,7 +24,7 @@ Copier uses a jinja2 syntax for rendering templates with the answers to the temp
 
 Files that are created by a template are marked with a `+` sign, and files that are created by a Copier template are marked with a `*` sign. The tree structure is as follows:
 
-```yaml
+```.yaml
 ┌───── [1] able-workflow-copier
 │┌──── [2] able-workflow-module-copier
 ││┌─── [3] able-workflow-etl-copier
@@ -33,7 +33,7 @@ Files that are created by a template are marked with a `+` sign, and files that 
 Legend ── “+” = created | “*” = modified | blank = untouched
     {{ project_name }}
     │
- +  ├── .copier-answers/
+ +  ├── .copier-answers/ # (3)
  +  │   ├── module-{{ module_type }}-{{ module_name }}.yml
   + │   ├── etl-{{ module_type }}-{{ module_name }}-{{ etl_name }}.yml
    +│   └── rule-{{ module_type }}-{{ module_name }}-{{ rule_name }}.yml
@@ -159,9 +159,13 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │       │   ├── conftext.py
 +   │       │   └── README.md
 +   │       └── scripts/
-+   │           ├── rules/
++  +│           ├── rules_conda_{{ conda_env_key }}/ # (6)
++   │           ├── rules_conda_CORE/ # (10)
++   │           ├── rules_conda_DOCS/ # (5)
++   │           ├── rules_global/ # (4)
 +   │           │   ├── test_conda_localize_file.py
 +   │           │   └── test_pyproject2conda.py
++   │           ├── utils/
 +   │           └── README.md
 +   ├── workflow/
 +   │   ├── envs/
@@ -194,6 +198,10 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   │   ├── config.schema.json
 +   │   │   └── config.local.schema.json
 +   │   ├── scripts/
++  +│   │   ├── rules_conda_{{ conda_env_key }}/ # (7)
++   │   │   ├── rules_conda_CORE/ # (11)
++   │   │   ├── rules_conda_DOCS/ # (8)
++   │   │   ├── rules_global/ # (9)
 +   │   │   ├── rules/
 +   │   │   │   ├── __init__.py
 +   │   │   │   ├── conda_localize_file.py
@@ -221,3 +229,12 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 
 1. Hello
 2. World
+3. The copier answers files get stored here from each template applied to the project.
+4. Tests for rule scripts that can run in the Snakemake global conda environment.
+5. Tests for rule scripts that require the `config["CONDA"]["ENVS"]["DOCS"]` conda environment.
+6. Tests for rule scripts that require the `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]` conda environment.
+7. Rule scripts that require the `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]` conda environment.
+8. Rule scripts that require the `config["CONDA"]["ENVS"]["DOCS"]` conda environment.
+9. Rule scripts that can run in the Snakemake global conda environment.
+10. Tests for rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.
+11. Rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.

@@ -130,8 +130,8 @@ setenv =
     {[testenv]setenv}
     ; TODO-copier-package implement `tests/workflow/scripts/utils/`
     global: PYTEST_PATHS = tests/workflow/scripts/rules_global/
-	core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_{{ package_name }}/
-	docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_docs/
+	core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_CORE/
+	docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_DOCS/
 commands =
     # Workflow script unit tests
     # The `-o addopts=''` option overrides the default `pyproject.toml` settings
