@@ -69,17 +69,19 @@ Legend ── “+” = created | “*” = modified | blank = untouched
  +* │           └── config.yaml
     │
 +   ├── data/
-+   │   └── README.md
++   │   ├── README.md
  +* │   └── {{ module_name }}/                    # dataset only
- +* │       ├── external/
- +* │       ├── interim/
- +* │       ├── processed/
- +* │       ├── raw/
+ +* │       ├── external/  # (12)
+ +* │       ├── interim/  # (13)
+ +* │       ├── processed/  # (14)
+ +* │       ├── raw/  # (15)
  +* │       └── README.md
     │
 +   ├── docs/
 +   │   ├── docs/
-+   │   │   ├── _css/           … (static scaffold — created by project template)
++   │   │   ├── _css/
++   │   │   ├── _images/
++   │   │   ├── _js/
     │   │   │
     │   │   ├── datasets/
  +  │   │   │   └── {{ module_type }}/            # dataset docs
@@ -95,17 +97,25 @@ Legend ── “+” = created | “*” = modified | blank = untouched
  +  │   │   │   └── {{ module_type }}/            # model docs
  +  │   │   │       ├── index.md
  +  │   │   │       └── SUMMARY.md
-    │   │   └── weh.md
+    │   │   │
+    │   │   ├── index.md
+    │   │   ├── getting-started.md
+    │   │   └── SUMMARY.md
+    │   │
 +   │   ├── gen_ref_pages.py
 +   │   ├── mkdocs.yml
 +   │   └── README.md
+    │
 +   ├── hooks/
 +   │   └── snakemake_pyproject2conda.py
+    │
 +   ├── features/
 +   │   └── README.md
  +  │   └── {{ module_name }}/README.md           # if feature module
+    │
 +   ├── logs/rules/
 +   │   └── README.md
+    │
 +   ├── models/
 +   │   └── README.md
  +  │   └── {{ module_name }}/README.md           # if model module
@@ -227,8 +237,8 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   └── tox.ini # (2)
 ```
 
-1. Hello
-2. World
+1. _depreciated
+2. _depreciated
 3. The copier answers files get stored here from each template applied to the project.
 4. Tests for rule scripts that can run in the Snakemake global conda environment.
 5. Tests for rule scripts that require the `config["CONDA"]["ENVS"]["DOCS"]` conda environment.
@@ -238,3 +248,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 9. Rule scripts that can run in the Snakemake global conda environment.
 10. Tests for rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.
 11. Rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.
+12. Data copied from an external source in a non-standard format. This folder may be a symlink to another location on disk.
+13. Temporary data storage for intermediate workflow steps.
+14. Processed data ready for reporting, feature extraction, or modeling.
+15. Raw data in a standardized format.
