@@ -2,34 +2,30 @@
 Integration tests for running the `all_data` rule in the Snakemake workflow.
 """
 
-import shlex
-import subprocess
 from pathlib import Path
-from typing import List
 
 import pytest
 from loguru import logger
 
 # --- Fixtures ---------------------------------------------------------------
-# (workspace fixture is now provided by conftest.py)
+# Track which workspaces have had the dummy file created
+_CREATED_DUMMY_INPUT = set()
 
 
-# --- Helpers ----------------------------------------------------------------
-def _snakemake(workspace: Path, extra: List[str]) -> None:
-    """Thin wrapper so the command line is only written once."""
+@pytest.fixture(autouse=True)
+def create_dummy_input_file(workspace):
+    """Create the expected input file so Snakemake can build the DAG, only once per workspace."""
+    workspace_id = str(workspace.resolve())
+    if workspace_id in _CREATED_DUMMY_INPUT:
+        return
 
-    cmd = [
-        "snakemake",
-        *extra,
-    ]
+    # Create a dummy input file for the `all_data` rule
+    readme = workspace / "data" / "README.md"
+    readme.parent.mkdir(parents=True, exist_ok=True)
+    readme.touch()
 
-    logger.debug(f"Executing: {shlex.join(cmd)}")
-
-    subprocess.run(
-        cmd,
-        cwd=workspace,
-        check=True,
-    )
+    logger.debug(f"Created dummy input file: {readme}")
+    _CREATED_DUMMY_INPUT.add(workspace_id)
 
 
 # --- Tests ------------------------------------------------------------------

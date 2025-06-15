@@ -1,20 +1,20 @@
 """Integration tests for building documentation."""
 
-import shlex
-import subprocess
 from pathlib import Path
-from typing import List
 
-from loguru import logger
+import pytest
+
+from .conftest import _snakemake
 
 
-def _snakemake(workspace: Path, extra: List[str]) -> None:
-    cmd = ["snakemake", *extra]
-    logger.debug(f"Executing: {shlex.join(cmd)}")
-    subprocess.run(cmd, cwd=workspace, check=True)
+# --- Tests ------------------------------------------------------------------
+@pytest.mark.order(1)
+def test_localize_conda_envs(workspace: Path) -> None:
+    """Step 1 - make the env YAML files local."""
+    _snakemake(workspace, ["conda_localize"])
 
 
 # TODO-copier-package implement this test when the docs build is ready
-# @pytest.mark.order(1)
+# @pytest.mark.order(2)
 # def test_docs_build(workspace: Path) -> None:
 #     _snakemake(workspace, ["--dry-run", "docs_build"])
