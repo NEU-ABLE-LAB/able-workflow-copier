@@ -10,10 +10,13 @@ gets its own, independent pytest test.
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 import pytest
 
+from copier import run_copy
 from loguru import logger
 
 from .conftest import answer_sets
@@ -44,11 +47,6 @@ def pytest_generate_tests(metafunc):
 
             # Lazily copy template just once per variant *at collection time*
             if var_id not in env_matrix:
-
-                import shutil
-                import tempfile
-
-                from copier import run_copy
 
                 tmpdir: Path = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
                 try:
