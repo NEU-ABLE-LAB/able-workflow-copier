@@ -17,11 +17,24 @@ from typing import List, Sequence
 from ..conftest import answer_sets
 
 
-###############################################################################
-# 3.  Return the list of tox envs for *that* rendered project
-###############################################################################
+# --- pytest options ---------------------------------------------------------
+def pytest_addoption(parser):
+    """
+    Add command-line options to filter which tox environments to run.
+    """
+    parser.addoption(
+        "--env",
+        action="append",
+        dest="inner_envs",
+        metavar="ENV",
+        help=(
+            "Only run the specified *inner* tox environment(s); "
+            + "may be given more than once."
+        ),
+    )
 
 
+# --- Helpers ----------------------------------------------------------------
 def _parse_env_list_from_config(project_dir: Path) -> list[str]:
     """Return ``tox.env_list`` by reading *pyproject.toml* (or *tox.ini*)."""
     pyproject = project_dir / "pyproject.toml"
@@ -92,6 +105,7 @@ def _list_tox_envs(
     return envs
 
 
+# --- Fixtures ---------------------------------------------------------------
 @pytest.fixture(scope="session")
 def env_matrix(rendered) -> dict[str, list[str]]:
     """
