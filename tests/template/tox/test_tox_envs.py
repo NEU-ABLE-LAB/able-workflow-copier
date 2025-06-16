@@ -9,6 +9,7 @@ gets its own, independent pytest test.
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 import pytest
@@ -17,12 +18,16 @@ from loguru import logger
 
 from .conftest import answer_sets
 
-###############################################################################
-# 1.  Dynamic parametrisation --------------------------------------------------
-###############################################################################
 
-
+# --- PyTest Hooks -----------------------------------------------------------
 def pytest_generate_tests(metafunc):
+    """
+    Dynamically parametrize tests for pytest with all template variants and
+    the tox tests within those rendered templates. This hook is called for
+    each test function to generate parameters. It will only apply to tests
+    that request the 'variant_id' and 'env_name' parameters.
+    """
+
     # Only apply to the test that asks for these args
     if {"variant_id", "env_name"} <= set(metafunc.fixturenames):
 
@@ -82,30 +87,72 @@ def pytest_generate_tests(metafunc):
         logger.warning(f"Skipping dynamic param for {metafunc.function}")
 
 
-###############################################################################
-# 2.  The actual test ---------------------------------------------------------
-###############################################################################
-
-
+# --- Helpers ----------------------------------------------------------------
 def _answers_for(var_id: str):
+    """
+    Get the answers for a given variant ID from the global answer_sets.
+    """
     return next(v["answers"] for v in answer_sets if v["id"] == var_id)
 
 
+def _bootstrap_git_repo(path: Path) -> None:
+    """
+    Ensure *path* is a Git repo with one commit so that setuptools-scm can
+    discover a version string.
+
+    Safe to call repeatedly: it does nothing if .git/ already exists.
+    """
+    if (path / ".git").exists():
+        return
+
+    # Initialise repo
+    subprocess.run(
+        ["git", "init", "--quiet", "--initial-branch=main"],
+        cwd=path,
+        check=True,
+    )
+
+    # Stage everything
+    subprocess.run(["git", "add", "-A"], cwd=path, check=True)
+
+    # Commit with throw-away identity (avoids global git config leakage)
+    env = os.environ.copy()
+    env.update(
+        {
+            "GIT_AUTHOR_NAME": "CI",
+            "GIT_AUTHOR_EMAIL": "ci@example.invalid",
+            "GIT_COMMITTER_NAME": "CI",
+            "GIT_COMMITTER_EMAIL": "ci@example.invalid",
+        }
+    )
+    subprocess.run(
+        ["git", "commit", "--quiet", "-m", "Initial commit"],
+        cwd=path,
+        env=env,
+        check=True,
+    )
+
+
+# --- Tests ------------------------------------------------------------------
 def test_inner_tox_env_passes(copie_session, variant_id, env_name):
-    """
-    1. Render the template for *this* variant
-    2. Run its tox env
-    3. Assert success
-    """
+    """Run the tox tests within a rendered project variant."""
+
+    # Render the template for this variant
     answers = _answers_for(variant_id)
     result = copie_session.copy(extra_answers=answers)
 
+    # Ensure the project directory is a Git repo (for setuptools-scm)
+    _bootstrap_git_repo(result.project_dir)
+
+    # Run the tox tests within the rendered project
     completed = subprocess.run(
         ["tox", "run-parallel", "--quiet", "-e", env_name],
         cwd=result.project_dir,
         capture_output=True,
         text=True,
     )
+
+    # Assert the tox run was successful
     assert completed.returncode == 0, (
         f"variant={variant_id!s} env={env_name!s}\n"
         f"stdout:\n{completed.stdout}\n"
