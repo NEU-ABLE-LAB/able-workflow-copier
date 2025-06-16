@@ -33,6 +33,13 @@ def pytest_addoption(parser):
         ),
     )
 
+    parser.addoption(
+        "--no-parallel",
+        action="store_true",
+        dest="tox_no_parallel",
+        help=("Do not run the specified *inner* tox environment(s) in parallel."),
+    )
+
 
 # --- Helpers ----------------------------------------------------------------
 def _parse_env_list_from_config(project_dir: Path) -> list[str]:

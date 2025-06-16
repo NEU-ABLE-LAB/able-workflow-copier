@@ -36,11 +36,7 @@ for answers_yaml in ANSWERS_YAMLS:
     answer_sets.append(answer_set)
 
 
-###############################################################################
-# Session-scoped Copier rendering — *one per answer-set*
-###############################################################################
-
-
+# --- Fixtures ---------------------------------------------------------------
 @pytest.fixture(scope="session", params=answer_sets, ids=lambda p: p["id"])
 def rendered(request, copie_session):
     """
@@ -49,8 +45,14 @@ def rendered(request, copie_session):
 
     variant = request.param
 
-    # Generate the session scoped-project
-    result = copie_session.copy(extra_answers=variant["answers"])
+    # Suppress stdout and stderr
+    with open(os.devnull, "w") as devnull:
+        old_stdout, old_stderr = sys.stdout, sys.stderr
+        sys.stdout, sys.stderr = devnull, devnull
+        try:
+            result = copie_session.copy(extra_answers=variant["answers"])
+        finally:
+            sys.stdout, sys.stderr = old_stdout, old_stderr
 
     # Basic smoke-tests
     if result.exit_code != 0 or result.exception:

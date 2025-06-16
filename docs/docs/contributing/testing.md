@@ -30,6 +30,10 @@ tox -e py312-template-tox
 
 See `template/tox.ini.jinja` for tests within the redered template that can be run.
 
+The `--env` argument is passed to the inner tox as `-e`
+
+The `--no-parallel` argument tells the inner tox to run `tox run` instead of `tox run-parallel --parallel-no-spinner`
+
 ```bash
-tox -e py312-template-tox -- --env py312-unit-core
+tox -e py312-template-tox -- --env=py312-unit-core --no-parallel
 ```

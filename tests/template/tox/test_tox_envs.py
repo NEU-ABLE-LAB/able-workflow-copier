@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 import pytest
@@ -144,22 +145,64 @@ def _bootstrap_git_repo(path: Path) -> None:
 
 
 # --- Tests ------------------------------------------------------------------
-def test_inner_tox_env_passes(copie_session, variant_id, env_name):
+def test_inner_tox_env_passes(copie_session, variant_id, env_name, request):
     """Run the tox tests within a rendered project variant."""
 
     # Render the template for this variant
     answers = _answers_for(variant_id)
-    result = copie_session.copy(extra_answers=answers)
+
+    # Suppress stdout and stderr
+    with open(os.devnull, "w") as devnull:
+        old_stdout, old_stderr = sys.stdout, sys.stderr
+        sys.stdout, sys.stderr = devnull, devnull
+        try:
+            result = copie_session.copy(extra_answers=answers)
+        finally:
+            sys.stdout, sys.stderr = old_stdout, old_stderr
 
     # Ensure the project directory is a Git repo (for setuptools-scm)
     _bootstrap_git_repo(result.project_dir)
 
+    # Determine if the tox environment should run in parallel or not.
+    # SEE: pytest_addoption() in conftest.py
+    if request.config.getoption("tox_no_parallel"):
+        run_args = ["run"]
+    else:
+        run_args = [
+            "run-parallel",
+            "--parallel-no-spinner",
+        ]
+
     # Run the tox tests within the rendered project
-    completed = subprocess.run(
-        ["tox", "run-parallel", "--quiet", "-e", env_name],
+    process = subprocess.Popen(
+        [
+            "tox",
+            *run_args,
+            "--quiet",
+            "-e",
+            env_name,
+            "--",
+            "--capture=no",
+        ],
         cwd=result.project_dir,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
+    )
+
+    stdout, stderr = [], []
+
+    # Stream output live and capture
+    for line in process.stdout:
+        sys.stdout.write(line)
+        stdout.append(line)
+    for line in process.stderr:
+        sys.stderr.write(line)
+        stderr.append(line)
+
+    process.wait()
+    completed = subprocess.CompletedProcess(
+        process.args, process.returncode, "".join(stdout), "".join(stderr)
     )
 
     # Assert the tox run was successful
