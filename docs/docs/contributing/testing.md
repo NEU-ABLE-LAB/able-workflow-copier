@@ -19,3 +19,17 @@ tox p
 ```bash
 tox run-parallel -f py312-unit -f py312-template-generate -f py312-lint -f py312-typecheck -f py312-docs
 ```
+
+## Run tests within the rendered examples
+
+```bash
+tox -e py312-template-tox
+```
+
+### Run only specific tests within the rendered examples
+
+See `template/tox.ini.jinja` for tests within the redered template that can be run.
+
+```bash
+tox -e py312-template-tox -- --env py312-unit-core
+```

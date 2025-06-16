@@ -70,7 +70,19 @@ def pytest_generate_tests(metafunc):
             if not env_matrix[var_id]:
                 logger.warning(f"No tox envs found for {var_id}, skipping")
 
+            # Retrieve the requested environments to run.
+            # If the user did not specify any, use all available
+            # SEE: pytest_addoption() in conftest.py
+            try:
+                requested = set(metafunc.config.getoption("inner_envs") or [])
+            except ValueError:
+                # If the option is not set, use an empty set
+                requested = set()
+
             for env in env_matrix[var_id]:
+                # If the user asked for a subset (-e ...) keep only those
+                if requested and env not in requested:
+                    continue
                 argvalues.append((var_id, env))
                 argids.append(f"{var_id}:{env}")
 
