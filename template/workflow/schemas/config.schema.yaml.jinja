@@ -1,0 +1,20 @@
+$schema: "https://json-schema.org/draft-06/schema#"
+description: The main configuration schema for the workflow.
+properties:
+  DOCS_DIR:
+    type: string
+    description: Directory for documentation files relative to the project root.
+    default: "docs"
+  LOG_DIR:
+    type: string
+    description: Directory for Snakemake log files relative to the project root.
+    default: "logs/rules"
+  MODULE_DIR:
+    type: string
+    description: Directory for the python module used by the project relative to the project root.
+    default: "{{ package_name }}"
+
+required:
+  - DOCS_DIR
+  - LOG_DIR
+  - MODULE_DIR
