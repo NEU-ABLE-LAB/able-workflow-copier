@@ -16,9 +16,8 @@ envlist = \
     {py311}-typecheck-{core}, \
     {py311}-lint-{core}, \
     py{311,312}-unit-{core}, \
-    py{311,312}-workflow-unit
-    ; TODO-copier-package implement workflow tests
-    ; py{311,312}-workflow_rules, \
+    py{311,312}-workflow-unit, \
+    py{311,312}-workflow-rules
     ; TODO-copier-package implement docs tests
     ; py312-docs,
 
@@ -86,6 +85,7 @@ commands =
         --junitxml={env:JUNIT_XML} \
         -o junit_family=legacy \
         -o addopts='' \
+        {posargs:} \
         {env:PYTEST_PATHS} {env:PYTEST_IGNORES:}
 
 
@@ -139,6 +139,7 @@ commands =
         --junitxml={env:JUNIT_XML} \
         -o junit_family=legacy \
         -o addopts='' \
+        {posargs:} \
         {env:PYTEST_PATHS}
 
 
@@ -146,13 +147,17 @@ commands =
 description = Snakemake rule integration tests. Requires network connection to build snakemake conda environment caches
 package = skip
 extras =
+dependency_groups = workflow,test
 setenv =
     {[testenv]setenv}
     PYTEST_PATHS = tests/workflow/rules/
 commands_pre =
     {[testenv]commands_pre}
 commands =
-    {envpython} -m pytest -o addopts='' {env:PYTEST_PATHS}
+    {envpython} -m pytest \
+        -o addopts='' \
+        {posargs:} \
+        {env:PYTEST_PATHS}
 
 
 [testenv:py312-docs]
@@ -166,4 +171,7 @@ setenv =
 commands_pre =
     {[testenv]commands_pre}
 commands =
-    {envpython} -m pytest -o addopts='' {env:PYTEST_PATHS}
+    {envpython} -m pytest \
+        -o addopts='' \
+        {posargs:} \
+        {env:PYTEST_PATHS}

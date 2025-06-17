@@ -233,8 +233,8 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   ├── LICENSE
 +   ├── pyproject.toml
 +   ├── README.md
-+   ├── snakefmt.toml # (1)
-+   └── tox.ini # (2)
++   ├── snakefmt.toml # (16)
++   └── tox.ini # (17)
 ```
 
 1. _depreciated
@@ -252,3 +252,5 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 13. Temporary data storage for intermediate workflow steps.
 14. Processed data ready for reporting, feature extraction, or modeling.
 15. Raw data in a standardized format.
+16. Configuration settings for snakemake formatting
+17. Main tox settings for resting template creation and code within generated example templates.

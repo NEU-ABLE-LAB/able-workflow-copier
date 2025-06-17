@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 import pytest
@@ -72,6 +73,8 @@ def pytest_generate_tests(metafunc):
 
             # Retrieve the requested environments to run.
             # If the user did not specify any, use all available
+            # environments for this variant.
+            # This is done via the `--template-envs` option.
             # SEE: pytest_addoption() in conftest.py
             try:
                 requested = set(metafunc.config.getoption("inner_envs") or [])
@@ -144,22 +147,125 @@ def _bootstrap_git_repo(path: Path) -> None:
 
 
 # --- Tests ------------------------------------------------------------------
-def test_inner_tox_env_passes(copie_session, variant_id, env_name):
+def test_inner_tox_env_passes(copie_session, variant_id, env_name, request):
     """Run the tox tests within a rendered project variant."""
 
     # Render the template for this variant
     answers = _answers_for(variant_id)
-    result = copie_session.copy(extra_answers=answers)
+
+    # Only suppress stdout/stderr of copie_session.copy() if verbosity < 2
+    verbosity = request.config.getoption("verbose")
+    if verbosity < 2:
+        with open(os.devnull, "w") as devnull:
+            old_stdout, old_stderr = sys.stdout, sys.stderr
+            sys.stdout, sys.stderr = devnull, devnull
+            try:
+                result = copie_session.copy(extra_answers=answers)
+            finally:
+                sys.stdout, sys.stderr = old_stdout, old_stderr
+    else:
+        logger.info(f"Rendering variant {variant_id}")
+        result = copie_session.copy(extra_answers=answers)
+        logger.info(f"Copier successfully rendered variant {variant_id}")
 
     # Ensure the project directory is a Git repo (for setuptools-scm)
     _bootstrap_git_repo(result.project_dir)
 
+    # Determine if the tox environment should run in parallel or not.
+    # If the user specified --tox-no-parallel, run tox in serial.
+    # SEE: pytest_addoption() in conftest.py
+    extra_args = ["--"]
+    if request.config.getoption("tox_no_parallel"):
+        run_args = ["run"]
+    else:
+        run_args = [
+            "run-parallel",
+            "--parallel-no-spinner",
+        ]
+
+    if request.config.getoption("capture") in ["no", "tee-sys"]:
+        # If --capture=no or -s is specified, disable output capturing
+        extra_args.extend(
+            [
+                "--force-sugar",
+            ]
+        )
+
+    if request.config.getoption("template_no_capture"):
+        # If --template-no-capture is specified, disable output capturing
+        extra_args.extend(
+            [
+                "--capture=no",
+            ]
+        )
+
+    verbosity = request.config.getoption("verbose")
+    if verbosity >= 2:
+        # If verbosity is 2 or higher, enable debug output
+        extra_args.append("-vv")
+    elif verbosity == 1:
+        # If verbosity is 1, enable info output
+        extra_args.append("-v")
+
+    # Setup tox environments
+    setup_args = [
+        "tox",
+        "run-parallel",
+        "--parallel-no-spinner",
+        "--notest",
+        "--skip-missing-interpreters",
+        "false",
+        "-e",
+        env_name,
+    ]
+    if verbosity >= 2:
+        subprocess.run(
+            setup_args,
+            cwd=result.project_dir,
+            check=True,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            text=True,
+        )
+    else:
+        subprocess.run(
+            setup_args,
+            cwd=result.project_dir,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
     # Run the tox tests within the rendered project
-    completed = subprocess.run(
-        ["tox", "run-parallel", "--quiet", "-e", env_name],
+    process = subprocess.Popen(
+        [
+            "tox",
+            *run_args,
+            "--skip-pkg-install",
+            "--quiet",
+            "-e",
+            env_name,
+            *extra_args,
+        ],
         cwd=result.project_dir,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
+    )
+
+    stdout, stderr = [], []
+
+    # Stream output live and capture
+    for line in process.stdout:
+        sys.stdout.write(line)
+        stdout.append(line)
+    for line in process.stderr:
+        sys.stderr.write(line)
+        stderr.append(line)
+
+    process.wait()
+    completed = subprocess.CompletedProcess(
+        process.args, process.returncode, "".join(stdout), "".join(stderr)
     )
 
     # Assert the tox run was successful

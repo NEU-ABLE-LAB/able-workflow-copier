@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 from loguru import logger
 
+from .conftest import _snakemake
+
 # --- Fixtures ---------------------------------------------------------------
 # Track which workspaces have had the dummy file created
 _CREATED_DUMMY_INPUT = set()

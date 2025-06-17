@@ -8,8 +8,6 @@ from typing import List
 import pytest
 from loguru import logger
 
-from {{ package_name }}.config import get_project_root
-
 # one workspace per parameter for the whole run
 _WORKSPACES: dict[str, Path] = {}
 
@@ -29,6 +27,7 @@ def _snakemake(workspace: Path, extra: List[str]) -> None:
         cmd,
         cwd=workspace,
         check=True,
+        capture_output=True,
     )
 
 
@@ -61,7 +60,7 @@ def workspace(
     )
     logger.debug(f"Working in a temporary project root: {tmp_path}")
 
-    repo_root = get_project_root()
+    repo_root = request.config.rootdir
 
     # Copy the repo’s config and profile
     shutil.copytree(repo_root / "config", tmp_path / "config")
