@@ -196,6 +196,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   │   ├── build.smk
 +   │   │   ├── dev.smk
 +   │   │   ├── docs.smk
++   │   │   ├── includes.smk  # (18)
 +   │   │   ├── reports.smk
 +   │   │   └── utils.smk
 +   │   ├── schemas/
@@ -237,8 +238,8 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   └── tox.ini # (17)
 ```
 
-1. _depreciated
-2. _depreciated
+1. _
+2. _
 3. The copier answers files get stored here from each template applied to the project.
 4. Tests for rule scripts that can run in the Snakemake global conda environment.
 5. Tests for rule scripts that require the `config["CONDA"]["ENVS"]["DOCS"]` conda environment.
@@ -254,3 +255,4 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 15. Raw data in a standardized format.
 16. Configuration settings for snakemake formatting
 17. Main tox settings for resting template creation and code within generated example templates.
+18. A singe file to aggregate all the includes.
