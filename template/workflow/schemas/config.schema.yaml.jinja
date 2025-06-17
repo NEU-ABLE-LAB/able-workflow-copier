@@ -1,0 +1,68 @@
+$schema: "https://json-schema.org/draft-06/schema#"
+description: The main configuration schema for the workflow.
+properties:
+  DOCS_DIR:
+    type: string
+    description: Directory for documentation files relative to the project root.
+    default: "docs"
+  LOG_DIR:
+    type: string
+    description: Directory for Snakemake log files relative to the project root.
+    default: "logs/rules"
+  MODULE_DIR:
+    type: string
+    description: Directory for the python module used by the project relative to the project root.
+    default: "{{ package_name }}"
+  REPORTS_DIR:
+    type: string
+    description: Directory for reports relative to the project root.
+    default: "reports/"
+  REPORT_TEMPLATES_DIR:
+    type: string
+    description: Directory for report notebook templates relative to the project root.
+    default: "reports/notebook_templates"
+  CONDA:
+    type: object
+    description: Conda environment configuration for the workflow.
+    properties:
+      PYPROJECT2CONDA_DIR:
+        type: string
+        description: Directory for pyproject2conda environment files relative to the workflow root.
+        default: "envs/pyproject2conda"
+      LOCALIZED_DIR:
+        type: string
+        description: Directory for localized conda environments relative to the workflow root.
+        default: "envs/localized"
+      PYTHON:
+        type: string
+        description: Python version used in the conda environments.
+        default: "py312"
+      DEFAULT_ENV:
+        type: string
+        description: Default conda environment key (from below) to use for development.
+        default: "DEV"
+      ENVS:
+        type: object
+        description: Dictionary of conda environments.
+        properties:
+          DEV:
+            type: string
+            description: Development conda environment name.
+            default: "dev"
+          CORE:
+            type: string
+            description: Core conda environment name for the python package (without any extras).
+            default: "core"
+          NOTEBOOK:
+            type: string
+            description: Conda environment name for rules that modify Jupyter notebooks.
+            default: "notebook"
+          DOCS:
+            type: string
+            description: Conda environment name for rules that generate documentation.
+            default: "docs"
+
+required:
+  - DOCS_DIR
+  - LOG_DIR
+  - MODULE_DIR

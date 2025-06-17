@@ -21,6 +21,7 @@ from pathlib import Path
 import shutil
 
 from loguru import logger
+from snakemake.utils import validate
 
 # --- PATHS ------------------------------------------------------------------
 
@@ -71,7 +72,11 @@ include: "rules/reports.smk"
 # TODO-copier-module Add rules for modules here
 
 
-# --- DAG ROOT ----------------------------------------------------------------
+# --- VALIDATION -------------------------------------------------------------
+validate(config, "schemas/config.schema.yaml")
+
+
+# --- DAG ROOT ---------------------------------------------------------------
 rule all_data:
     """Run all data rules."""
     input:
