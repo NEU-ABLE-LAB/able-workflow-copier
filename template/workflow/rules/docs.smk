@@ -1,5 +1,6 @@
 # TODO-copier-package add notebooks to docs
 
+
 rule docs_build:
     """Build the documentation."""
 
