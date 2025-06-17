@@ -85,6 +85,7 @@ commands =
         --junitxml={env:JUNIT_XML} \
         -o junit_family=legacy \
         -o addopts='' \
+        {posargs:} \
         {env:PYTEST_PATHS} {env:PYTEST_IGNORES:}
 
 
@@ -138,6 +139,7 @@ commands =
         --junitxml={env:JUNIT_XML} \
         -o junit_family=legacy \
         -o addopts='' \
+        {posargs:} \
         {env:PYTEST_PATHS}
 
 
@@ -153,8 +155,9 @@ commands_pre =
     {[testenv]commands_pre}
 commands =
     {envpython} -m pytest \
-    -o addopts='' \
-    {env:PYTEST_PATHS}
+        -o addopts='' \
+        {posargs:} \
+        {env:PYTEST_PATHS}
 
 
 [testenv:py312-docs]
@@ -168,4 +171,7 @@ setenv =
 commands_pre =
     {[testenv]commands_pre}
 commands =
-    {envpython} -m pytest -o addopts='' {env:PYTEST_PATHS}
+    {envpython} -m pytest \
+        -o addopts='' \
+        {posargs:} \
+        {env:PYTEST_PATHS}

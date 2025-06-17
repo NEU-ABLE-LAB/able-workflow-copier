@@ -27,6 +27,7 @@ def _snakemake(workspace: Path, extra: List[str]) -> None:
         cmd,
         cwd=workspace,
         check=True,
+        capture_output=True,
     )
 
 

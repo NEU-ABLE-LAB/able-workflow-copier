@@ -1,8 +1,10 @@
+import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, cast
+
 import pytest
 from loguru import logger
-
 from ruamel.yaml import YAML
 
 ANSWERS_YAMLS = [
@@ -45,14 +47,19 @@ def rendered(request, copie_session):
 
     variant = request.param
 
-    # Suppress stdout and stderr
-    with open(os.devnull, "w") as devnull:
-        old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = devnull, devnull
-        try:
-            result = copie_session.copy(extra_answers=variant["answers"])
-        finally:
-            sys.stdout, sys.stderr = old_stdout, old_stderr
+    # Only suppress output if verbosity < 2 (i.e., not -vv or higher)
+    if request.config.option.verbose < 2:
+        with open(os.devnull, "w") as devnull:
+            old_stdout, old_stderr = sys.stdout, sys.stderr
+            sys.stdout, sys.stderr = devnull, devnull
+            try:
+                result = copie_session.copy(extra_answers=variant["answers"])
+            finally:
+                sys.stdout, sys.stderr = old_stdout, old_stderr
+    else:
+        logger.info(f"Rendering variant {variant['id']} with answers")
+        result = copie_session.copy(extra_answers=variant["answers"])
+        logger.info(f"Copier successfully rendered variant {variant['id']}")
 
     # Basic smoke-tests
     if result.exit_code != 0 or result.exception:
