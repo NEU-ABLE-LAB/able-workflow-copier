@@ -16,6 +16,4 @@ include: "dev.smk"
 include: "docs.smk"
 # Reporting rules
 include: "reports.smk"
-
-
 # Append additional rules below
