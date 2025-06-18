@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-import tomllib  # Python 3.11+
+import tomllib
 from loguru import logger
 from typing import List, Sequence
 
