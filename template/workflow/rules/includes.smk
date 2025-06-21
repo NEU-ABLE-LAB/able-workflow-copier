@@ -16,3 +16,4 @@ include: "dev.smk"
 include: "docs.smk"
 # Append additional rules below
 include: "reports.smk"
+include: "docs_dag_svg.smk"
