@@ -57,19 +57,7 @@ RE_VALID_SQL_TABLE = r"^(?:[A-Za-z_][A-Za-z0-9_]*|\"[^\"]+\")$"
 
 
 # --- INCLUDES ---------------------------------------------------------------
-# Helper functions
-# Needs to be imported first so that the rules can use them.
-include: "rules/utils.smk"
-# Rules for development, building, and testing
-include: "rules/build.smk"
-include: "rules/dev.smk"
-include: "rules/docs.smk"
-# Reporting rules
-include: "rules/reports.smk"
-
-
-# Datasets, features, and modeling rules
-# TODO-copier-module Add rules for modules here
+include: "rules/includes.smk"
 
 
 # --- VALIDATION -------------------------------------------------------------

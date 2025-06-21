@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-import tomllib  # Python 3.11+
+import tomllib
 from loguru import logger
 from typing import List, Sequence
 
@@ -110,7 +110,7 @@ def _list_tox_envs(
     envs = [line.strip() for line in out.splitlines() if line.strip()]
     if not envs:
         logger.warning(
-            "`tox -l` returned no environments for {} – is env_list unset?",
+            "`tox -l` returned no environments for {} - is env_list unset?",
             project_dir,
         )
         envs = _parse_env_list_from_config(project_dir)

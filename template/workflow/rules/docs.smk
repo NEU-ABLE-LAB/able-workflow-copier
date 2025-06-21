@@ -1,31 +1,14 @@
 # TODO-copier-package add notebooks to docs
 
 
-rule dag_svg:
-    """Generate the workflow DAG."""
-    localrule: True
-    input:
-        snakefile=WORKFLOW_BASE / "Snakefile",
-        rules=lambda wc: (WORKFLOW_BASE / "rules").glob("*.smk"),
-    output:
-        svg=DOCS_DIR / "docs" / "images" / "dag.svg",
-    log:
-        loguru=str(LOG_DIR / "dag_svg" / "loguru.log"),
-        stdout=str(LOG_DIR / "dag_svg" / "stdout.log"),
-        stderr=str(LOG_DIR / "dag_svg" / "stderr.log"),
-    conda:
-        get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
-    script:
-        str(WORKFLOW_BASE / "scripts/rules_conda_docs/dag_svg.py")
-
-
 rule docs_build:
     """Build the documentation."""
 
     # TODO check this rule is working as intended
     input:
         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        dag_svg=rules.dag_svg.output,
+        # TODO-copier-package add dag_svg to docs_build
+        # dag_svg=rules.dag_svg.output,
     output:
         temp(DOCS_DIR / "site/index.html"),
     log:
@@ -48,7 +31,8 @@ rule docs_deploy:
     """
     input:
         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        dag_svg=rules.dag_svg.output,
+        # TODO-copier-package add dag_svg to docs_build
+        # dag_svg=rules.dag_svg.output,
     log:
         LOG_DIR / "docs.log",
     conda:
@@ -73,7 +57,8 @@ rule docs_serve_mike:
     """
     input:
         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        dag_svg=rules.dag_svg.output,
+        # TODO-copier-package add dag_svg to docs_build
+        # dag_svg=rules.dag_svg.output,
     log:
         LOG_DIR / "docs_serve.log",
     conda:
@@ -95,7 +80,8 @@ rule docs_serve:
     """
     input:
         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        dag_svg=rules.dag_svg.output,
+        # TODO-copier-package add dag_svg to docs_build
+        # dag_svg=rules.dag_svg.output,
     log:
         LOG_DIR / "docs_serve.log",
     conda:
