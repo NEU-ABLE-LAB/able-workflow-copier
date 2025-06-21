@@ -1,8 +1,8 @@
-### Copier templates variables
+# Copier templates variables
 
 Copier uses a jinja2 syntax for rendering templates with the answers to the templates questions.
 
-- [`able-workflow-copier` template](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
+- [`able-workflow-copier` template]({{ able_workflow_copier_url }})
   - **`{{ project_name }}`**: The name of the project being created.
   - **`{{ package_name }}`**: The name of the Python package being created.
 
@@ -20,7 +20,7 @@ Copier uses a jinja2 syntax for rendering templates with the answers to the temp
   - **`{{ is_package_rule }}`**: The rule uses the package.
   - **`{{ rule_name }}`**: The name of the Snakemake rule being created
 
-### Directory tree
+# Directory tree
 
 Files that are created by a template are marked with a `+` sign, and files that are created by a Copier template are marked with a `*` sign. The tree structure is as follows:
 

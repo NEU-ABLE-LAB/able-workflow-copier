@@ -57,10 +57,18 @@ theme:
 extra:
   version:
     provider: mike
+  able_workflow_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev
+  able_workflow_copier_docs: http://localhost:8001
+  able_workflow_module_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev
+  able_workflow_module_copier_docs: http://localhost:8002
+  able_workflow_etl_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev
+  able_workflow_etl_copier_docs: http://localhost:8003
+  able_workflow_rule_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev
+  able_workflow_rule_copier_docs: http://localhost:8004
 
 plugins:
-  - asciinema-player
   - git-revision-date-localized
+  - include-markdown
   - inline-select-svg
   - literate-nav:
       nav_file: SUMMARY.md

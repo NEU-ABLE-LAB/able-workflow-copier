@@ -36,4 +36,7 @@
 
 ## The `able-workflow` project template tree
 
---8<-- "template/docs/docs/overview/tree.snippet.md"
+{%
+    include-markdown "../../../template/docs/docs/overview/tree.snippet.md"
+    heading-offset=1
+%}

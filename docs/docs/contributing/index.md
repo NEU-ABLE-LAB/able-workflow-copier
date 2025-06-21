@@ -1,4 +1,4 @@
-# Contributing to `able-workflow-dev`
+# Contributing to `able-workflow`
 
 ## Tools
 
