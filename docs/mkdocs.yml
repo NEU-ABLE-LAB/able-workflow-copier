@@ -55,16 +55,16 @@ theme:
   favicon: _images/logo.png
 
 extra:
+  able_workflow_copier_repo: https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev
+  able_workflow_copier_docs: http://localhost:8001
+  able_workflow_module_copier_repo: https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev
+  able_workflow_module_copier_docs: http://localhost:8002
+  able_workflow_etl_copier_repo: https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev
+  able_workflow_etl_copier_docs: http://localhost:8003
+  able_workflow_rule_copier_repo: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev
+  able_workflow_rule_copier_docs: http://localhost:8004
   version:
     provider: mike
-  able_workflow_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev
-  able_workflow_copier_docs: http://localhost:8001
-  able_workflow_module_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev
-  able_workflow_module_copier_docs: http://localhost:8002
-  able_workflow_etl_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev
-  able_workflow_etl_copier_docs: http://localhost:8003
-  able_workflow_rule_copier_url: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev
-  able_workflow_rule_copier_docs: http://localhost:8004
 
 plugins:
   - git-revision-date-localized
