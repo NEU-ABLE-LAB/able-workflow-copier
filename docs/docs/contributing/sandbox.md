@@ -16,5 +16,7 @@ The `.gitignore` file tells git to ignore the entire `sandbox/` project director
 ??? note "`scripts/sandbox_examples_generate.py`: Generate the examples in the sandbox"
 
     ```python
-    --8<-- "scripts/sandbox_examples_generate.py"
+    {%
+        include "../../../scripts/sandbox_examples_generate.py"
+    %}
     ```

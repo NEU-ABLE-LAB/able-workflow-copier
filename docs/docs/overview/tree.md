@@ -1,5 +1,7 @@
 # Directory tree
 
+- [`able-workflow-copier`]({{ able_workflow_copier_docs }})
+
 ## The `able-workflow-copier` project tree
 
 ```yaml
@@ -39,4 +41,5 @@
 {%
     include-markdown "../../../template/docs/docs/overview/tree.snippet.md"
     heading-offset=1
+    rewrite-relative-urls=false
 %}

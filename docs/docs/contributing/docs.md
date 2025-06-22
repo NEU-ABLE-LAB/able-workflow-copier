@@ -1,6 +1,10 @@
 # ABLE Workflow copier template documentation
 
---8<-- "docs/README.md:2:-6"
+{%
+    include-markdown "../../README.md"
+    start="<!--include-start-->"
+    end="<!--include-end-->"
+%}
 
 ## Tools and tips for writing documentation
 
