@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 ROOT = Path(__file__).parents[4]
-SCRIPT = ROOT / "workflow/scripts/rules/pyproject2conda.py"
+SCRIPT = ROOT / "workflow/scripts/rules_global/pyproject2conda.py"
 if not SCRIPT.exists():
     pytest.skip(f"Cannot find {SCRIPT}", allow_module_level=True)
 
