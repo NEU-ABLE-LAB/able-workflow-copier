@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: fa96bd3
+_commit: a4d95ca
 _src_path: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev.git
 conda_env_key: DOCS
 parent_project_tpl: .copier-answers/project.yml
