@@ -8,9 +8,9 @@ A [copier](https://copier.readthedocs.io/en/stable/) template for generating a s
 
 ## Overview of ABLE Workflow copier templates
 
-- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
-- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
-- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
+- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier)
+- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier)
+- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier)
 - `able-workflow-rule-script-copier`
   - TODO-copier-package create this repo to template python scripts used as snakemake rules (e.g., `workflow/scripts/rules_global/conda_localize_file.py` and `template/workflow/scripts/rules_conda_DOCS/dag_svg.py`). And their associated unit tests which need the requirements specifed by the `conda:` directive the script is used in.
 
@@ -64,18 +64,18 @@ The following instructions assume you are working on Linux (or with WSL on Windo
 
    ```bash
    # Create the environment (or update and prune if it already exists)
-   conda env update --name able-workflow-copier-dev --file environment-py312-dev.yaml --prune
-   conda activate able-workflow-copier-dev
+   conda env update --name able-workflow-copier --file environment-py312-dev.yaml --prune
+   conda activate able-workflow-copier
    ```
 
    Alternatively, run the script `scripts/conda_update.sh`.
 
-   Configure the `able-workflow-copier-dev` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
+   Configure the `able-workflow-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
 4. Install pre-commit into the repo to run checks on every commit
 
    ```bash
-   (able-workflow-copier-dev) pre-commit install
+   (able-workflow-copier) pre-commit install
    ```
 
 5. Play around in the sandbox. (The `sandbox/` directory is in `.gitignore` and is a good place to explore how to use the template.)

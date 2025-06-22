@@ -1,5 +1,7 @@
 # ABLE Workflow copier template documentation
 
+<!--include-start-->
+
 ## Overview
 
 The documentation for this project uses [MkDocs](https://www.mkdocs.org/) and the
@@ -25,6 +27,8 @@ The navigation structure is specified with
     ```bash`
     mkdocs serve --config-file docs/mkdocs.yml
     ```
+
+<!--include-end-->
 
 ## More information
 

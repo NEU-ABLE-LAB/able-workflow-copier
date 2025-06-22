@@ -1,4 +1,8 @@
-# Contributing to `able-workflow-dev`
+---
+render_macros: false
+---
+
+# Contributing to `able-workflow`
 
 ## Tools
 
@@ -13,6 +17,8 @@ See top of `copier.yml`
 
     /// html | div
     ```yaml
-    --8<-- "copier.yml"
+    {%
+        include "../../../copier.yml"
+    %}
     ```
     ///

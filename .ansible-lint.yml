@@ -4,6 +4,7 @@ enable_list: [yaml]     # run only the YAML rule
 exclude_paths:
   - able-workflow/
   - docs/docs/_submodules/
+  - docs/mkdocs.yml
 skip_list:
-  - yaml[line-length]   # example: maybe you don’t want 80-column wrapping
-  - yaml[truthy]        # Copier often needs on/off strings
+  - yaml[line-length]
+  - yaml[truthy]
