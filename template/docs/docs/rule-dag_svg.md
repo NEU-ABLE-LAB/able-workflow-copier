@@ -1,6 +1,6 @@
 # ABLE Workflow Rule Copier rule `dag_svg`
 
-# Create an SVG of the main Snakemake DAG
+Create an SVG of the main Snakemake DAG
 
 ## Updating rule
 To update this rule, run the following command in the root of your project:
