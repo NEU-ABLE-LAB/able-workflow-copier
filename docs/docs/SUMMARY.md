@@ -1,9 +1,8 @@
 # Navigation outline for literate-nav
 
-- [Home](index.md)
-- [Overview](overview/)
-- Related Templates
-  - [able-workflow-module](_submodules/module-copier/)
-  - [able-workflow-etl](_submodules/etl-copier/)
-  - [able-workflow-rule](_submodules/rule-copier/)
-- [Contributing](contributing/)
+- [Project Template](index.md)
+  - [Overview](overview/)
+  - [Contributing](contributing/)
+- [Module Template]({{ able_workflow_module_copier_docs }})
+- [ETL Template]({{ able_workflow_etl_copier_docs }})
+- [Rule Template]({{ able_workflow_rule_copier_docs }})
