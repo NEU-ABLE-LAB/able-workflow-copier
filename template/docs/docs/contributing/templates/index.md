@@ -1,6 +1,6 @@
 # Copier templates
 
-This project was created with the [ABLE Workflow Copier](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev) template.
+This project was created with the [ABLE Workflow Copier]({{ able_workflow_rule_copier_docs }}) template.
 
 To updated the project with the latest changes to the template, run:
 

@@ -1,3 +1,7 @@
 # {{ project_name }} directory tree
 
---8<-- "template/docs/docs/overview/tree.snippet.md"
+{%
+    include-markdown "tree.snippet.md"
+    heading-offset=1
+    rewrite-relative-urls=false
+%}
