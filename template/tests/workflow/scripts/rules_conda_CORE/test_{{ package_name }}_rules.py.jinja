@@ -29,7 +29,7 @@ from snakemake.utils import Namedlist
 # --------------------------------------------------------------------------- #
 
 ROOT = Path(__file__).parents[4]
-SCRIPT = ROOT / "workflow/scripts/rules/{{ package_name }}_rules.py"
+SCRIPT = ROOT / "workflow/scripts/rules_conda_CORE/{{ package_name }}_rules.py"
 if not SCRIPT.exists():
     pytest.skip(f"Cannot find {SCRIPT}", allow_module_level=True)
 
