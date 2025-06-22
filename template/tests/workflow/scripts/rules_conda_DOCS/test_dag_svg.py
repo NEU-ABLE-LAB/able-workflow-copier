@@ -82,7 +82,69 @@ def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
 # --------------------------------------------------------------------------- #
 
 
-def test_main_runs(tmp_path):
-    """A stand-in test for the main() function."""
+def test_main_generates_expected_svg(monkeypatch, tmp_path):
+    """Smoke-test ``main()`` and check the SVG post-processing."""
+
+    # --------------------------------------------------------------------- #
+    # Patch ``subprocess.run`` so no external commands are launched
+    # --------------------------------------------------------------------- #
+    dot_graph = "digraph G { A -> B }"
+    raw_svg = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <polygon stroke="none" fill="white" points="0,0 100,0 100,100 0,100"/>
+  </g>
+  <text x="10" y="10" fill="black">hello</text>
+</svg>
+"""
+
+    calls: list[list[str]] = []
+
+    def _fake_run(
+        cmd, *, check, text, stdout, stderr=None, input=None
+    ):  # noqa: D401,E501
+        """Mimic ``subprocess.run`` for the two calls made in *main()*."""
+        calls.append(cmd)
+
+        if cmd and cmd[0] == "snakemake":
+            return types.SimpleNamespace(stdout=dot_graph, returncode=0)
+        elif cmd and cmd[0] == "dot":
+            # ensure the DOT produced by the first call is piped into DOT
+            assert input == dot_graph
+            return types.SimpleNamespace(stdout=raw_svg, returncode=0)
+
+        raise RuntimeError(f"Unexpected command: {cmd!r}")
+
+    monkeypatch.setattr(module_under_test.subprocess, "run", _fake_run)
+
+    # --------------------------------------------------------------------- #
+    # Execute ``main()``
+    # --------------------------------------------------------------------- #
     smk = _fake_snakemake(tmp_path)
     module_under_test.main(smk)
+
+    # we should have invoked both external commands exactly once
+    assert calls == [
+        ["snakemake", "--forceall", "--dag"],
+        ["dot", "-Tsvg"],
+    ]
+
+    # --------------------------------------------------------------------- #
+    # Validate the written SVG
+    # --------------------------------------------------------------------- #
+    svg_path = Path(smk.output.svg)
+    assert svg_path.exists(), "SVG file was not written"
+
+    root = ET.parse(svg_path).getroot()
+
+    # 1. root element must carry the extra "dag" class
+    assert "dag" in root.attrib.get("class", ""), "<svg> missing 'dag' class"
+
+    # 2. <style> block injected
+    style_elems = root.findall("{http://www.w3.org/2000/svg}style")
+    assert style_elems, "No <style> element injected"
+    assert "--md-typeset-color" in style_elems[0].text
+
+    # 3. white background polygon removed
+    polygons = root.findall(".//{http://www.w3.org/2000/svg}polygon")
+    assert not polygons, "White background <polygon> was *not* removed"

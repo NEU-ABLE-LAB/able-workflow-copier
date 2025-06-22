@@ -16,7 +16,7 @@ envlist = \
     {py311}-typecheck-{core}, \
     {py311}-lint-{core}, \
     py{311,312}-unit-{core}, \
-    py{311,312}-workflow-unit, \
+    py{311,312}-workflow-unit-{global,core,docs}, \
     py{311,312}-workflow-rules
     ; TODO-copier-package implement docs tests
     ; py312-docs,
@@ -110,7 +110,7 @@ commands =
 
 # TODO-copier-etl Add factors for extras
 # TODO-copier-package implement docs scripts tests
-[testenv:py{311,312}-workflow-unit-{global,core}]
+[testenv:py{311,312}-workflow-unit-{global,core,docs}]
 description = Snakemake unit tests for workflow utilities and rule scripts that do not require a custom conda environment
 package =
     global: skip

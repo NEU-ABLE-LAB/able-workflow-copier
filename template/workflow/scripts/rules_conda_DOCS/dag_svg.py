@@ -4,13 +4,49 @@ Script for the dag_svg rule
 Create an SVG of the main Snakemake DAG
 """
 
+import subprocess
 import sys
+import textwrap
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from loguru import logger
+from lxml import etree as ET
 
 if TYPE_CHECKING:  # pragma: no cover
     from snakemake.script import snakemake
+
+
+STYLE = textwrap.dedent(
+    """
+    <style>
+      /*  Use MkDocs-Material palette tokens
+          ──────────────────────────────────
+          default  : data-md-color-scheme="default"
+          dark/slate: data-md-color-scheme="slate"
+      */
+
+      /* Labels */
+      svg.dag text { fill: var(--md-typeset-color, #000000de); }
+    </style>
+    """
+).strip()
+
+
+def _neutralise_only_problematic_colours(root: ET.Element) -> None:
+    """
+    Remove the white *background* polygon so the page background shows
+    through in both themes.
+    """
+    SVG_NS = "{http://www.w3.org/2000/svg}"
+
+    # Background polygon: first <polygon> child of the outermost <g>
+    for poly in root.findall(f".//{SVG_NS}polygon"):
+        if poly.get("stroke") == "none" and poly.get("fill", "").lower() == "white":
+            parent = poly.getparent()
+            if parent is not None:
+                parent.remove(poly)
+            break  # there’s only one like this
 
 
 def main(smk) -> None:  # type: ignore[no-untyped-def]
@@ -19,33 +55,61 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     logger.remove()
     logger.add(smk.log.loguru)
 
-    # TODO Read snakemake `input:` entries as
-    # smk.input.<INPUT_NANME> as needed
+    # No need to read snakemake `input:` entries
 
-    # TODO Read snakemake `output:` entries as
-    # smk.output.<OUTPUT_NAME> as needed
+    # Read snakemake `output:` entries
+    svg_path = Path(smk.output.svg)
 
-    # TODO Read snakemake `params:` entries as
-    # smk.params.<PARAM_NAME> as needed
+    # No need to read snakemake `params:` entries
 
-    # TODO Read snakemake `wildcards:` entries as
-    # smk.wildcards.<WILDCARD_NAME> as needed
+    # No need to read snakemake `wildcards:` entries
 
-    # TODO Enable logging for subprocesses if needed
-    # # Generate DAG as SVG via graphviz
-    # logger.debug("Generating DAG SVG using Snakemake")
-    # with (
-    #     open(smk.log.stdout, "a") as stdout_log,
-    #     open(smk.log.stderr, "a") as stderr_log
-    # ):
-    #
-    #     dag_dot = subprocess.run(
-    #         # TODO Fill in command if applicable,
-    #         check=True,
-    #         text=True,
-    #         stdout=subprocess.PIPE,
-    #         stderr=stderr_log,
-    #     ).stdout
+    # Generate DAG as SVG via graphviz
+    logger.debug("Generating DAG SVG using Snakemake")
+    with open(smk.log.stderr, "a") as stdout_log:
+        dag_dot = subprocess.run(
+            ["snakemake", "--forceall", "--dag"],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stdout_log,
+        ).stdout
+
+        # Convert DOT → SVG with Graphviz
+        raw_svg = subprocess.run(
+            ["dot", "-Tsvg"],
+            input=dag_dot,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stdout_log,
+        ).stdout
+
+    # Parse & manipulate SVG as XML
+    logger.debug("Parsing SVG DAG output")
+    parser = ET.XMLParser(ns_clean=True, recover=True)
+    root = ET.fromstring(raw_svg.encode(), parser=parser)
+
+    # mark root for CSS scoping
+    logger.debug("Marking SVG root element with 'dag' class")
+    if "class" in root.attrib:
+        root.attrib["class"] += " dag"
+    else:
+        root.attrib["class"] = "dag"
+
+    # neutralise only background + text colour
+    logger.debug("Neutralising problematic colours (background + text)")
+    _neutralise_only_problematic_colours(root)
+
+    # inject <style> block
+    logger.debug("Injecting CSS style into SVG")
+    root.insert(0, ET.fromstring(STYLE))
+
+    # 3 - write out pretty-printed SVG
+    logger.debug(f"Writing SVG DAG to {svg_path}")
+    svg_path.write_bytes(
+        ET.tostring(root, xml_declaration=True, encoding="utf-8", pretty_print=True)
+    )
 
 
 if __name__ == "__main__":
