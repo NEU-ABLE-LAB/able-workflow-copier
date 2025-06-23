@@ -13,20 +13,14 @@ The navigation structure is specified with
 [`literate-nav`](https://pypi.org/project/mkdocs-literate-nav/) in the
 `SUMMARY.md` file within the `docs/docs/` directory and each subdirectory.
 
-## Building the documentation locally
+## Serving the documentation locally
 
     ```bash
-    mkdocs build  --config-file docs/mkdocs.yml
+    ./scritps/mkdocs.sh
     ```
 
     The assumes that you have already set up the development environment.
     See the main `README.md` file for instructions.
-
-## Serving the documentation locally
-
-    ```bash`
-    mkdocs serve --config-file docs/mkdocs.yml
-    ```
 
 <!--include-end-->
 
