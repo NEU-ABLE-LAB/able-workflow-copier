@@ -12,6 +12,9 @@ Other than this `README.md` , this directory should not be committed to git.
 │   │   ├── processed/
 │   │   ├── raw/
 │   │   └── README.md
+│   ├── tests/
+│   │   ├── {{ module_name }}/...
+│   │   └── README.md
 │   └── README.md
 ```
 

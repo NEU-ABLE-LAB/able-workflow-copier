@@ -13,6 +13,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from lxml import etree as ET
 
 # --------------------------------------------------------------------------- #
 # Load the script under test                                                  #
@@ -56,22 +57,22 @@ sys.modules.setdefault("snakemake.script", _fake_sm_script)
 
 def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
     """
-    Return a *snakemake* stand-in with the attrs required by ``main()``.
+    Return a *snakemake* stand-in with the attrs required by the
+    ``main()`` function in the script under test.
     """
 
     smk = SimpleNamespace(
-        input=SimpleNamespace(
-            readme=tmp_path / "README.md",
+        output=SimpleNamespace(
+            svg=tmp_path / "docs" / "docs" / "_images" / "dag.svg",
         ),
         log=SimpleNamespace(
             loguru=tmp_path / "logs" / "conda_localize.log",
-            stdout=tmp_path / "logs" / "stdout.log",
             stderr=tmp_path / "logs" / "stderr.log",
         ),
     )
 
     # Create dummy directories and files
-    smk.input.readme.touch()
+    smk.output.svg.parent.mkdir(parents=True, exist_ok=True)
     smk.log.loguru.parent.mkdir(parents=True, exist_ok=True)
 
     return smk
