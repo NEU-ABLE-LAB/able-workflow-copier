@@ -18,8 +18,6 @@ envlist = \
     py{311,312}-package-unit-{core}, \
     py{311,312}-workflow-unit-{global,core,docs}, \
     py{311,312}-workflow-rules
-    ; TODO-copier-package implement docs tests
-    ; py312-docs,
 
 
 [gh-actions]
@@ -151,23 +149,6 @@ dependency_groups = workflow,test
 setenv =
     {[testenv]setenv}
     PYTEST_PATHS = tests/workflow/rules/
-commands_pre =
-    {[testenv]commands_pre}
-commands =
-    {envpython} -m pytest \
-        -o addopts='' \
-        {posargs:} \
-        {env:PYTEST_PATHS}
-
-
-[testenv:py312-docs]
-description = Unit tests for building documentation
-package = skip
-extras =
-dependency_groups = docs,test
-setenv =
-    {[testenv]setenv}
-    PYTEST_PATHS = tests/docs/
 commands_pre =
     {[testenv]commands_pre}
 commands =
