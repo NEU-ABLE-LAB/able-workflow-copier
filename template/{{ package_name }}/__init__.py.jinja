@@ -3,9 +3,8 @@ Pythan package for the {{ project_name }} project that contains code for
 datasets, features, and models created by the Snakemake workflow.
 """
 
-from importlib import metadata as _metadata
+from importlib.metadata import version
 
 from {{ package_name }} import config  # noqa: F401  # noqa: F401
 
-# Run-time package version derived from the Git tag that built the wheel
-__version__: str = _metadata.version("{{ project_name }}")
+__version__ = version("{{ project_name }}")
