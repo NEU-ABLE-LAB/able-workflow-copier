@@ -1,1 +1,17 @@
-package_name: dummy_package_name
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 6d32f19
+_src_path: /home/thisismikekane/able-workflow-copier-dev
+conda_localize: false
+conda_update_workflow_env: false
+documentation_url: https://github.com/NEU-ABLE-LAB/able-workflow
+homepage_url: https://github.com/NEU-ABLE-LAB/able-workflow
+organization_name: Northeastern University ABLE Lab
+organization_slug: NEU-ABLE-LAB
+package_name: dummy_project_name
+project_authors:
+-   email: mi.kane@northeastern.edu
+    name: Michael Kane
+project_description: A snakemake workflow with an associated python package containing
+    modules for datasets, features, and models.
+project_name: able-workflow
+repository_url: https://github.com/NEU-ABLE-LAB/able-workflow
