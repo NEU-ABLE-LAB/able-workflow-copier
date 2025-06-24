@@ -3,73 +3,76 @@
 
 rule docs_build:
     """Build the documentation."""
-
-    # TODO check this rule is working as intended
     input:
-        mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        # TODO-copier-package add dag_svg to docs_build
-        # dag_svg=rules.dag_svg.output,
+        mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
+        dag_svg=rules.dag_svg.output,
     output:
-        temp(DOCS_DIR / "site/index.html"),
+        site_dir=directory(Path(config["DOCS_SITE_DIR"]).resolve()),
     log:
-        LOG_DIR / "docs_build.log",
+        stdout=LOG_DIR / "docs_build" / "stdout.log",
+        stderr=LOG_DIR / "docs_build" / "stderr.log",
+    params:
+        docs_assets=Path(config["DOCS_ASSETS_DIR"]).resolve(),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     shell:
         """
-        exec 1>"{log}"
-        exec 2>"{log}"
+        exec 1>"{log.stdout}"
+        exec 2>"{log.stderr}"
         export JUPYTER_PLATFORM_DIRS=1
-        mkdocs build --config-file {input.mkdocs_yml}
+        export DOCS_ASSETS_DIR="{params.docs_assets}"
+        mkdocs build \
+          --config-file {input.mkdocs_yml} \
+          --site-dir {output.site_dir}
         """
 
 
-rule docs_deploy:
-    """
-    Deploy the documentation to the `gh-pages with
-    [mike](https://github.com/jimporter/mike?tab=readme-ov-file#building-your-docs).
-    """
-    input:
-        mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        # TODO-copier-package add dag_svg to docs_build
-        # dag_svg=rules.dag_svg.output,
-    log:
-        LOG_DIR / "docs.log",
-    conda:
-        get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
-    shell:
-        # TODO Configure versioning so `mike` grabs semantic tags
-        """
-        exec 1>"{log}"
-        exec 2>"{log}"
-        echo "TODO configure versioning"
-        exit 1
-        # mike deploy --config-file {input.mkdocs_yml}
-        """
+# TODO-copier-package deploy docs with `mike`
+# rule docs_deploy:
+#     """
+#     Deploy the documentation to the `gh-pages with
+#     [mike](https://github.com/jimporter/mike?tab=readme-ov-file#building-your-docs).
+#     """
+#     input:
+#         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
+#         dag_svg=rules.dag_svg.output,
+#     log:
+#         LOG_DIR / "docs.log",
+#     conda:
+#         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+#     shell:
+#         # TODO Configure versioning so `mike` grabs semantic tags
+#         """
+#         exec 1>"{log}"
+#         exec 2>"{log}"
+#         echo "TODO configure versioning"
+#         exit 1
+#         # mike deploy --config-file {input.mkdocs_yml}
+#         """
 
 
-rule docs_serve_mike:
-    """
-    Serve the documentation committed to the `gh-pages` branch
-    [using `mike`](https://github.com/jimporter/mike?tab=readme-ov-file#viewing-your-docs).
-    NOTE: This rule is "blocking", and will not return until the server is stopped.
-          This rule is only for development purposes.
-    """
-    input:
-        mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        # TODO-copier-package add dag_svg to docs_build
-        # dag_svg=rules.dag_svg.output,
-    log:
-        LOG_DIR / "docs_serve.log",
-    conda:
-        get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
-    shell:
-        """
-        exec 1>"{log}"
-        exec 2>"{log}"
-        export JUPYTER_PLATFORM_DIRS=1
-        mike serve --config-file {input.mkdocs_yml}
-        """
+# TODO-copier-package serve docs with `mike`
+# rule docs_serve_mike:
+#     """
+#     Serve the documentation committed to the `gh-pages` branch
+#     [using `mike`](https://github.com/jimporter/mike?tab=readme-ov-file#viewing-your-docs).
+#     NOTE: This rule is "blocking", and will not return until the server is stopped.
+#           This rule is only for development purposes.
+#     """
+#     input:
+#         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
+#         dag_svg=rules.dag_svg.output,
+#     log:
+#         LOG_DIR / "docs_serve.log",
+#     conda:
+#         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+#     shell:
+#         """
+#         exec 1>"{log}"
+#         exec 2>"{log}"
+#         export JUPYTER_PLATFORM_DIRS=1
+#         mike serve --config-file {input.mkdocs_yml}
+#         """
 
 
 rule docs_serve:
@@ -79,9 +82,9 @@ rule docs_serve:
           This rule is only for development purposes.
     """
     input:
-        mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
-        # TODO-copier-package add dag_svg to docs_build
-        # dag_svg=rules.dag_svg.output,
+        mkdocs_yml=workflow.source_path("../../docs/mkdocs.yml"),
+        docs_assets=Path(config["DOCS_ASSETS_DIR"]).resolve(),
+        dag_svg=rules.dag_svg.output,
     log:
         LOG_DIR / "docs_serve.log",
     conda:
@@ -91,5 +94,7 @@ rule docs_serve:
         exec 1>"{log}"
         exec 2>"{log}"
         export JUPYTER_PLATFORM_DIRS=1
-        mkdocs serve --config-file {input.mkdocs_yml}
+        export DOCS_ASSETS_DIR="{input.docs_assets}"
+        mkdocs serve \
+          --config-file {input.mkdocs_yml}
         """

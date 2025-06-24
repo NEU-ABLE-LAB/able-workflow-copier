@@ -2,10 +2,9 @@ rule dag_svg:
     """Create an SVG of the main Snakemake DAG"""
     localrule: True
     input:
-        snakefile=WORKFLOW_BASE / "Snakefile",
-        rules=lambda wc: (WORKFLOW_BASE / "rules").glob("*.smk"),
+        snakefile=workflow.source_path("../Snakefile"),
     output:
-        svg=DOCS_DIR / "docs" / "_images" / "dag.svg",
+        svg=Path(config["DOCS_ASSETS_DIR"]) / "dag_all.svg",
     log:
         loguru=str(LOG_DIR / "dag_svg" / "loguru.log"),
         stderr=str(LOG_DIR / "dag_svg" / "stderr.log"),

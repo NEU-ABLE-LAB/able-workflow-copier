@@ -58,7 +58,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     # No need to read snakemake `input:` entries
 
     # Read snakemake `output:` entries
-    svg_path = Path(smk.output.svg)
+    svg_path = Path(smk.output.svg).resolve()
 
     # No need to read snakemake `params:` entries
 

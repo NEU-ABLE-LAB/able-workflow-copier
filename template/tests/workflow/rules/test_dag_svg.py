@@ -26,5 +26,5 @@ def test_dag_svg(workspace: Path) -> None:
     _snakemake(workspace, ["dag_svg"])
 
     # Confirm that the SVG file was created
-    svg_file = workspace / "docs" / "docs" / "_images" / "dag.svg"
+    svg_file = workspace / "docs" / "docs" / "_assets" / "dag_all.svg"
     assert svg_file.exists(), f"Expected SVG file not found: {svg_file}"

@@ -18,7 +18,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
 
     # Parse Snakemake directives
     toml_path = Path(smk.input.toml)
-    env_name = smk.params.env_name
+    env_name = smk.params.env_name.split("-")[-1]
 
     # Setup logging
     logger.remove()

@@ -21,26 +21,34 @@ def _snakemake(workspace: Path, extra: List[str], verbose: bool = True) -> None:
 
     logger.debug(f"Executing: {shlex.join(cmd)}")
 
-    cp = subprocess.run(
-        cmd,
-        cwd=workspace,
-        check=True,
-        capture_output=True,
-    )
+    try:
+        cp = subprocess.run(
+            cmd,
+            cwd=workspace,
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as e:
+        # If the command fails, print the output and raise an error
+        sys.stderr.write(
+            f"\n===== Snakemake Error stdout =====\n{e.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Error stderr =====\n{e.stderr.decode('utf-8')}\n"
+        )
+        raise
 
     # If the command fails, print the output and raise an error
     if cp.returncode:
         sys.stderr.write(
-            f"\n===== Snakemake stdout =====\n{cp.stdout.decode('utf-8')}"
-            f"\n===== Snakemake stderr =====\n{cp.stderr.decode('utf-8')}\n"
+            f"\n===== Snakemake Return Code stdout =====\n{cp.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Return Code stderr =====\n{cp.stderr.decode('utf-8')}\n"
         )
         cp.check_returncode()
 
     # Only write output if verbose flag is True
     if verbose:
         sys.stdout.write(
-            f"\n===== Snakemake stdout =====\n{cp.stdout.decode('utf-8')}"
-            f"\n===== Snakemake stderr =====\n{cp.stderr.decode('utf-8')}\n"
+            f"\n===== Snakemake Verbose stdout =====\n{cp.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Verbose stderr =====\n{cp.stderr.decode('utf-8')}\n"
         )
 
 

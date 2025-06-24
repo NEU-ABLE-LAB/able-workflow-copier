@@ -13,7 +13,7 @@ include: "utils.smk"
 # Rules for development, building, and testing
 include: "build.smk"
 include: "dev.smk"
+include: "docs_dag_svg.smk"
 include: "docs.smk"
 # Append additional rules below
 include: "reports.smk"
-include: "docs_dag_svg.smk"

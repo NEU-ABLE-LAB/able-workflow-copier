@@ -5,11 +5,9 @@ rule conda_localize:
     """
     localrule: True
     input:
-        expand(
+        yamls=expand(
             str(
-                Path("workflow")
-                / config["CONDA"]["LOCALIZED_DIR"]
-                / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+                Path(config["CONDA"]["LOCALIZED_DIR"]) / "{environment}.yaml"
             ),
             environment=config["CONDA"]["ENVS"].values(),
         ),
@@ -22,16 +20,11 @@ rule conda_localize_file:
     localrule: True
     input:
         src=str(
-            Path("workflow")
-            / config["CONDA"]["PYPROJECT2CONDA_DIR"]
-            / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+            Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+            / "{environment}.yaml"
         ),
     output:
-        dst=str(
-            Path("workflow")
-            / config["CONDA"]["LOCALIZED_DIR"]
-            / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
-        ),
+        dst=str(Path(config["CONDA"]["LOCALIZED_DIR"]) / "{environment}.yaml"),
     wildcard_constraints:
         environment=RE_VALID_FNAME_STEM,
     params:
@@ -54,14 +47,12 @@ rule conda_update_yaml:
         yaml=(Path("workflow") / "{yaml_dir}" / "{yaml_stem}.yaml"),
     output:
         stamp=touch(
-            Path("workflow")
-            / "{yaml_dir}"
-            / "{yaml_stem}.snakemake_conda_update_stamp"
+            Path("{yaml_dir}") / "{yaml_stem}.snakemake_conda_update_stamp"
         ),
     wildcard_constraints:
-        yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|envs",
+        yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|{config['CONDA']['ENVS_DIR']}",
     params:
-        env_name=lambda wc: wc.yaml_stem.replace("-", "_"),
+        env_name=lambda wc: wc.yaml_stem,
     log:
         LOG_DIR / "conda_update/{yaml_dir}/{yaml_stem}.log",
     shell:
@@ -88,20 +79,19 @@ rule conda_update:
         expand(
             str(
                 Path(
-                    Path("workflow")
-                    / config["CONDA"]["LOCALIZED_DIR"]
-                    / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}"
+                    Path(config["CONDA"]["LOCALIZED_DIR"])
+                    / f"{{environment}}"
                 ).with_suffix(".snakemake_conda_update_stamp")
             ),
             environment=config["CONDA"]["ENVS"].values(),
         ),
-        str(
-            Path("workflow")
-            / f"envs/{config['CONDA']['PYTHON']}-workflow.snakemake_conda_update_stamp"
-        ),
-        str(
-            Path("workflow")
-            / f"envs/{config['CONDA']['PYTHON']}-tox.snakemake_conda_update_stamp"
+        expand(
+            str(
+                Path(
+                    Path(config["CONDA"]["ENVS_DIR"]) / f"{{environment}}"
+                ).with_suffix(".snakemake_conda_update_stamp")
+            ),
+            environment=config["CONDA"]["ENVS_META"].values(),
         ),
 
 
