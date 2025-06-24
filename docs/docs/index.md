@@ -9,9 +9,9 @@ A [copier](https://copier.readthedocs.io/en/stable/) template for generating a s
 ## Overview of ABLE Workflow copier templates
 
 - [`able-workflow-copier`]({{ able_workflow_copier_docs }})
-- [`able-workflow-module-copier`]( {{ able_workflow_module_copier_docs }})
+- [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }})
 - [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
-- [`able-workflow-rule-script-copier`]({{ able_workflow_rule_copier_docs }})
+- [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
 
 ## Contributing
 

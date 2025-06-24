@@ -48,7 +48,7 @@ sys.modules.setdefault("snakemake.script", _fake_sm_script)
 
 if not SCRIPT.exists():  # pragma: no cover
     pytest.skip(
-        f"Cannot find {SCRIPT} – are you running tests from the repo root?",
+        f"Cannot find {SCRIPT} - are you running tests from the repo root?",
         allow_module_level=True,
     )
 

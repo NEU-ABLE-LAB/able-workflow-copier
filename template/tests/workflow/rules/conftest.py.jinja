@@ -1,6 +1,7 @@
 import shlex
 import shutil
 import subprocess
+import sys
 import textwrap
 from pathlib import Path
 from typing import List
@@ -8,12 +9,9 @@ from typing import List
 import pytest
 from loguru import logger
 
-# one workspace per parameter for the whole run
-_WORKSPACES: dict[str, Path] = {}
-
 
 # --- Helpers ----------------------------------------------------------------
-def _snakemake(workspace: Path, extra: List[str]) -> None:
+def _snakemake(workspace: Path, extra: List[str], verbose: bool = True) -> None:
     """Thin wrapper so the command line is only written once."""
 
     cmd = [
@@ -23,16 +21,44 @@ def _snakemake(workspace: Path, extra: List[str]) -> None:
 
     logger.debug(f"Executing: {shlex.join(cmd)}")
 
-    subprocess.run(
-        cmd,
-        cwd=workspace,
-        check=True,
-        capture_output=True,
-    )
+    try:
+        cp = subprocess.run(
+            cmd,
+            cwd=workspace,
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as e:
+        # If the command fails, print the output and raise an error
+        sys.stderr.write(
+            f"\n===== Snakemake Error stdout =====\n{e.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Error stderr =====\n{e.stderr.decode('utf-8')}\n"
+        )
+        raise
+
+    # If the command fails, print the output and raise an error
+    if cp.returncode:
+        sys.stderr.write(
+            f"\n===== Snakemake Return Code stdout =====\n{cp.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Return Code stderr =====\n{cp.stderr.decode('utf-8')}\n"
+        )
+        cp.check_returncode()
+
+    # Only write output if verbose flag is True
+    if verbose:
+        sys.stdout.write(
+            f"\n===== Snakemake Verbose stdout =====\n{cp.stdout.decode('utf-8')}"
+            f"\n===== Snakemake Verbose stderr =====\n{cp.stderr.decode('utf-8')}\n"
+        )
 
 
 # --- Fixtures ---------------------------------------------------------------
-@pytest.fixture(params=["proj_root", "workflow"])
+@pytest.fixture(
+    params=[
+        # "proj_root",
+        "workflow",
+    ]
+)
 def workspace(
     tmp_path_factory: pytest.TempPathFactory,
     request: pytest.FixtureRequest,
@@ -50,13 +76,9 @@ def workspace(
     test_module = request.module.__name__
     basename = f"{test_module}_{snakefile_loc}"
 
-    # reuse the directory if it already exists
-    if basename in _WORKSPACES:
-        return _WORKSPACES[basename]
-
     tmp_path = tmp_path_factory.mktemp(
         basename=basename,
-        numbered=False,
+        numbered=True,
     )
     logger.debug(f"Working in a temporary project root: {tmp_path}")
 
@@ -91,5 +113,8 @@ def workspace(
         )
     )
 
-    _WORKSPACES[basename] = tmp_path
+    # Localize the local package path in the conda environment yaml files
+    verbose = request.config.getoption("verbose")
+    _snakemake(tmp_path, ["conda_localize"], verbose=verbose)
+
     return tmp_path

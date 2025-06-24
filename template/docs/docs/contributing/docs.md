@@ -23,9 +23,26 @@ How to add note, info, tips, etc. blocks (and collapsable blocks).
 
     Info block that can collapse away.
 
-### docstrings
+### [mkdocstrings](https://mkdocstrings.github.io/)
 
 All python code should contain type hints and [numpy-style docstring](https://numpydoc.readthedocs.io/en/latest/format.html). These are rendered into the documentation using [`mkdocstrings`](https://mkdocstrings.github.io/).
+
+### [mkdocs-macros](https://mkdocs-macros-plugin.readthedocs.io/en/latest/)
+
+Used to by `mike` and to render jinja2 templates in markdown files.
+
+### [mkdocs-include-markdown](https://github.com/mondeja/mkdocs-include-markdown-plugin)
+
+Used to include markdown. Preferred over [snippets](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/) since `include-markdown` allows for changing header levels.
+
+### [mkdocs-gen-files](https://oprypin.github.io/mkdocs-gen-files/)
+
+- Renders jinja2 in SUMMARY.md files.
+- Generates pages containing mkdocstrings.
+
+### [mkdocs-literate-nav](https://oprypin.github.io/mkdocs-literate-nav/index.html)
+
+The navigration tree for each directory is defined by the `SUMMARY.md` instead of defining the whole site in `mkdocs.yml`.
 
 ### MathJax
 

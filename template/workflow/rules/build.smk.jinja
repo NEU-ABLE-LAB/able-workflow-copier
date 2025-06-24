@@ -11,9 +11,8 @@ rule pyproject2conda_package_file:
         # workflow is imported as a module.
         {% raw -%}
         yaml=str(
-            Path("workflow")
-            / config["CONDA"]["PYPROJECT2CONDA_DIR"]
-            / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+            Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+            / f"{{environment}}.yaml"
         ),
         {%- endraw %}
     wildcard_constraints:
@@ -34,9 +33,8 @@ rule pyproject2conda_package_all:
         {% raw -%}
         expand(
             str(
-                Path("workflow")
-                / config["CONDA"]["PYPROJECT2CONDA_DIR"]
-                / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+                Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+                / f"{{environment}}.yaml"
             ),
             environment=config["CONDA"]["ENVS"].values(),
         ),
@@ -44,20 +42,23 @@ rule pyproject2conda_package_all:
 
 
 rule pyproject2conda_meta_file:
-    """Generate workflow and tox environment YAMLs."""
+    """
+    Generate workflow and tox environment YAMLs.
+    That are committed to the repository for as the minimal
+    environments for running and testing the workflow.
+    """
     localrule: True
     input:
         toml=workflow.source_path("../../pyproject.toml"),
     output:
         {% raw -%}
         yaml=str(
-            Path("workflow")
-            / "envs"
-            / f"{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+            Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+            / f"{{environment}}.yaml"
         ),
         {%- endraw %}
     wildcard_constraints:
-        environment="(tox)|(workflow)",
+        environment="|".join(config["CONDA"]["ENVS_META"].values()),
     params:
         env_name="{environment}",
     log:
@@ -74,11 +75,10 @@ rule pyproject2conda_meta_all:
         {% raw -%}
         expand(
             str(
-                Path("workflow")
-                / "envs"
-                / f"{config['CONDA']['PYTHON']}-{{environment}}.yaml"
+                Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+                / f"{{environment}}.yaml"
             ),
-            environment=["tox", "workflow"],
+            environment=config["CONDA"]["ENVS_META"].values(),
         ),
         {%- endraw %}
 

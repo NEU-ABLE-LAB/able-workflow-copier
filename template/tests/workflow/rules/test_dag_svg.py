@@ -1,6 +1,4 @@
-"""
-Integration tests for running the `all_data` rule in the Snakemake workflow.
-"""
+"""Integration tests for building documentation."""
 
 import shutil
 from pathlib import Path
@@ -24,6 +22,9 @@ def create_dummy_input_data(
 
 
 # --- Tests ------------------------------------------------------------------
-def test_snakemake_all_data(workspace: Path) -> None:
-    """Dry run the `all_data` rule to ensure it can be executed."""
-    _snakemake(workspace, ["--dry-run", "all_data"])
+def test_dag_svg(workspace: Path) -> None:
+    _snakemake(workspace, ["dag_svg"])
+
+    # Confirm that the SVG file was created
+    svg_file = workspace / "docs" / "docs" / "_assets" / "dag_all.svg"
+    assert svg_file.exists(), f"Expected SVG file not found: {svg_file}"

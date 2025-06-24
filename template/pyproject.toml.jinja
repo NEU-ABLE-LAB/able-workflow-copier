@@ -2,12 +2,13 @@
 # https://github.com/tamasfe/taplo/issues/620#issuecomment-2625975106
 
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=8.0"]
+requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "{{ project_name }}"
-dynamic = ["version"]
+# Dynamic versioning is not supported by Snakemake modules
+version = "0.1.0-rc20250624-1200"
 description = "{{ project_description }}"
 authors = {{ project_authors | to_json | to_toml_authors }}
 license-files = ["LICENSE"]
@@ -77,10 +78,11 @@ docs = [
   "lxml>=5.4.0",
   "mike>=2.1.3",
   "mkdocs>=1.6.1",
-  "mkdocs-gen-files>=0.5.0",
-  "mkdocs-git-revision-date-localized-plugin>=1.2.9",
+  "mkdocs-include-markdown-plugin>=7.1.6",
   "mkdocs-inline-select-svg-plugin>=0.1.0",
   "mkdocs-jupyter>=0.25.1",
+  "mkdocs-gen-files>=0.5.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2.9",
   "mkdocs-literate-nav>=0.6.2",
   "mkdocs-macros-plugin>=1.3.7",
   "mkdocs-material>=9.6.14",
@@ -89,6 +91,7 @@ docs = [
   "mkdocstrings-python>=1.16.10",
   "notebook>=7.4.2",
   "pymdown-extensions>=10.15",
+  "ruamel.yaml>=0.18.6",
   "snakemake>=9.3.3",
 ]
 
@@ -222,10 +225,10 @@ template = "workflow/envs/pyproject2conda/{{ package_name }}-{env}"
 [tool.pyproject2conda.dependencies]
 # Install GraphViz to visualize the Snakemake DAG
 graphviz = { channel = "conda-forge", packages = ["graphviz>=12.2.1"]}
-mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
-mkdocs-section-index = { pip = true }
-mkdocs-mermaid2-plugin = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
+mkdocs-mermaid2-plugin = { pip = true }
+mkdocs-section-index = { pip = true }
+mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 snakemake = { channel = "bioconda"}
 snakefmt = { channel = "bioconda"}
 
@@ -266,8 +269,6 @@ header = true
 python = "highest"
 skip_package = true
 extras_or_groups = ["tox"]
-template_python = "workflow/envs/py{py}-{env}"
-template = "workflow/envs/{env}"
 
 [tool.pyproject2conda.envs."workflow"]
 style = ["yaml"]
@@ -275,8 +276,6 @@ header = true
 python = "highest"
 skip_package = true
 extras_or_groups = ["workflow"]
-template_python = "workflow/envs/py{py}-{env}"
-template = "workflow/envs/{env}"
 
 [tool.pytest.ini_options]
 # Ignore extras when running default pytest in VSCode
@@ -307,12 +306,6 @@ known-first-party = ["{{ package_name }}"]
 
 [tool.setuptools.packages.find]
 include = ["{{ package_name }}*"]
-
-[tool.setuptools_scm]
-# accept both annotated and lightweight tags that start with “v”
-tag_regex = "^v(?P<version>[0-9]+\\.[0-9]+\\.[0-9]+.*)$"
-# optional: strip local-version details on dirty builds
-local_scheme = "no-local-version"
 
 [tool.snakefmt]
 line_length = 79

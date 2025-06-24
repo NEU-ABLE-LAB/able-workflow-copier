@@ -63,6 +63,7 @@ extra:
   able_workflow_etl_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_ETL_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-etl-copier"]
   able_workflow_rule_copier_repo: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_DOCS", "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier"]
   able_workflow_rule_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-rule-copier"]
+  docs_assets_path: !!python/object/apply:os.getenv ["DOCS_ASSETS_PATH", "https://NEU-ABLE-LAB.github.io/able-workflow-rule-copier"]
   project_version: "{% raw %}{{ import('importlib.metadata').version('{% endraw %}{{ package_name }}{% raw %}') }}{% endraw %}"
   version:
     provider: mike

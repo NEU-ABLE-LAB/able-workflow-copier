@@ -47,10 +47,14 @@ def get_localized_conda(env_name: str) -> str:
     # else:
     #     logger.debug(f"Using workflow directory: {workflow_dir}")
 
+    # Remove the `workflow/` prefix from LOCALIZED_DIR
+    # to get the correct path to the conda environment file.
+    workflow_localized_dir = Path(
+        config["CONDA"]["LOCALIZED_DIR"]
+    ).relative_to("workflow")
+
     env_path = (
-        workflow_dir
-        / config["CONDA"]["LOCALIZED_DIR"]
-        / f"{PACKAGE_NAME}-{config['CONDA']['PYTHON']}-{env_name}"
+        workflow_dir / workflow_localized_dir / f"{env_name}"
     ).with_suffix(".yaml")
     logger.debug(f"Localized conda environment path: {env_path}")
 

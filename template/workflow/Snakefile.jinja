@@ -23,45 +23,29 @@ import shutil
 from loguru import logger
 from snakemake.utils import validate
 
-# --- PATHS ------------------------------------------------------------------
 
-# This is helper path to get the `workflow/` directory of this workflow
-# even if it is imported as a module into a parent workflow.
-# This serves two primary purposes:
-#
-#   1) One level above this *should* be the `{{ package_name }}` package directory
-#
-#   2) Since paths in `conda:`, `include:`, `script:`, and `notebook:`,
-#      directives are relative to the `Snakefile` or `.smk` file they are
-#      defined in, this can help find things in the `workflow/` especially
-#      if the `.smk` file is nested in subdirectories of `workflow/rules/`.
-#
-# **DO NOT USE in the output of a rule**: Any changes to files in this path
-# may be in the cache of the workflow and may not perist.
-WORKFLOW_BASE = Path(workflow.current_basedir)
-logger.debug(f"WORKFLOW_BASE: {WORKFLOW_BASE}")
+# --- VALIDATION -------------------------------------------------------------
+validate(config, "schemas/config.schema.yaml")
 
-DOCS_DIR = Path(config["DOCS_DIR"])
-LOG_DIR = Path(config["LOG_DIR"])
-MODULE_DIR = Path(config["MODULE_DIR"])
-REPORTS_DIR = Path(config["REPORTS_DIR"])
-REPORT_TEMPLATES_DIR = Path(config["REPORT_TEMPLATES_DIR"])
 
 # --- CONSTANTS ---------------------------------------------------------------
-PACKAGE_NAME = "{{ package_name}}"
-
 # Any valid Unix file name stem
 RE_VALID_FNAME_STEM = r"[^/\x00]+"
 # Any valid SQL table name
 RE_VALID_SQL_TABLE = r"^(?:[A-Za-z_][A-Za-z0-9_]*|\"[^\"]+\")$"
 
 
+# --- PATHS ------------------------------------------------------------------
+WORKFLOW_BASE = Path(workflow.current_basedir)
+logger.debug(f"WORKFLOW_BASE: {WORKFLOW_BASE}")
+
+LOG_DIR = Path(config["LOG_DIR"])
+REPORTS_DIR = Path(config["REPORTS_DIR"])
+REPORT_TEMPLATES_DIR = Path(config["REPORT_TEMPLATES_DIR"])
+
+
 # --- INCLUDES ---------------------------------------------------------------
 include: "rules/includes.smk"
-
-
-# --- VALIDATION -------------------------------------------------------------
-validate(config, "schemas/config.schema.yaml")
 
 
 # --- DAG ROOT ---------------------------------------------------------------
