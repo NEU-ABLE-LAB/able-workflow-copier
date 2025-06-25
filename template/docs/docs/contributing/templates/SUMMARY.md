@@ -1,5 +1,5 @@
 # Navigation outline for literate-nav
 
-- project.md
+- [Project](project.md)
 - rule-*.md
-- *.
+- */
