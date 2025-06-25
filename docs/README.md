@@ -15,12 +15,21 @@ The navigation structure is specified with
 
 ## Serving the documentation locally
 
-    ```bash
-    ./scritps/mkdocs.sh
-    ```
+The following assumes that you have already set up the development environment.
 
-    The assumes that you have already set up the development environment.
-    See the main `README.md` file for instructions.
+### Serving just the `able-workflow-copier` docs
+
+```bash
+./scritps/mkdocs_serve.sh
+```
+
+### Serving ALL the `able-workflow-*` docs
+
+The following assumes that you cloned all the submodules in this repo
+
+```bash
+./scripts/mkdocs_serve_all.py
+```
 
 <!--include-end-->
 
