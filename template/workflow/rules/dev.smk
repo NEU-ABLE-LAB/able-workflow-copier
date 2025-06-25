@@ -43,6 +43,7 @@ rule conda_update_yaml:
           This rule is only for development purposes.
     """
     localrule: True
+    group: "conda_group"
     input:
         yaml=(Path("{yaml_dir}") / "{environment}.yaml"),
     output:
@@ -53,16 +54,17 @@ rule conda_update_yaml:
         yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|{config['CONDA']['ENVS_DIR']}",
         environment=RE_VALID_FNAME_STEM,
     log:
-        LOG_DIR / "conda_update/{yaml_dir}/{environment}.log",
+        stdout=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stdout.log",
+        stderr=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stderr.log",
     shell:
         """
-        exec 1>"{log}"
-        exec 2>"{log}"
+        exec 1>"{log.stdout}"
+        exec 2>"{log.stderr}"
         conda env update \
-        --name {wildcards.environment} \
-        --file {input.yaml} \
-        --prune \
-        --quiet
+          --name {wildcards.environment} \
+          --file {input.yaml} \
+          --prune \
+          --quiet
         """
 
 

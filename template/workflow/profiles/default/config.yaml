@@ -12,6 +12,11 @@ cores: 4
 software-deployment-method: conda
 use-conda: true
 
+# Prevent the `conda_update_yaml` command from running multiple `conda env update`
+# commands in parallel, which can cause issues.
+group-components:
+  conda_group: 1
+
 # Configuration files
 # TODO-copier-package see if this can be moved to a shared location between profiles
 configfile:
