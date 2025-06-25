@@ -1,0 +1,37 @@
+name: build-and-publish
+on:
+  workflow_call:
+    inputs:
+      publish:
+        description: "Set to true to upload to PyPI/Docker"
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      PYPI_TOKEN:
+        required: false   # only needed when publish=true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # TODO also build other versions?
+          python-version: '3.12'
+
+      - name: Build wheel & sdist
+        run: |
+          pip install build
+          python -m build
+
+      # Only publish when caller asked for it
+      - name: Upload to PyPI
+        if: inputs.publish == 'true'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          pip install twine
+          twine upload dist/*
