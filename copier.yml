@@ -111,12 +111,20 @@ package_name:
 
 conda_update_workflow_env:
   type: bool
-  help: Whether to create/update the conda environment for the workflow.
+  help: >-
+    Whether to create/update the conda environment for the workflow.
+    Disable this whenever running `copier update`. If you would like to update
+    the conda environment after updating the template, run
+    `snakemake conda_update`
   default: false
 
 conda_localize:
   type: bool
-  help: Whether to run `snakemake conda_localize` to localize the conda environment yaml files.
+  help: >-
+    Whether to run `snakemake conda_localize` to localize
+    the conda environment yaml files with the python package location.
+    If you do not run this, you will need to run
+    `snakemake conda_localize` manually after running `copier`.
   default: false
 
 # Post-generation hooks
