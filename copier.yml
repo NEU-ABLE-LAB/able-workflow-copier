@@ -135,5 +135,5 @@ _tasks:
     when: "{{ conda_update_workflow_env }}"
   # Localize conda environment files
   - command: >-
-      conda run --name "weh_interviews_py312_workflow" snakemake conda_localize
+      conda run --name "{{ package_name }}_py312_workflow" snakemake conda_localize
     when: "{{ conda_localize }}"

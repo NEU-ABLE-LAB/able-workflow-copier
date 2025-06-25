@@ -44,23 +44,22 @@ rule conda_update_yaml:
     """
     localrule: True
     input:
-        yaml=(Path("workflow") / "{yaml_dir}" / "{yaml_stem}.yaml"),
+        yaml=(Path("{yaml_dir}") / "{environment}.yaml"),
     output:
         stamp=touch(
-            Path("{yaml_dir}") / "{yaml_stem}.snakemake_conda_update_stamp"
+            Path("{yaml_dir}") / "{environment}.snakemake_conda_update_stamp"
         ),
     wildcard_constraints:
         yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|{config['CONDA']['ENVS_DIR']}",
-    params:
-        env_name=lambda wc: wc.yaml_stem,
+        environment=RE_VALID_FNAME_STEM,
     log:
-        LOG_DIR / "conda_update/{yaml_dir}/{yaml_stem}.log",
+        LOG_DIR / "conda_update/{yaml_dir}/{environment}.log",
     shell:
         """
         exec 1>"{log}"
         exec 2>"{log}"
         conda env update \
-        --name {params.env_name} \
+        --name {wildcards.environment} \
         --file {input.yaml} \
         --prune \
         --quiet

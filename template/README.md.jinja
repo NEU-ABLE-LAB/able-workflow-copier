@@ -26,7 +26,7 @@ template.
 Create the minimal Conda environment to run the workflow
 
 ```bash
-conda env update --name {{ project_name }}-py312-workflow --file workflow/envs/py312-workflow.yaml
+conda env update --name {{ package_name }}-py312-workflow --file workflow/envs/py312-workflow.yaml
 ```
 
 Before running any Snakemake commands, you need to localize the package path in the Snakemake environment files. This is done by running the `conda_localize` rule:

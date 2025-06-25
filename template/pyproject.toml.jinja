@@ -269,6 +269,8 @@ header = true
 python = "highest"
 skip_package = true
 extras_or_groups = ["tox"]
+template_python = "workflow/envs/{{ package_name }}-py{py}-{env}"
+template = "workflow/envs/{{ package_name }}-{env}"
 
 [tool.pyproject2conda.envs."workflow"]
 style = ["yaml"]
@@ -276,6 +278,8 @@ header = true
 python = "highest"
 skip_package = true
 extras_or_groups = ["workflow"]
+template_python = "workflow/envs/{{ package_name }}-py{py}-{env}"
+template = "workflow/envs/{{ package_name }}-{env}"
 
 [tool.pytest.ini_options]
 # Ignore extras when running default pytest in VSCode
