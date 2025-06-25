@@ -16,11 +16,7 @@ How to add note, info, tips, etc. blocks (and collapsable blocks).
 
     Info block that can collapse away.
 
-### docstrings
-
-All python code should contain type hints and [numpy-style docstring](https://numpydoc.readthedocs.io/en/latest/format.html). These are rendered into the documentation using [`mkdocstrings`](https://mkdocstrings.github.io/).
-
-### MathJax
+### [MathJax](https://squidfunk.github.io/mkdocs-material/reference/math/)
 
 Write equations with latex and [mathjax](https://www.mathjax.org/).
 
@@ -30,10 +26,16 @@ Write equations with latex and [mathjax](https://www.mathjax.org/).
 
     $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
 
-### [mkdocks macros](https://mkdocs-macros-plugin.readthedocs.io/en/latest/)
+### [mkdocs include markdown](https://github.com/mondeja/mkdocs-include-markdown-plugin)
 
-??? info "Detailed info about mkdocs macros"
+### [mkdocs literate nav](https://oprypin.github.io/mkdocs-literate-nav/index.html)
 
-    /// html | div
-    {{ macros_info() }}
-    ///
+The navigation structure is specified with
+[`literate-nav`](https://pypi.org/project/mkdocs-literate-nav/) in the
+`SUMMARY.md` file within the `docs/docs/` directory and each subdirectory.
+
+### [mkdocs macros](https://mkdocs-macros-plugin.readthedocs.io/en/latest/)
+
+### [mkdocstrings](https://numpydoc.readthedocs.io/en/latest/format.html)
+
+All python code should contain type hints and [numpy-style docstring](https://numpydoc.readthedocs.io/en/latest/format.html). These are rendered into the documentation using [`mkdocstrings`](https://mkdocstrings.github.io/).

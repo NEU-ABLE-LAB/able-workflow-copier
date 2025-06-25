@@ -9,10 +9,6 @@ The documentation for this project uses [MkDocs](https://www.mkdocs.org/) and th
 
 The documentation source files are located in the `docs/docs/` directory.
 
-The navigation structure is specified with
-[`literate-nav`](https://pypi.org/project/mkdocs-literate-nav/) in the
-`SUMMARY.md` file within the `docs/docs/` directory and each subdirectory.
-
 ## Serving the documentation locally
 
 The following assumes that you have already set up the development environment.
@@ -23,7 +19,7 @@ The following assumes that you have already set up the development environment.
 ./scritps/mkdocs_serve.sh
 ```
 
-### Serving ALL the `able-workflow-*` docs
+### Serving ALL the `able-workflow` docs
 
 The following assumes that you cloned all the submodules in this repo
 

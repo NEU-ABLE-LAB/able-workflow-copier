@@ -9,7 +9,7 @@ Four `mkdocs serve` processes are launched in parallel:
 3. **etl-copier** - `able-workflow/etl-copier/docs/mkdocs.yml`
 4. **rule-copier** - `able-workflow/rule-copier/docs/mkdocs.yml`
 
-Each site is served on 127.0.0.1:800{0-3} and writes logs to
+Each site is served on 127.0.0.1:801{1-3} and writes logs to
 
     logs/mkdocs_serve_all/{site}/{stdout,stderr}.log
 
@@ -42,21 +42,21 @@ LOG_ROOT: Path = ROOT / "logs" / "mkdocs_serve_all"
 
 # (site-name, mkdocs-config-file, port)
 SITES: List[Tuple[str, Path, int]] = [
-    ("main", ROOT / "docs" / "mkdocs.yml", 8001),
+    ("main", ROOT / "docs" / "mkdocs.yml", 8011),
     (
         "module-copier",
         ROOT / "able-workflow" / "module-copier" / "docs" / "mkdocs.yml",
-        8002,
+        8012,
     ),
     (
         "etl-copier",
         ROOT / "able-workflow" / "etl-copier" / "docs" / "mkdocs.yml",
-        8003,
+        8013,
     ),
     (
         "rule-copier",
         ROOT / "able-workflow" / "rule-copier" / "docs" / "mkdocs.yml",
-        8004,
+        8014,
     ),
 ]
 
@@ -68,13 +68,13 @@ SITES: List[Tuple[str, Path, int]] = [
 
 ENV_VARS: Dict[str, str] = {
     "ABLE_WORKFLOW_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev",
-    "ABLE_WORKFLOW_COPIER_DOCS": "http://localhost:8001",
+    "ABLE_WORKFLOW_COPIER_DOCS": "http://localhost:8011",
     "ABLE_WORKFLOW_MODULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev",
-    "ABLE_WORKFLOW_MODULE_COPIER_DOCS": "http://localhost:8002",
+    "ABLE_WORKFLOW_MODULE_COPIER_DOCS": "http://localhost:8012",
     "ABLE_WORKFLOW_ETL_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev",
-    "ABLE_WORKFLOW_ETL_COPIER_DOCS": "http://localhost:8003",
+    "ABLE_WORKFLOW_ETL_COPIER_DOCS": "http://localhost:8013",
     "ABLE_WORKFLOW_RULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev",
-    "ABLE_WORKFLOW_RULE_COPIER_DOCS": "http://localhost:8004",
+    "ABLE_WORKFLOW_RULE_COPIER_DOCS": "http://localhost:8014",
 }
 
 
