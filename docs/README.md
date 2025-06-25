@@ -31,6 +31,8 @@ The following assumes that you cloned all the submodules in this repo
 ./scripts/mkdocs_serve_all.py
 ```
 
+Logs for the local `mkdocs` servers for each of these processes can be found in `logs/mkdocs_serve_all/`
+
 <!--include-end-->
 
 ## More information
