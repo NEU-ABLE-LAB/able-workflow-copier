@@ -52,10 +52,7 @@ rule pyproject2conda_meta_file:
         toml=workflow.source_path("../../pyproject.toml"),
     output:
         {% raw -%}
-        yaml=str(
-            Path(config["CONDA"]["ENVS_DIR"])
-            / f"{{environment}}.yaml"
-        ),
+        yaml=str(Path(config["CONDA"]["ENVS_DIR"]) / f"{{environment}}.yaml"),
         {%- endraw %}
     wildcard_constraints:
         environment="|".join(config["CONDA"]["ENVS_META"].values()),
@@ -74,10 +71,7 @@ rule pyproject2conda_meta_all:
     input:
         {% raw -%}
         expand(
-            str(
-                Path(config["CONDA"]["ENVS_DIR"])
-                / f"{{environment}}.yaml"
-            ),
+            str(Path(config["CONDA"]["ENVS_DIR"]) / f"{{environment}}.yaml"),
             environment=config["CONDA"]["ENVS_META"].values(),
         ),
         {%- endraw %}

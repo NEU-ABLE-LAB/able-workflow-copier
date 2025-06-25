@@ -43,7 +43,8 @@ rule conda_update_yaml:
           This rule is only for development purposes.
     """
     localrule: True
-    group: "conda_group"
+    group:
+        "conda_group"
     input:
         yaml=(Path("{yaml_dir}") / "{environment}.yaml"),
     output:
