@@ -1,0 +1,64 @@
+repos:
+  # --- pre-build ------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: snakemake-pyproject2conda
+        name: Run snakemake pyproject2conda
+        entry: hooks/snakemake_pyproject2conda.py
+        language: python
+        additional_dependencies:
+          - snakemake>=9.3.3
+          - loguru>=0.7.2
+          - pyproject2conda>=0.19.1
+        files: >-
+          (?i)(^pyproject\.toml$|py\d+-(workflow|tox)\.yaml$)
+        pass_filenames: true
+
+  # --- hygiene --------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # --- formatting -----------------------------------------------------------
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        args: ["--safe"]
+
+  # --- linting  -------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit      # official hook :contentReference[oaicite:1]{index=1}
+    rev: v0.4.0
+    hooks:
+      - id: ruff
+        args: ["check", "--fix", "--exit-zero"]
+
+  - repo: https://github.com/snakemake/snakefmt
+    rev: v0.10.2
+    hooks:
+      - id: snakefmt
+        args: [
+          "--config", "snakefmt.toml",
+          "workflow/",
+        ]
+
+  # --- static typing --------------------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-mypy        # maintained mirror :contentReference[oaicite:2]{index=2}
+    rev: "v1.15.0"
+    hooks:
+      - id: mypy
+        exclude: "^(tests/)|(docs/)|(workflow/)"
+        additional_dependencies:
+          - loguru==0.7.2
+          - pandas==2.2.3
+          - pandas-stubs==2.2.3.250527
+          - pandera[mypy,pandas]==0.24
+          - pydantic[mypy]==2.11.4
+          - types-tqdm==4.67.0.20250516
+          - types-openpyxl==3.1.5.20250516
+          - typing-extensions==4.13.2
+          - typer==0.15.3
