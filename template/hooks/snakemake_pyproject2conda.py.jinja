@@ -32,9 +32,15 @@ def relevant_files(paths: list[Path]) -> dict[str, list[Path]]:
     return {
         "pyproject": [p for p in paths if p.name == "pyproject.toml"],
         "workflow_yaml": [
-            p for p in paths if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-workflow.yaml")
+            p
+            for p in paths
+            if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-workflow.yaml")
         ],
-        "tox_yaml": [p for p in paths if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-tox.yaml")],
+        "tox_yaml": [
+            p
+            for p in paths
+            if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-tox.yaml")
+        ],
     }
 
 
