@@ -4,6 +4,10 @@
 rule docs_build:
     """Build the documentation."""
     input:
+        # WORKFLOW_BASE is used here instead of workflow.source_path()
+        # since workflow.source_path() cannot cache an entire directory
+        # so instead just point to the mkdocs.yml file and assume the
+        # worker has access to the entire directory
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
         dag_svg=rules.dag_svg.output,
     output:
@@ -82,11 +86,17 @@ rule docs_serve:
           This rule is only for development purposes.
     """
     input:
-        mkdocs_yml=workflow.source_path("../../docs/mkdocs.yml"),
-        docs_assets=Path(config["DOCS_ASSETS_DIR"]).resolve(),
+        # WORKFLOW_BASE is used here instead of workflow.source_path()
+        # since workflow.source_path() cannot cache an entire directory
+        # so instead just point to the mkdocs.yml file and assume the
+        # worker has access to the entire directory
+        mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
         dag_svg=rules.dag_svg.output,
     log:
-        LOG_DIR / "docs_serve.log",
+        stdout=LOG_DIR / "docs_build" / "stdout.log",
+        stderr=LOG_DIR / "docs_build" / "stderr.log",
+    params:
+        docs_assets=Path(config["DOCS_ASSETS_DIR"]).resolve(),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     shell:
@@ -94,7 +104,8 @@ rule docs_serve:
         exec 1>"{log}"
         exec 2>"{log}"
         export JUPYTER_PLATFORM_DIRS=1
-        export DOCS_ASSETS_DIR="{input.docs_assets}"
+        export DOCS_ASSETS_DIR="{params.docs_assets}"
         mkdocs serve \
-          --config-file {input.mkdocs_yml}
+          --config-file {input.mkdocs_yml} \
+          --site-dir {output.site_dir}
         """
