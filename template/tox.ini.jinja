@@ -12,12 +12,11 @@ requires =
 # Then install the desired version as a new conda environment, e.g., 3.12
 # `conda create -n py312 python=3.12`
 envlist = \
-    ; TODO-copier-etl add extras to the envlist when they are added
-    py{311,312}-typecheck-{core}, \
-    py{311,312}-lint-{core}, \
-    py{311,312}-package-unit-{core}, \
-    py{311,312}-workflow-unit-{global,core,docs}, \
-    py{311,312}-workflow-rules
+    py{311,312}-lint, \
+    py{311,312}-package-unit-{core,runner}, \
+    py{311,312}-typecheck-{core-runner}, \
+    py{311,312}-workflow-rules, \
+    py{311,312}-workflow-unit-{core,docs,runner,global}
 
 
 [gh-actions]
@@ -28,75 +27,25 @@ python =
 
 [testenv]
 description = Generic test environment
-package = editable    # Faster than building a wheel for each run
+package = editable
 extras =
-    # The `core` environment is the default, so it doesn't need to be specified
-    core: core
-    # Pull in the extras that match the factor in env name
-    # TODO-copier-etl add extras to the extras list when they are added
+    core:
+    runner: runner
 dependency_groups = test
-allowlist_externals=mkdir
+allowlist_externals = mkdir
 setenv =
     PROJECT_NAME = {{ '{' }}{{ package_name }}{{ '}' }}
     COV_CORE_DATAFILE = {toxinidir}/.cover/.coverage.{envname}
     COVERAGE_FILE = {toxinidir}/.cover/.coverage.{envname}
     JUNIT_XML = {toxinidir}/.junit/junit.{envname}.xml
     PYTEST_PATHS = tests/
-
 commands_pre =
     # Create .cover/ and .junit/ directories if they don't exist
     mkdir -p {toxinidir}/.cover
     mkdir -p {toxinidir}/.junit
 
 
-# TODO-copier-etl add extras to the testenv sections when they are added
-[testenv:py{311,312}-package-unit-{core}]
-description = pytest unit tests for package core and each extras
-setenv =
-    {[testenv]setenv}
-    PYTEST_PATHS = tests/{{ package_name }}/
-
-    # Directory glob that should be *ignored* when we're *not* testing an extra
-    core:   PYTEST_IGNORES = --ignore-glob '*/extras_*'
-
-    # When adding new extras, add them to the `envlist` above, then
-    # configure each extra to ignore every other extra:
-    #
-    # ```
-    # secondextra: PYTEST_IGNORES = \
-    #     --ignore-glob '*/extras_first/*' \
-    #     --ignore-glob '*/extras_thirdextra/*'
-    # ```
-    #
-    # If many more extras are added, consider building --ignore-glob
-    # patterns dynamically with a `commands_pre` script.
-    #
-    # See https://tox.readthedocs.io/en/latest/config.html#testenv-commands_pre
-    # See https://chatgpt.com/share/682234ce-3444-8008-b4a2-f851943cf724
-
-    # TODO-copier-etl add ignore-glob patterns for new extras here
-
-commands =
-    # The `-o addopts=''` option overrides the default `pyproject.toml` settings
-    {envpython} -m pytest \
-        --cov \
-        --junitxml={env:JUNIT_XML} \
-        -o junit_family=legacy \
-        -o addopts='' \
-        {posargs:} \
-        {env:PYTEST_PATHS} {env:PYTEST_IGNORES:}
-
-
-# TODO-copier-etl add extras to the testenv sections when they are added
-[testenv:py{311,312}-typecheck-{core}]
-description = MyPy static type-checks for core and each extras
-package = skip
-dependency_groups = typecheck
-commands = {envpython} -m mypy
-
-
-# TODO-copier-etl add extras to the testenv sections when they are added
-[testenv:py{311,312}-lint-{core}]
+[testenv:py{311,312}-lint]
 description = Linting for core and each extras
 package = skip
 dependency_groups = lint
@@ -106,31 +55,19 @@ commands =
     {envpython} -m snakefmt --config snakefmt.toml --check --diff workflow/
 
 
-# TODO-copier-etl Add factors for extras
-# TODO-copier-package implement docs scripts tests
-[testenv:py{311,312}-workflow-unit-{global,core,docs}]
-description = Snakemake unit tests for workflow utilities and rule scripts that do not require a custom conda environment
-package =
-    global: skip
-    core: editable
-    docs: editable
-extras =
-    global:
-    core:
-    docs:
-dependency_groups =
-    global: workflow,test
-    ; When snakemake uses `conda:` it injects `snakemake` as a dependency
-    core: snakemake,test
-    docs: snakemake,docs,test
+[testenv:py{311,312}-package-unit-{core,runner}]
+description = pytest unit tests for package core and ETL runners that require additional dependencies.
 setenv =
     {[testenv]setenv}
-    ; TODO-copier-package implement `tests/workflow/scripts/utils/`
-    global: PYTEST_PATHS = tests/workflow/scripts/rules_global/
-	core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_CORE/
-	docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_DOCS/
+    PYTEST_PATHS = tests/{{ package_name }}/
+
+    # Directory glob that should be *ignored* when we're *not* testing an extra
+    core:   PYTEST_IGNORES = --ignore-glob '*/runner/*'
+
+    # Re-run all the tests with the `runner` extra enabled, as well as the
+    # tests that explicitly require the `runner` extra.
+    runner: PYTEST_IGNORES =
 commands =
-    # Workflow script unit tests
     # The `-o addopts=''` option overrides the default `pyproject.toml` settings
     {envpython} -m pytest \
         --cov \
@@ -138,7 +75,14 @@ commands =
         -o junit_family=legacy \
         -o addopts='' \
         {posargs:} \
-        {env:PYTEST_PATHS}
+        {env:PYTEST_PATHS} \
+        {env:PYTEST_IGNORES:}
+
+
+[testenv:py{311,312}-typecheck-{core,runner}]
+description = MyPy static type-checks for core and the runner extras
+dependency_groups = typecheck
+commands = {envpython} -m mypy
 
 
 [testenv:py{311,312}-workflow-rules]
@@ -153,6 +97,42 @@ commands_pre =
     {[testenv]commands_pre}
 commands =
     {envpython} -m pytest \
+        -o addopts='' \
+        {posargs:} \
+        {env:PYTEST_PATHS}
+
+
+[testenv:py{311,312}-workflow-unit-{global,core,docs}]
+description = Snakemake unit tests for workflow utilities and rule scripts that do not require a custom conda environment
+package =
+    core: editable
+    docs: editable
+    global: skip
+    runner: editable
+extras =
+    core:
+    docs: runner
+    global:
+    runner: runner
+dependency_groups =
+    # When snakemake uses `conda:` it injects `snakemake` as a dependency
+    core: snakemake,test
+    docs: snakemake,docs,test
+    global: workflow,test
+    runner: snakemake,runner,test
+setenv =
+    {[testenv]setenv}
+	core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_CORE/
+	docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_DOCS/
+    global: PYTEST_PATHS = tests/workflow/scripts/rules_global/
+    runner: PYTEST_PATHS = tests/workflow/scripts/rules_RUNNER/
+commands =
+    # Workflow script unit tests
+    # The `-o addopts=''` option overrides the default `pyproject.toml` settings
+    {envpython} -m pytest \
+        --cov \
+        --junitxml={env:JUNIT_XML} \
+        -o junit_family=legacy \
         -o addopts='' \
         {posargs:} \
         {env:PYTEST_PATHS}

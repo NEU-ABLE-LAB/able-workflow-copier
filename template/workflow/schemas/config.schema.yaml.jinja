@@ -178,6 +178,10 @@ properties:
         description: >-
           Conda environments used by the `conda:`
           directive of Snakemake rules.
+          The values should start with the package name, followed by
+          the python version and finally the environment name found
+          in the `tool.pyproject2conda.envs.` sections of `pyproject.toml`.
+          e.g., `<package_name>-py312-core`.
         properties:
 
           CORE:
@@ -186,18 +190,18 @@ properties:
               Core conda environment name for the python package
               (without any extras).
 
-          CORE_EXTRAS:
+          RUNNER:
             type: string
             description: >-
               Core conda environment name for the python package
-              with all extras.
+              with the extra dependencies installed for the runners.
 
           DEV:
             type: string
             description: >-
               Development conda environment name.
 
-          DEV_EXTRAS:
+          DEV_RUNNER:
             type: string
             description: >-
               Development conda environment name with all package extras.

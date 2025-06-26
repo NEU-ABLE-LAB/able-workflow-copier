@@ -35,12 +35,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Extras for each module in the package that requires large or strict
-# dependencies for full workflow functionality. In order to build the
+
+# These extras are required to run the python package within
+# a snakemake workflow. In order to build the
 # documentation for the package, all of the optional-dependencies
 # must be able to be installed simultaneously.
-
-all = [
+runner = [
   "snakemake>=9.3.3",
   # Add additional dependencies for new modules and ETL process here.
 ]
@@ -257,11 +257,11 @@ style = ["yaml"]
 header = true
 python = "highest"
 
-[tool.pyproject2conda.envs."core-extras"]
+[tool.pyproject2conda.envs."core-runner"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras-or-groups = ["all"]
+extras-or-groups = ["runner"]
 
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]
@@ -269,17 +269,17 @@ header = true
 python = "highest"
 extras-or-groups = ["dev"]
 
-[tool.pyproject2conda.envs."dev-extras"]
+[tool.pyproject2conda.envs."dev-runner"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras-or-groups = ["all","dev"]
+extras-or-groups = ["runner","dev"]
 
 [tool.pyproject2conda.envs."docs"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras-or-groups = ["all","docs"]
+extras-or-groups = ["runner","docs"]
 
 [tool.pyproject2conda.envs."notebook"]
 style = ["yaml"]
@@ -304,10 +304,6 @@ skip_package = true
 extras-or-groups = ["workflow"]
 template-python = "workflow/envs/{{ package_name }}-py{py}-{env}"
 template = "workflow/envs/{{ package_name }}-{env}"
-
-[tool.pytest.ini_options]
-# Ignore extras when running default pytest in VSCode
-addopts = """--ignore-glob=*/extras_*"""
 
 [tool.ruff]
 line-length = 79
