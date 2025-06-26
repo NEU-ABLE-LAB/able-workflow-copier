@@ -58,8 +58,9 @@ def warn_if_yaml_without_pyproject(groups: dict[str, list[Path]]) -> None:
 def ensure_imports() -> None:
     missing = [pkg for pkg in REQ_PKGS if importlib.util.find_spec(pkg) is None]
     if missing:
+        str_missing = ", ".join(missing)
         logger.error(
-            f"Missing Python packages: {", ".join(missing)}.\n"
+            f"Missing Python packages: {str_missing}.\n"
             "Activate (or create) the workflow env first:\n\n"
             f"    conda env create -f {ENV_FILE}\n"
             f"    conda activate {ENV_NAME}\n"
