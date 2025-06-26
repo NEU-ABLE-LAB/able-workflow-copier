@@ -31,6 +31,7 @@ def _fake_snakemake(tmp_path: Path, env_file: str) -> SimpleNamespace:
         log=SimpleNamespace(
             loguru=str(log_dir / "pyproject2conda.loguru.log"),
             stdout=str(log_dir / "pyproject2conda.stdout.log"),
+            stderr=str(log_dir / "pyproject2conda.stderr.log"),
         ),
     )
 
