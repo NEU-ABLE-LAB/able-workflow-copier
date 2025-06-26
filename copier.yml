@@ -144,17 +144,26 @@ _skip_if_exists:
 _tasks:
   # Create conda environment for the workflow
   - command: >-
-      conda env update --name "{{ package_name }}_py312_workflow" --file "workflow/envs/{{ package_name }}-py312-workflow.yaml"
+      conda env update --name "{{ package_name }}-py312-workflow" --file "workflow/envs/{{ package_name }}-py312-workflow.yaml"
+    when: "{{ conda_update_workflow_env }}"
+  - command: >-
+      conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
     when: "{{ conda_update_workflow_env }}"
   # Localize conda environment files
   - command: >-
-      conda run --name "{{ package_name }}_py312_workflow" snakemake conda_localize
+      conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
     when: "{{ conda_localize }}"
   # Run black to format the code to fix line wraps
   # depending on length of generated code.
   - command: >-
       black --exclude "" ./
     when: "{{ format_code }}"
+  - command: >-
+      ruff check --fix ./
+    when: "{{ format_code }}"
+  # - command: >-
+  #     snakefmt --config snakefmt.toml workflow/
+  #   when: "{{ format_code }}"
 
 _message_after_copy: |
   The "{{ project_name }}" project has been created successfully.

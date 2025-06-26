@@ -18,6 +18,8 @@ dependencies = [
   "copier>=9.7.1",
   "loguru>=0.7.2",
   "ruamel.yaml>=0.18.12",
+  "ruff>=0.11.8",
+  "snakefmt>=0.11.0",
   "typer>=0.16.0",
 
   # jinja2 extensions
@@ -143,7 +145,7 @@ init_forbid_extra   = true
 channels = [
   "conda-forge",
 ]
-template_python = "environment-py{py}-{env}"
+template-python = "environment-py{py}-{env}"
 
 [tool.pyproject2conda.dependencies]
 copier-templates-extensions = { pip = true }
@@ -159,7 +161,7 @@ pytest-copie = { pip = true }
 style = ["yaml"]
 header = true
 python = "highest"
-extras_or_groups = ["dev"]
+extras-or-groups = ["dev"]
 
 [tool.pytest.ini_options]
 # These tests should be able to run in the dev environment
