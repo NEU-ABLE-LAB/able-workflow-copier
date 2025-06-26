@@ -11,7 +11,7 @@ repos:
           - loguru>=0.7.2
           - pyproject2conda>=0.19.1
         files: >-
-          (?i)(^pyproject\.toml$|py\d+-(workflow|tox)\.yaml$)
+          (?i)(^pyproject\.toml$|{{ package_name }}-py\d+-(workflow|tox)\.yaml$)
         pass_filenames: true
 
   # --- hygiene --------------------------------------------------------------

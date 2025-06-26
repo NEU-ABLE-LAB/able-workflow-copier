@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""
+pre-commit hook:
+* Run only when pyproject.toml or py*-workflow.yaml / py*-tox.yaml staged.
+* Warn if workflow/tox YAML changed without pyproject.toml.
+* Verify snakemake & pyproject2conda imports.
+* Execute `snakemake <env-file>` for each environment file that must be
+  (re)generated.
+  * If pyproject.toml is staged,
+    then regenerate **all** env files in workflow/envs
+  * Otherwise, regenerate only the env files that were staged
+"""
+
+from __future__ import annotations
+
+import fnmatch
+import importlib.util
+import subprocess
+import sys
+from pathlib import Path
+from typing import Final
+
+from loguru import logger
+
+REQ_PKGS: Final = ("snakemake", "pyproject2conda")
+ENV_FILE: Final = Path("workflow/envs/{{ package_name }}-py312-workflow.yaml")
+ENV_NAME: Final = "{{ package_name }}-py312-workflow"
+
+
+def relevant_files(paths: list[Path]) -> dict[str, list[Path]]:
+    """Partition incoming paths into categories we care about."""
+    return {
+        "pyproject": [p for p in paths if p.name == "pyproject.toml"],
+        "workflow_yaml": [
+            p for p in paths if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-workflow.yaml")
+        ],
+        "tox_yaml": [p for p in paths if fnmatch.fnmatch(p.name, "{{ package_name }}-py*-tox.yaml")],
+    }
+
+
+def warn_if_yaml_without_pyproject(groups: dict[str, list[Path]]) -> None:
+    if (groups["workflow_yaml"] or groups["tox_yaml"]) and not groups["pyproject"]:
+        changed = [*groups["workflow_yaml"], *groups["tox_yaml"]]
+        listed = "\n    ".join(str(p) for p in changed)
+        logger.warning(
+            "Workflow/tox YAML changed without pyproject.toml:\n    {}\n"
+            "Do not edit these yaml files manually. Generate them by editing `pyproject.toml`",
+            listed,
+        )
+
+
+def ensure_imports() -> None:
+    missing = [pkg for pkg in REQ_PKGS if importlib.util.find_spec(pkg) is None]
+    if missing:
+        logger.error(
+            f"Missing Python packages: {", ".join(missing)}.\n"
+            "Activate (or create) the workflow env first:\n\n"
+            f"    conda env create -f {ENV_FILE}\n"
+            f"    conda activate {ENV_NAME}\n"
+        )
+        raise SystemExit(1)
+
+
+def _all_env_files() -> list[Path]:
+    """Return every workflow/tox env YAML under workflow/envs/."""
+    env_dir = Path("workflow", "envs")
+    return sorted(env_dir.glob("py*-workflow.yaml")) + sorted(
+        env_dir.glob("py*-tox.yaml")
+    )
+
+
+def targets_to_build(groups: dict[str, list[Path]]) -> list[str]:
+    """
+    Decide which env-file targets Snakemake should build.
+    * If pyproject.toml is staged, rebuild every env file we know about.
+    * Else, rebuild only the env YAMLs that are actually staged.
+    """
+    if groups["pyproject"]:
+        envs = _all_env_files()
+    else:
+        envs = [*groups["workflow_yaml"], *groups["tox_yaml"]]
+    # Deduplicate & stringify for subprocess.run
+    return list({str(p) for p in envs})
+
+
+def main(argv: list[str]) -> None:
+    paths = [Path(p) for p in argv]
+    groups = relevant_files(paths)
+
+    # --- If no relevant files staged, exit silently (success) ---------------
+    if not any(groups.values()):
+        logger.debug("No relevant files staged; skipping hook.")
+        raise SystemExit(0)
+
+    warn_if_yaml_without_pyproject(groups)
+    ensure_imports()
+
+    # --- Determine targets & run Snakemake ---------------------------------
+    targets = targets_to_build(groups)
+    if not targets:
+        logger.debug("No environment targets need building; skipping Snakemake.")
+        raise SystemExit(0)
+
+    try:
+        subprocess.run(["snakemake", *targets], check=True)
+    except subprocess.CalledProcessError as exc:
+        # Snakemake already printed its own output; propagate its status code.
+        raise SystemExit(exc.returncode)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
