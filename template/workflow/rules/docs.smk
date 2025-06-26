@@ -106,6 +106,5 @@ rule docs_serve:
         export JUPYTER_PLATFORM_DIRS=1
         export DOCS_ASSETS_DIR="{params.docs_assets}"
         mkdocs serve \
-          --config-file {input.mkdocs_yml} \
-          --site-dir {output.site_dir}
+          --config-file {input.mkdocs_yml}
         """
