@@ -1,0 +1,27 @@
+# # Post Copier To-Do's for {{ project_name }}
+
+This issue is for tracking the development of the {{ project_name }} project copied from the `able-workflow-copier` template.
+
+## Next steps
+
+### Environment Setup
+
+1. **Install minimal dependencies**: See `README.md` for adding the `{{ package_name }}-py312-workflow` Conda environment.
+
+2. **Localize Conda environments**: Run the `conda_localize` rule to set up the Snakemake environment files:
+
+   ```bash
+   snakemake conda_localize
+   ```
+
+3. **Build the documentation**: If the documentation is not hosted, you can build it locally using Snakemake. This will require the minimal workflow requirements.
+
+   ```bash
+   snakemake docs_serve
+   ```
+
+4. Open the documentation in your browser and follow the instructions for setting up the development environment on the *Contributing* page.
+
+### Project Development
+
+1. **Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/) template to create a new module for your project.

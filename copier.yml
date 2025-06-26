@@ -137,3 +137,11 @@ _tasks:
   - command: >-
       conda run --name "{{ package_name }}_py312_workflow" snakemake conda_localize
     when: "{{ conda_localize }}"
+
+_message_after_copy: |
+  The "{{ project_name }}" project has been created successfully.
+
+  See `logs/post-copier-todos/package.md` for next steps on
+  implementing your project. You can copy-paste the contents
+  of that file into a GitHub issue or a project management tool to track
+  the implementation of the project.
