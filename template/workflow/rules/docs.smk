@@ -101,8 +101,8 @@ rule docs_serve:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     shell:
         """
-        exec 1>"{log}"
-        exec 2>"{log}"
+        exec 1>"{log.stdout}"
+        exec 2>"{log.stderr}"
         export JUPYTER_PLATFORM_DIRS=1
         export DOCS_ASSETS_DIR="{params.docs_assets}"
         mkdocs serve \
