@@ -156,14 +156,14 @@ _tasks:
   # Run black to format the code to fix line wraps
   # depending on length of generated code.
   - command: >-
-      black --exclude "" ./
+      black ./
     when: "{{ format_code }}"
   - command: >-
       ruff check --fix ./
     when: "{{ format_code }}"
-  # - command: >-
-  #     snakefmt --config snakefmt.toml workflow/
-  #   when: "{{ format_code }}"
+  - command: >-
+      snakefmt --config snakefmt.toml workflow/
+    when: "{{ format_code }}"
 
 _message_after_copy: |
   The "{{ project_name }}" project has been created successfully.

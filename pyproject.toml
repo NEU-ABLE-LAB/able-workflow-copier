@@ -156,6 +156,7 @@ mkdocs-section-index = { pip = true }
 mkdocs-typer2 = { pip = true }
 mkdocstrings = { skip = true, packages = ["mkdocstrings-python>=1.16.10"] }
 pytest-copie = { pip = true }
+snakefmt = { channel = "bioconda"}
 
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]
