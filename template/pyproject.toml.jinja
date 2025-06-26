@@ -30,16 +30,20 @@ dependencies = [
   "pyarrow>=20.0.0",
   "pydantic>=2.11.4",
   "python-dotenv>=1.1.0",
-  "scikit-learn>=1.6.1",
   "tqdm>=4.67.1",
   "typer>=0.15.3",
 ]
 
 [project.optional-dependencies]
 # Extras for each module in the package that requires large or strict
-# dependencies for full workflow functionality.
+# dependencies for full workflow functionality. In order to build the
+# documentation for the package, all of the optional-dependencies
+# must be able to be installed simultaneously.
 
-# TODO-copier-etl Add copier template to add extras for ETL templates
+all = [
+  "snakemake>=9.3.3",
+  # Add additional dependencies for new modules and ETL process here.
+]
 
 [dependency-groups]
 # Optional dependencies for development, CI, and Jupyter workflows
@@ -128,11 +132,24 @@ typecheck = [
   "typer>=0.15.3",
 ]
 
+# Adding and updating copier template
+copier = [
+  "copier>=9.7.1",
+  "loguru>=0.7.2",
+  "ruamel.yaml>=0.18.12",
+  "typer>=0.16.0",
+
+  # jinja2 extensions
+  "cookiecutter>=2.6.0",
+  "copier-templates-extensions>=0.3.1",
+  "jinja2-jsonschema>=0.3.0",
+]
+
 # development / CI
 dev = [
-  "copier>=9.7.1",
   "pip>=25.1.1",
   "pre-commit>=4.2.0",
+  { include-group = "copier" },
   { include-group = "docs" },
   { include-group = "lint" },
   { include-group = "notebook" },
@@ -218,7 +235,7 @@ init_forbid_extra   = true
 channels = [
     "conda-forge",
 ]
-template_python = "workflow/envs/pyproject2conda/{{ package_name }}-py{py}-{env}"
+template-python = "workflow/envs/pyproject2conda/{{ package_name }}-py{py}-{env}"
 template = "workflow/envs/pyproject2conda/{{ package_name }}-{env}"
 
 [tool.pyproject2conda.dependencies]
@@ -240,35 +257,43 @@ style = ["yaml"]
 header = true
 python = "highest"
 
-# TODO-copier-etl Add ETL extra groups here
+[tool.pyproject2conda.envs."core-extras"]
+style = ["yaml"]
+header = true
+python = "highest"
+extras-or-groups = ["all"]
 
 [tool.pyproject2conda.envs."dev"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras_or_groups = ["dev"]
+extras-or-groups = ["dev"]
 
-# TODO-copier-etl Add ETL extra dev groups here
+[tool.pyproject2conda.envs."dev-extras"]
+style = ["yaml"]
+header = true
+python = "highest"
+extras-or-groups = ["all","dev"]
 
 [tool.pyproject2conda.envs."docs"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras_or_groups = ["docs"]
+extras-or-groups = ["all","docs"]
 
 [tool.pyproject2conda.envs."notebook"]
 style = ["yaml"]
 header = true
 python = "highest"
-extras_or_groups = ["notebook"]
+extras-or-groups = ["notebook"]
 
 [tool.pyproject2conda.envs."tox"]
 style = ["yaml"]
 header = true
 python = "highest"
-skip_package = true
-extras_or_groups = ["tox"]
-template_python = "workflow/envs/{{ package_name }}-py{py}-{env}"
+skip-package = true
+extras-or-groups = ["tox"]
+template-python = "workflow/envs/{{ package_name }}-py{py}-{env}"
 template = "workflow/envs/{{ package_name }}-{env}"
 
 [tool.pyproject2conda.envs."workflow"]
@@ -276,8 +301,8 @@ style = ["yaml"]
 header = true
 python = "highest"
 skip_package = true
-extras_or_groups = ["workflow"]
-template_python = "workflow/envs/{{ package_name }}-py{py}-{env}"
+extras-or-groups = ["workflow"]
+template-python = "workflow/envs/{{ package_name }}-py{py}-{env}"
 template = "workflow/envs/{{ package_name }}-{env}"
 
 [tool.pytest.ini_options]

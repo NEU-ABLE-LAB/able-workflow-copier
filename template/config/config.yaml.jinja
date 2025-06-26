@@ -12,7 +12,9 @@ CONDA:
     TOX: "{{ package_name }}-py312-tox"
     WORKFLOW: "{{ package_name }}-py312-workflow"
   ENVS:
-    DEV: "{{ package_name }}-py312-dev"
     CORE: "{{ package_name }}-py312-core"
-    NOTEBOOK: "{{ package_name }}-py312-notebook"
+    CORE_EXTRAS: "{{ package_name }}-py312-core-extras"
+    DEV: "{{ package_name }}-py312-dev"
+    DEV_EXTRAS: "{{ package_name }}-py312-dev-extras"
     DOCS: "{{ package_name }}-py312-docs"
+    NOTEBOOK: "{{ package_name }}-py312-notebook"

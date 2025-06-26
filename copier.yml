@@ -135,6 +135,11 @@ format_code:
     after running `copier` in order for lint tests to pass.
   default: true
 
+# --- Post-answers Configurations ---
+_skip_if_exists:
+  # This rule should only be updated from within the template.
+  - ".copier-answers/rule-dag_svg.yml"
+
 # Post-generation hooks
 _tasks:
   # Create conda environment for the workflow

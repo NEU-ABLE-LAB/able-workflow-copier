@@ -3,6 +3,7 @@ Wrapper for the ``pyproject2conda`` rule that runs the converter and logs
 its output. Each call generates a single environment file.
 """
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -18,7 +19,15 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
 
     # Parse Snakemake directives
     toml_path = Path(smk.input.toml)
-    env_name = smk.params.env_name.split("-")[-1]
+
+    # Extract environment name segment after py31\d pattern
+    full_env_name = smk.params.env_name
+    match = re.search(r"py31\d-(.+)", full_env_name)
+    if match:
+        env_name = match.group(1)
+    else:
+        # Fallback to original behavior if pattern not found
+        env_name = full_env_name.split("-")[-1]
 
     # Setup logging
     logger.remove()
@@ -27,7 +36,10 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     Path(smk.output.yaml).parent.mkdir(parents=True, exist_ok=True)
 
     # Run pyproject2conda, capturing all output in *append* mode.
-    with open(smk.log.stdout, "a") as stdout_log:
+    with (
+        open(smk.log.stdout, "a") as stdout_log,
+        open(smk.log.stderr, "a") as stderr_log,
+    ):
         subprocess.run(
             [
                 "pyproject2conda",
@@ -39,7 +51,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
             ],
             check=True,
             stdout=stdout_log,
-            stderr=stdout_log,
+            stderr=stderr_log,
         )
 
     logger.info(f"[pyproject2conda] Generated env: {env_name}")

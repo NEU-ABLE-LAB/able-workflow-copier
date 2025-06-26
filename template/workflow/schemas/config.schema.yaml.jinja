@@ -180,23 +180,34 @@ properties:
           directive of Snakemake rules.
         properties:
 
-          DEV:
-            type: string
-            description: >-
-              Development conda environment name.
-
           CORE:
             type: string
             description: >-
               Core conda environment name for the python package
               (without any extras).
 
-          NOTEBOOK:
+          CORE_EXTRAS:
             type: string
             description: >-
-              Conda environment name for rules that modify Jupyter notebooks.
+              Core conda environment name for the python package
+              with all extras.
+
+          DEV:
+            type: string
+            description: >-
+              Development conda environment name.
+
+          DEV_EXTRAS:
+            type: string
+            description: >-
+              Development conda environment name with all package extras.
 
           DOCS:
             type: string
             description: >-
               Conda environment name for rules that generate documentation.
+
+          NOTEBOOK:
+            type: string
+            description: >-
+              Conda environment name for rules that modify Jupyter notebooks.
