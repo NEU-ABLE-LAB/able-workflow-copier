@@ -16,6 +16,7 @@ def _snakemake(workspace: Path, extra: List[str], verbose: bool = True) -> None:
 
     cmd = [
         "snakemake",
+        "--show-failed-logs",
         *extra,
     ]
 
