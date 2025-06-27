@@ -240,6 +240,7 @@ template = "workflow/envs/pyproject2conda/{{ package_name }}-{env}"
 
 [tool.pyproject2conda.dependencies]
 copier-templates-extensions = { pip = true }
+jinja2-jsonschema = { pip = true }
 # Install GraphViz to visualize the Snakemake DAG
 graphviz = { channel = "conda-forge", packages = ["graphviz>=12.2.1"]}
 mkdocs-inline-select-svg-plugin = { pip = true }
