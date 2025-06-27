@@ -130,8 +130,11 @@ conda_localize:
 format_code:
   type: bool
   help: >-
-    Whether to run `black` to format the code after generation.
-    If you do not run this, you may need to run `black` manually
+    Whether to format the generated code after generation.
+    You must have `black`, `ruff`, and `snakefmt` installed
+    in your conda environment for this to work.
+    If you do not run this, you will need to run
+    `black`, `ruff`, and `snakefmt` manually
     after running `copier` in order for lint tests to pass.
   default: true
 

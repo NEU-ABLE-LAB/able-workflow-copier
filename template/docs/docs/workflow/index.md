@@ -4,6 +4,6 @@ The data processing and reporting pipeline is orchestrated with [Snakemake](http
 
 TODO-copier-package explain what a DAG is.
 
-![Snakemake DAG]({{ docs_assets_path }}/dag.svg)
+![Snakemake DAG](../{{ docs_assets_path }}/dag_all.svg)
 
 TODO-copier-package point users to config and rules

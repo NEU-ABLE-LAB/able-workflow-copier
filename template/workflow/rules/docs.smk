@@ -93,8 +93,8 @@ rule docs_serve:
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
         dag_svg=rules.dag_svg.output,
     log:
-        stdout=LOG_DIR / "docs_build" / "stdout.log",
-        stderr=LOG_DIR / "docs_build" / "stderr.log",
+        stdout=LOG_DIR / "docs_serve" / "stdout.log",
+        stderr=LOG_DIR / "docs_serve" / "stderr.log",
     params:
         docs_assets=Path(config["DOCS_ASSETS_DIR"]).resolve(),
     conda:
