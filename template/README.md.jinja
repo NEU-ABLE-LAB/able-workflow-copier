@@ -8,10 +8,11 @@
 
 {{ project_description }}
 
-> A reproducible [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+A reproducible [Snakemake](https://snakemake.readthedocs.io/en/stable/)
 workflow for data processing, feature extraction, and modeling using the
-{{ package_name }}.
-Built with [`Copier`](https://copier.readthedocs.io/en/stable/) from the
+`{{ package_name }}` python package.
+
+> Built with [`Copier`](https://copier.readthedocs.io/en/stable/) from the
 [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier)
 template.
 
@@ -19,11 +20,11 @@ template.
 
 ## The {{ project_name }} Workflow
 
-- [ ] TODO add a sentence or two generally about what a snakemake workflow is.
+A Snakemake workflow is a reproducible and scalable data analysis pipeline that defines computational steps as rules, automatically handling dependencies, parallelization, and resource management. This workflow orchestrates the entire data processing pipeline from raw inputs through feature extraction to final modeling outputs, ensuring reproducibility and enabling easy scaling across different computing environments.
 
 ### Environment setup and basics of workflow execution with Snakemake
 
-Create the minimal Conda environment to run the workflow
+Create the minimal Conda environment to run the workflow.
 
 ```bash
 conda env update --name {{ package_name }}-py312-workflow --file workflow/envs/{{ package_name }}-py312-workflow.yaml
@@ -32,21 +33,22 @@ conda env update --name {{ package_name }}-py312-workflow --file workflow/envs/{
 Before running any Snakemake commands, you need to localize the package path in the Snakemake environment files. This is done by running the `conda_localize` rule:
 
 ```bash
+conda activate {{ package_name }}-py312-workflow
 snakemake conda_localize
 ```
 
-### Building the documentation
+For more information on the Snakemake workflows in this repository, see the [full documentation]({{ documentation_url }}).
 
-- [ ] TODO explain that all the info about the workflow, rules, and data inputs and output can be found in the documentation.
-- [ ] TODO add instructions for building, serve, and view the documentation locally if the docs are not hosted on a public server. This should be possible with the minimal workflow requirements, since Snakemake will create a rule environment to build the docs.
-- [ ] TODO add a link to the hosted documentation if it exists.
+If the documentation is not hosted on a public server, you can build it locally by running the snakemake rule `docs_serve`
 
+```bash
+conda activate {{ package_name }}-py312-workflow
+snakemake docs_serve
+```
 
 ## Development guidelines
 
-- [ ] TODO add instructions for setting up the development environment.
-- [ ] TODO add instructions for running the tests and linter.
-- [ ] TODO add instructions for adding new features to the workflow and associated package.
+See the [Contributing page]({{ documentation_url }}/contributing) for more information on how to contribute to this project.
 
 ## 📜  License & citation
 
