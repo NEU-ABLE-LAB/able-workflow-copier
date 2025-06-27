@@ -139,9 +139,11 @@ format_code:
   default: true
 
 # --- Post-answers Configurations ---
-_skip_if_exists:
+_exclude:
   # This rule should only be updated from within the template.
   - ".copier-answers/rule-dag_svg.yml"
+  - "docs/docs/contributing/templates/rule-dag_svg.md"
+  - "logs/post-copier-todos/rule-dag_svg.md"
 
 # Post-generation hooks
 _tasks:
