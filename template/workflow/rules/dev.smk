@@ -72,6 +72,11 @@ rule conda_update_yaml:
 rule conda_update:
     """
     Update the conda environments for the user.
+
+    This rule should be run with the `--cores 1` option to ensure
+    that the environments are updated sequentially and not in parallel
+    since conda does not support parallel updates well.
+
     NOTE: Snakemake recreates these environments in a separate location
           when called using the `conda:` directive in the pipeline.
           This rule is only for development purposes.

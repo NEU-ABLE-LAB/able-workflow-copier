@@ -4,7 +4,7 @@ Main Snakefile for the workflow.
 Run `snakemake conda_localize` to create the conda environment
 yaml files that are required by the `conda:` directive in the pipeline.
 
-Run `snakemake conda_update` first if running in development
+Run `snakemake --cores 1 conda_update` first if running in development
 environment. This will create local conda environments that VSCode can
 use for testing, formatting, linting, and debugging.
 

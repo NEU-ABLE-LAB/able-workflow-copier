@@ -115,7 +115,7 @@ conda_update_workflow_env:
     Whether to create/update the conda environment for the workflow.
     Disable this whenever running `copier update`. If you would like to update
     the conda environment after updating the template, run
-    `snakemake conda_update`
+    `snakemake --cores 1 conda_update`
   default: false
 
 conda_localize:
