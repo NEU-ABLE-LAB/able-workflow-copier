@@ -10,6 +10,10 @@ _subdirectory: "template"
 _answers_file: .copier-answers/project.yml
 
 # Questions
+project_name:
+  type: str
+  help: A human-readable name for the project.
+
 project_name_slug:
   type: str
   help: A name for the project. (Must be a valid github project name.)
@@ -17,12 +21,7 @@ project_name_slug:
     {% if not (project_name_slug | regex_search('^[a-z][a-z0-9\-_]+$')) %}
     project_name_slug must start with a letter, followed one or more letters, digits or dash all lowercase.
     {% endif %}
-  default: "{{ project_name_slug | default('able-workflow') }}"
-
-project_name:
-  type: str
-  help: A human-readable name for the project.
-  default: "{{ project_name_slug | replace('-', ' ') | title }}"
+  default: "{{ project_name | lower | slugify }}"
 
 project_description:
   type: str
