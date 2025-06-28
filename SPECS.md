@@ -22,7 +22,7 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 ### Resulting files of project
 
 ```txt
-{{ project_name }}
+{{ project_name_slug }}
 ├── .copier-answers/
 │
 ├── .github/
@@ -226,7 +226,7 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 ### Hypothetical `whole_energy_homes_interviews/.copier-answers.yml`
 
 ```yaml
-project_name: "whole_energy_homes_interviews"
+project_name_slug: "whole_energy_homes_interviews"
 project_description: "Analysis of qualitative codes from interview transcripts."
 package_name: "weh_interviews"
 ```
@@ -234,7 +234,7 @@ package_name: "weh_interviews"
 ### Example `.copier-answers.yml`
 
 ```yaml
-project_name: "able_workflow"
+project_name_slug: "able_workflow"
 project_description: "Example analysis of workflow using a package."
 package_name: "able"
 ```
@@ -282,7 +282,7 @@ After the user answer the questions and copier creates the module, copier should
 The following files are added to the project
 
 ```txt
-{{ project_name }}
+{{ project_name_slug }}
 ├── .copier-answers/
 │   └── .copier-answers.module-{{ module_type }}-{{ module_name }}.yml
 │

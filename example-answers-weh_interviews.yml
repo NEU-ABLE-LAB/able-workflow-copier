@@ -9,5 +9,5 @@ project_authors:
 project_description: A snakemake workflow with an associated python package containing
     modules for datasets, features, and models for analyzing codes extractd from a
     qualitative analysis of the participant interview transcripts.
-project_name: whole_energy_homes_interviews
+project_name_slug: whole_energy_homes_interviews
 repository_url: https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews

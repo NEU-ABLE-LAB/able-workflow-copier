@@ -10,14 +10,19 @@ _subdirectory: "template"
 _answers_file: .copier-answers/project.yml
 
 # Questions
-project_name:
+project_name_slug:
   type: str
   help: A name for the project. (Must be a valid github project name.)
   validator: >-
-    {% if not (project_name | regex_search('^[a-z][a-z0-9\-_]+$')) %}
-    project_name must start with a letter, followed one or more letters, digits or dash all lowercase.
+    {% if not (project_name_slug | regex_search('^[a-z][a-z0-9\-_]+$')) %}
+    project_name_slug must start with a letter, followed one or more letters, digits or dash all lowercase.
     {% endif %}
-  default: "{{ project_name | default('able-workflow') }}"
+  default: "{{ project_name_slug | default('able-workflow') }}"
+
+project_name:
+  type: str
+  help: A human-readable name for the project.
+  default: "{{ project_name_slug | replace('-', ' ') | title }}"
 
 project_description:
   type: str
@@ -50,7 +55,7 @@ repository_url:
     repository_url must be a valid URL.
     {% endif %}
   default: >-
-    {{ repository_url | default('https://github.com/' ~ organization_slug ~ '/' ~ project_name) }}
+    {{ repository_url | default('https://github.com/' ~ organization_slug ~ '/' ~ project_name_slug) }}
 
 documentation_url:
   type: str
@@ -107,7 +112,7 @@ package_name:
       {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$') ) %}
       package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
       {% endif %}
-  default: "{{ project_name | lower | replace('-', '_') }}"
+  default: "{{ project_name_slug | lower | replace('-', '_') }}"
 
 conda_update_workflow_env:
   type: bool
