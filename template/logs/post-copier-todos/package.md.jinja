@@ -1,6 +1,6 @@
-# # Post Copier To-Do's for {{ project_name }}
+# # Post Copier To-Do's for {{ project_name_long }}
 
-This issue is for tracking the development of the {{ project_name }} project copied from the `able-workflow-copier` template.
+This issue is for tracking the development of the {{ project_name_long }} project copied from the `able-workflow-copier` template.
 
 ## Next steps
 
@@ -24,4 +24,44 @@ This issue is for tracking the development of the {{ project_name }} project cop
 
 ### Project Development
 
-1. **Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/) template to create a new module for your project.
+1. **Initialize git**: If you haven't already, initialize a git repository in the project directory:
+
+   ```bash
+   git init
+   ```
+
+   Then, add the remote repository URL if you have one:
+
+   ```bash
+   git remote add origin <your-repo-url>
+   ```
+
+   Then, commit the initial files:
+
+   ```bash
+   git add .
+   git commit -m "Initial commit from able-workflow-copier template"
+   ```
+
+2. **Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/) template to create a new module for your project.
+
+### Aspirational to-do's
+
+These might be converted to issues to address throughout the life of the project.
+
+#### Functionality
+
+#### Online tools
+
+- [ ] Configure [codecov](https://about.codecov.io/) for the repository.
+  - [ ] TODO explain how to do this.
+  - [ ] Update the codecov badge in `README.md` with the correct URL.
+  - [ ] Update the codecov badge in `docs/docs/index.md` with the correct URL.
+- [ ] Host the documentation on a public server (e.g. [github pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#next-steps))
+  - [ ] TODO explain how to do this.
+
+#### Documentation
+
+- [ ] Add citation to the README.md with a public GitHub repository and/or DOI.
+    - [ ] TODO explain how to get a DOI for a GitHub repo.
+- [ ] Update `docs/docs/_images/logo.png` with your project logo in [`README.md`].
