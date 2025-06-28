@@ -19,7 +19,7 @@ project_name_slug:
     {% endif %}
   default: "{{ project_name_slug | default('able-workflow') }}"
 
-project_name_long:
+project_name:
   type: str
   help: A human-readable name for the project.
   default: "{{ project_name_slug | replace('-', ' ') | title }}"
@@ -176,7 +176,7 @@ _tasks:
     when: "{{ format_code }}"
 
 _message_after_copy: |
-  The "{{ project_name_long }}" project has been created successfully.
+  The "{{ project_name }}" project has been created successfully.
 
   See `logs/post-copier-todos/package.md` for next steps on
   implementing your project. You can copy-paste the contents

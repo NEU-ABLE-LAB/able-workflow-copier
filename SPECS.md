@@ -12,7 +12,7 @@ Template for creating the root project that contains a python package and snakem
 Create a `post-copy` hook to copier that creates a github issue for the user to complete the project. Assume that the user has the `gh` CLI installed and authenticated.
 
 ```markdown
-# Finish initializing the `{{ project_name_long }}` project
+# Finish initializing the `{{ project_name }}` project
 
 ## Checklist
 - [ ] Create at least one module with `able_workflow_module_copier`.

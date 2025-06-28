@@ -1,4 +1,4 @@
-# {{ project_name_long }} directory tree
+# {{ project_name }} directory tree
 
 {%
     include-markdown "overview/tree.snippet.md"
