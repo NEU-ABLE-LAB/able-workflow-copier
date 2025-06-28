@@ -3,6 +3,7 @@ homepage_url: https://github.com/NEU-ABLE-LAB/able-workflow
 organization_name: Northeastern University ABLE Lab
 organization_slug: NEU-ABLE-LAB
 package_name: able
+package_name_slug: able
 project_authors:
 -   email: mi.kane@northeastern.edu
     name: Michael Kane

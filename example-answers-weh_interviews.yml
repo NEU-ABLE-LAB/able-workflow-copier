@@ -2,7 +2,8 @@ documentation_url: https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews
 homepage_url: https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews
 organization_name: Northeastern University ABLE Lab
 organization_slug: NEU-ABLE-LAB
-package_name: weh_interviews
+package_name: WEH Interviews
+package_name_slug: weh_interviews
 project_authors:
 -   email: mi.kane@northeastern.edu
     name: Michael Kane
