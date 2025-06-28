@@ -7,7 +7,7 @@ Copier uses a jinja2 syntax for rendering templates with the answers to the temp
 - [`able-workflow-copier`]({{ able_workflow_copier_docs }})
 
 - [`able-workflow-copier` template]({{ able_workflow_copier_docs }})
-  - **`{{ project_name }}`**: The name of the project being created.
+  - **`{{ project_name_slug }}`**: The name of the project being created.
   - **`{{ package_name }}`**: The name of the Python package being created.
 
 - [`able-workflow-module-copier` template]({{ able_workflow_module_copier_docs }})
@@ -35,7 +35,7 @@ Files that are created by a template are marked with a `+` sign, and files that 
 │││┌── [4] able-workflow-rule-copier
 ││││
 Legend ── “+” = created | “*” = modified | blank = untouched
-    {{ project_name }}
+    {{ project_name_slug }}
     │
  +  ├── .copier-answers/ # (3)
  +  │   ├── module-{{ module_type }}-{{ module_name }}.yml

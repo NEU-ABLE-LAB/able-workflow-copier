@@ -8,5 +8,5 @@ project_authors:
     name: Michael Kane
 project_description: A snakemake workflow with an associated python package containing
     modules for datasets, features, and models.
-project_name: able-workflow
+project_name_slug: able-workflow
 repository_url: https://github.com/NEU-ABLE-LAB/able-workflow
