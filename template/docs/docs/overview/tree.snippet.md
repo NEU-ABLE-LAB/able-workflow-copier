@@ -5,24 +5,20 @@
 Copier uses a jinja2 syntax for rendering templates with the answers to the templates questions.
 
 - [`able-workflow-copier`]({{ able_workflow_copier_docs }})
-
 - [`able-workflow-copier` template]({{ able_workflow_copier_docs }})
-  - **`{{ project_name_slug }}`**: The name of the project being created.
-  - **`{{ package_name }}`**: The name of the Python package being created.
-
+    - **`{{ project_name_slug }}`**: The name of the project being created.
+    - **`{{ package_name }}`**: The name of the Python package being created.
 - [`able-workflow-module-copier` template]({{ able_workflow_module_copier_docs }})
-  - **`{{ module_type }}`**: The type of module being created (e.g., `datasets`, `features`, or `models`).
-  - **`{{ module_name }}`**: The name of the module being created.
-
+    - **`{{ module_type }}`**: The type of module being created (e.g., `datasets`, `features`, or `models`).
+    - **`{{ module_name }}`**: The name of the module being created.
 - [`able-workflow-etl-copier` template]({{ able_workflow_etl_copier_docs }})
-  - **`{{ etl_name }}`**: The name of the ETL process being created.
-  - **`{{ requires_extras }}`**: Whether the ETL requires extra dependencies (boolean).
-  - **`{{ extras_name }}`**: The name of the extras package (if `requires_extras` is `true`).
-  - **`{{ conda_env_key }}`**: The key for the Conda environment from the workflow config (e.g., `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]`).
-
+    - **`{{ etl_name }}`**: The name of the ETL process being created.
+    - **`{{ requires_extras }}`**: Whether the ETL requires extra dependencies (boolean).
+    - **`{{ extras_name }}`**: The name of the extras package (if `requires_extras` is `true`).
+    - **`{{ conda_env_key }}`**: The key for the Conda environment from the workflow config (e.g., `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]`).
 - [`able-workflow-rule-copier` template]({{ able_workflow_rule_copier_docs }})
-  - **`{{ is_package_rule }}`**: The rule uses the package.
-  - **`{{ rule_name }}`**: The name of the Snakemake rule being created
+    - **`{{ is_package_rule }}`**: The rule uses the package.
+    - **`{{ rule_name }}`**: The name of the Snakemake rule being created
 
 ## Directory tree
 
