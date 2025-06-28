@@ -13,8 +13,6 @@ Copier uses a jinja2 syntax for rendering templates with the answers to the temp
     - **`{{ module_name }}`**: The name of the module being created.
 - [`able-workflow-etl-copier` template]({{ able_workflow_etl_copier_docs }})
     - **`{{ etl_name }}`**: The name of the ETL process being created.
-    - **`{{ requires_extras }}`**: Whether the ETL requires extra dependencies (boolean).
-    - **`{{ extras_name }}`**: The name of the extras package (if `requires_extras` is `true`).
     - **`{{ conda_env_key }}`**: The key for the Conda environment from the workflow config (e.g., `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]`).
 - [`able-workflow-rule-copier` template]({{ able_workflow_rule_copier_docs }})
     - **`{{ is_package_rule }}`**: The rule uses the package.
@@ -146,7 +144,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   ├── datasets/
  +  │   │   ├── {{ module_name }}/
     │   │   │   ├── {{ etl_name }}.py
-    │   │   │   │   ├── extras/
+    │   │   │   │   ├── runner/
     │   │   │   │   │   ├── __init__.py
     │   │   │   │   │   ├── extract_external.py
     │   │   │   │   │   ├── load.py
@@ -162,7 +160,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   ├── features/
  +  │   │   ├── {{ module_name }}/
     │   │   │   ├── {{ etl_name }}.py
-    │   │   │   │   ├── extras/
+    │   │   │   │   ├── runner/
     │   │   │   │   │   ├── __init__.py
     │   │   │   │   │   ├── extract_external.py
     │   │   │   │   │   ├── load.py
@@ -178,7 +176,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   ├── models/
  +  │   │   ├── {{ module_name }}/
     │   │   │   ├── {{ etl_name }}.py
-    │   │   │   │   ├── extras/
+    │   │   │   │   ├── runner/
     │   │   │   │   │   ├── __init__.py
     │   │   │   │   │   ├── extract_external.py
     │   │   │   │   │   ├── load.py
