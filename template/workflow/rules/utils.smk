@@ -9,6 +9,7 @@ rule log_config:
     """
     Log the configuration of the workflow.
     """
+    localrule: True
     log:
         loguru=LOG_DIR / "log_config.log",
         config=LOG_DIR / "config.yaml",

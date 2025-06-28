@@ -95,6 +95,7 @@ rule docs_serve:
     NOTE: This rule is "blocking", and will not return until the server is stopped.
           This rule is only for development purposes.
     """
+    localrule: True
     input:
         # WORKFLOW_BASE is used here instead of workflow.source_path()
         # since workflow.source_path() cannot cache an entire directory
