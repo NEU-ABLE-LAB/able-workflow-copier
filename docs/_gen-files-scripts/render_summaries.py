@@ -1,7 +1,7 @@
 """
 Render every SUMMARY.md under docs/docs/ with Jinja, using variables
 from docs/mkdocs.yml::extra.  The rendered content is written back to
-the same relative path *inside* MkDocs’ virtual file system.
+the same relative path *inside* MkDocs' virtual file system.
 
 Requires:
   - mkdocs-gen-files
