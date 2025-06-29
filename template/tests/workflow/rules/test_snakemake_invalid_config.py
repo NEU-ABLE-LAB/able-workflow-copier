@@ -42,7 +42,7 @@ def create_invalid_config(
 
 
 # --- Tests ------------------------------------------------------------------
-def test_snakemake_all_data(workspace: Path) -> None:
+def test_snakemake_all_data_invalid_config(workspace: Path) -> None:
     """
     The workflow must abort when the config violates the schema.
     We consider the test *passed* only if Snakemake exits with a
