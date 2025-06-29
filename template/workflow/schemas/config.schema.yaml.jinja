@@ -172,7 +172,9 @@ properties:
             type: string
             description: >-
               Conda environment name for running the workflow.
-
+        required:
+          - TOX
+          - WORKFLOW
       ENVS:
         type: object
         description: >-
@@ -215,3 +217,23 @@ properties:
             type: string
             description: >-
               Conda environment name for rules that modify Jupyter notebooks.
+        required:
+          - CORE
+          - RUNNER
+          - DEV
+          - DEV_RUNNER
+          - DOCS
+          - NOTEBOOK
+    required:
+      - ENVS_DIR
+      - PYPROJECT2CONDA_DIR
+      - LOCALIZED_DIR
+      - ENVS_META
+      - ENVS
+required:
+  - DOCS_ASSETS_DIR
+  - DOCS_SITE_DIR
+  - REPORTS_DIR
+  - REPORT_TEMPLATES_DIR
+  - LOG_DIR
+  - CONDA

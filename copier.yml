@@ -163,7 +163,7 @@ _tasks:
   - command: >-
       conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
     when: "{{ conda_localize }}"
-  # Run black to format the code to fix line wraps
+  # Run black, ruff, and snakefmt to format the code to fix line wraps
   # depending on length of generated code.
   - command: >-
       black ./
