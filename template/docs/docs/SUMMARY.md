@@ -1,12 +1,11 @@
 # Documentation outline for literate-nav
 
 - [Home](index.md)
-- [Minimal Example](getting-started.md)
-- [Overview](overview/)
-- [Setup and Use](setup/)
+- [Quick Start](setup/)
 - [Datasets](datasets/)
 - [Features](features/)
 - [Models](models/)
+- [Workflow](workflow/)
+- [Software Overview](overview/)
 - [Contributing](contributing/)
-- [Snakemake reference](workflow/)
 - [API Reference](api/)
