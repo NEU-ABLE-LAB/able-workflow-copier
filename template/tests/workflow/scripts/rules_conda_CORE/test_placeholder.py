@@ -6,4 +6,6 @@ Delete or replace this file as soon as you add real tests.
 
 import pytest
 
-pytest.skip("No tests for this ruleset yet", allow_module_level=True)
+
+def test_placeholder_skip():
+    pytest.skip("No tests for this ruleset yet")
