@@ -213,6 +213,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +  +│           ├── rules_conda_{{ conda_env_key }}/ # (6)
 +   │           ├── rules_conda_CORE/ # (10)
 +   │           ├── rules_conda_DOCS/ # (5)
++   │           ├── rules_conda_RUNNER/ # (19)
 +   │           ├── rules_global/ # (4)
 +   │           │   ├── test_conda_localize_file.py
 +   │           │   └── test_pyproject2conda.py
@@ -253,6 +254,7 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +  +│   │   ├── rules_conda_{{ conda_env_key }}/ # (7)
 +   │   │   ├── rules_conda_CORE/ # (11)
 +   │   │   ├── rules_conda_DOCS/ # (8)
++   │   │   ├── rules_conda_RUNNER/ # (20)
 +   │   │   ├── rules_global/ # (9)
 +   │   │   ├── rules/
 +   │   │   │   ├── __init__.py
@@ -288,8 +290,8 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 7. Rule scripts that require the `config["CONDA"]["ENVS"]["{{ conda_env_key }}"]` conda environment.
 8. Rule scripts that require the `config["CONDA"]["ENVS"]["DOCS"]` conda environment.
 9. Rule scripts that can run in the Snakemake global conda environment.
-10. Tests for rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.
-11. Rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["DOCS"]`.
+10. Tests for rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["CORE"]`.
+11. Rule scripts that require the {{ package_name }} core conda environment, `config["CONDA"]["ENVS"]["CORE"]`.
 12. Data copied from an external source in a non-standard format. This folder may be a symlink to another location on disk.
 13. Temporary data storage for intermediate workflow steps.
 14. Processed data ready for reporting, feature extraction, or modeling.
@@ -297,3 +299,5 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 16. Configuration settings for snakemake formatting
 17. Main tox settings for resting template creation and code within generated example templates.
 18. A singe file to aggregate all the includes.
+19. Tests for rule scripts that require the conda environment, `config["CONDA"]["ENVS"]["RUNNER"]`, that includes the `{{ package_name }}` package and the `runner` extra dependencies.
+20. Rule scripts that require the conda environment, `config["CONDA"]["ENVS"]["RUNNER"]`, that includes the `{{ package_name }}` package and the `runner` extra dependencies.

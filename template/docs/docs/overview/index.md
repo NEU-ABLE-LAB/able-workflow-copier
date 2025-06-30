@@ -14,13 +14,13 @@ new contributors get productive quickly.
 
 ## Big‑picture architecture
 
-|Layer|Tooling|What lives here|Why it matters|
-|---|---|---|---|
-|**Package**|`weh_interviews/`|Pure Python code that converts raw Excel sheets to tidy parquet. Extras (e.g. `extras_excel`) hold _optional_ dependencies that are **only** needed for that sub‑module.|Keeps the core install light and lets other repos depend on the parquet output without pulling in every heavy library.|
-|**Workflow**|**Snakemake**|Declarative DAG of ETL steps (each a rule). Every rule points at a dedicated _Conda_ YAML generated from _pyproject.toml_ so each step runs in the **minimal** environment it really needs.|Re‑running is deterministic, parallel, and cache‑aware. You never “just run a script”.|
-|**Environments**|`pyproject‑to‑conda`, `conda‑inject`, `snakemake conda localize`|Generates per‑rule YAMLs from the dependency **groups** defined in _pyproject.toml_. The `conda localize` helper then pip‑installs **your local clone** into each env so rules can `import weh_interviews`.|Makes CI and HPC jobs reproducible **without** uploading the package to PyPI/GH packages.|
-|**Quality‑gate**|pre‑commit (Black, Ruff), MyPy, Pytest, Tox|Auto‑formatting, linting, type‑checking and unit tests. Tox spins up **matrix** envs so optional extras are tested as well.|You get immediate feedback locally and in CI before code lands on `main`.|
-|**Docs**|MkDocs + mkdocstrings|API reference is built from the type‑hinted docstrings, narrative docs live under `docs/`.|“Docs as code” – updated on every push.|
+| Layer            | Tooling                                                          | What lives here                                                                                                                                                                                             | Why it matters                                                                                                         |
+| ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Package**      | `weh_interviews/`                                                | Pure Python code that converts raw Excel sheets to tidy parquet. Extras (e.g. `runner`) hold _optional_ dependencies that are **only** needed for that sub‑module.                                          | Keeps the core install light and lets other repos depend on the parquet output without pulling in every heavy library. |
+| **Workflow**     | **Snakemake**                                                    | Declarative DAG of ETL steps (each a rule). Every rule points at a dedicated _Conda_ YAML generated from _pyproject.toml_ so each step runs in the **minimal** environment it really needs.                 | Re‑running is deterministic, parallel, and cache‑aware. You never “just run a script”.                                 |
+| **Environments** | `pyproject‑to‑conda`, `conda‑inject`, `snakemake conda localize` | Generates per‑rule YAMLs from the dependency **groups** defined in _pyproject.toml_. The `conda localize` helper then pip‑installs **your local clone** into each env so rules can `import weh_interviews`. | Makes CI and HPC jobs reproducible **without** uploading the package to PyPI/GH packages.                              |
+| **Quality‑gate** | pre‑commit (Black, Ruff), MyPy, Pytest, Tox                      | Auto‑formatting, linting, type‑checking and unit tests. Tox spins up **matrix** envs so optional extras are tested as well.                                                                                 | You get immediate feedback locally and in CI before code lands on `main`.                                              |
+| **Docs**         | MkDocs + mkdocstrings                                            | API reference is built from the type‑hinted docstrings, narrative docs live under `docs/`.                                                                                                                  | “Docs as code” – updated on every push.                                                                                |
 
 ---
 
@@ -36,17 +36,16 @@ new contributors get productive quickly.
 ├── weh_interviews/         # your actual Python package
 │   ├── __init__.py
 │   ├── extract.py          # light‑weight schema description
-│   └── extras_excel/       # optional Excel‑only code & deps
-├── tests/                  # pytest suites (core & extras)
+│   └── runner/             # optional Excel‑only code & deps
+├── tests/                  # pytest suites (core & runner)
 ├── docs/                   # MkDocs site source
 └── README.md               # quick‑start
 ```
 
-### Extras pattern
+### ETL Process Runtime Extras
 
 Any sub‑package whose **runtime** requirements go beyond the core
-(`openpyxl`, `xlrd`, heavy ML libs, …) lives in a folder that starts with
-`extras_`.
+(`openpyxl`, `xlrd`, heavy ML libs, …) lives in the `runner` folder.
 Inside `pyproject.toml` those optional deps are declared under a
 _dependency group_ of the **same name** so they can be installed
 selectively:
@@ -117,7 +116,7 @@ snakemake -j4 all
 
 - **Unit tests:** `pytest -q`
 
-- **Full matrix:** `tox` (runs core, `extras_excel`, docs build, etc.)
+- **Full matrix:** `tox` (runs core, `runner`, docs build, etc.)
 
 - **Docs live‑reload:** `mkdocs serve`
 
