@@ -1,23 +1,63 @@
-# How to use this workflow and package
+# Project setup overview
 
-Create the minimal Conda environment to run the workflow
+Welcome to **{{ project_name_slug }}**. This page ties together the three platform-specific
+guides, explains the Conda environments that ship with the template, and walks
+through the one-time commands that put Snakemake under your fingertips.
+
+## 1 Prerequisites (all platforms)
+
+| Tool          | Notes                                                        |
+| ------------- | ------------------------------------------------------------ |
+| **git**       | With support for authenticated access to github.             |
+| **conda**     | we suggest miniforge with the libmamba solver                |
+| **Snakemake** | Installed via the *{{ package_name }}-py312-workflow* env    |
+| **VS Code**   | The recommended (and only supported) development environment |
+
+See documentation for installing on [Windows](windows.md) and [SLURM](slurm.md) platforms.
+
+## 2 Conda environments used by this template
+
+The file `template/workflow/config/config.yaml.jinja` enumerates every Conda
+environment the workflow may touch. As shipped, the list is:
+
+| Environment file                                       | Created by                                                                                         | Purpose                                                                                                                                   |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `workflow/envs/{{ package-name }}-py312-workflow.yaml` | template. committed to git.                                                                        | Tiny *driver* env able to run Snakemake itself                                                                                            |
+| `workflow/envs/{{ package-name }}-py312-tox.yaml`      | template. committed to git.                                                                        | Minimal env to run the tox test-matrix                                                                                                    |
+| `workflow/envs/pyproject2conda/*.yaml`                 | `snakemake pyproject2conda`                                                                        | Conda environment files produced from the dependencies listed in `pyrpoject.toml`. These do not install the `{{ package_name }}` package. |
+| `workflow/envs/localized/*.yaml`                       | `snakemake conda_localize`. This command must be run before running any other `snakemake` command. | Copy of every `pyrpoject2conda/*.yaml` but with the {{ package_name }} installed using the full path specific to this machine.            |
+| `workflow/envs/*/*.yaml`                               | -                                                                                                  | See `workflow/schemas/config.schema.yaml` for a description of the created environments.                                                  |
+
+> **Tip:** `snakemake --summary` will tell you which rules depend on which envs.
+
+## 3 Core setup steps (once per machine)
+
+Execute the following *after* completing **one** of the OS-specific guides
+([Linux](linux.md), [Windows + WSL](windows.md) or [SLURM](slurm.md)).
+
+
+1. Clone the freshly-generated repository
 
 ```bash
-conda env update --name {{ package_name }}-py312-workflow --file workflow/envs/py312-workflow.yaml
+git clone {{ repository_url }}.git && cd {{ project_slug }}
 ```
 
-Before running any Snakemake commands, you need to localize the package path in the Snakemake environment files. This is done by running the `conda_localize` rule:
+2. Build and activate the full developer environment
 
 ```bash
-snakemake conda_localize
+mamba env create -f envs/environment.yml
+conda activate {{ project_slug }}
 ```
 
-TODO-copier-package write overview of what is needed to run the workflow. Point user to separate instructions for setting up the development environment if they plan to edit the workflow or package. Explain `able-workflow-module-copier` and `able-workflow-etl-copier` in a sentence or two to cover the concept of adding to the package and workflow.
+3. Install pre-commit hooks
 
-TODO-copier-package Explain `conda_localize` rule. Why is it necessary? The environment yamls could pip install from github, but that would mean every commit needs to be pushed in order to test it. The pacakge can't simply be placed in the `workflow/scripts` because Snakemake only copies the script being requested by the `script:` directive, not its dependencies. The environment yaml cannot use a relative path, because when Snakemake makes its cache of the environment, it is in a path that changes based on file hashes.
+```bash
+pre-commit install
+pre-commit run --all-files
+```
 
-TODO-copier-package Once sentence explaination about why WSL is required. Point user to Windows setup instructions. Then tell them to follow Linux instructions once WSL is setup.
+4. Localize the conda environment files with the full-path to the package
 
-TODO-copier-package point user to Linux setup instructions.
-
-TODO-copier-package point user to SLURM setup instructions.
+```bash
+snakemake conda_localize --cores 1
+```
