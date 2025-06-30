@@ -17,7 +17,7 @@ sudo apt update && sudo apt install -y git build-essential curl wget
 
 ```bash
 git clone {{ repository_url }}.git
-cd {{ repo_name }}
+cd {{ repository_url }}
 ```
 
 ## 2  Install Miniforge + Mamba

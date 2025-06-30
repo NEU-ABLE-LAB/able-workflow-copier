@@ -23,7 +23,7 @@ create your UNIX username.
 ```bash
 # ①  Clone on the native ext4 file‑system, not /mnt/c
 git clone {{ repository_url }}.git
-cd {{ repo_name }}
+cd {{ project_name }}
 ```
 
 ## 3.  Install Miniforge + Mamba
