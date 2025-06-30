@@ -22,6 +22,15 @@ from types import SimpleNamespace
 from typing import Any, Dict
 
 import pytest
+from snakemake.io import (
+    InputFiles,
+    OutputFiles,
+    Params,
+    Wildcards,
+    Resources,
+    Log,
+)
+from snakemake.script import Snakemake
 from snakemake.utils import Namedlist
 
 # --------------------------------------------------------------------------- #
@@ -34,8 +43,8 @@ if not SCRIPT.exists():
     pytest.skip(f"Cannot find {SCRIPT}", allow_module_level=True)
 
 spec = importlib.util.spec_from_file_location("{{ package_name }}_rules", SCRIPT)
-RULES = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(RULES)  # type: ignore[arg-type]
+rule_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(rule_module)  # type: ignore[arg-type]
 
 # --------------------------------------------------------------------------- #
 # Helper factories                                                            #
@@ -47,21 +56,39 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
     Build the *snakemake* stand-in expected by ``main()``.
     """
     if multiple_io:
-        inputs = Namedlist([("one", str(tmp_path / "a.txt")), ("two", "b.dat")])
-        outputs = Namedlist([("result", str(tmp_path / "out" / "c.txt"))])
+        inputs = InputFiles( fromdict = {
+            "one": str(tmp_path / "a.txt"),
+            "two": str(tmp_path / "b.dat"),
+        })
+        outputs = OutputFiles( fromdict = {
+            "result": str(tmp_path / "out" / "c.txt"),
+        })
     else:
-        inputs = Namedlist([str(tmp_path / "in.txt")])
-        outputs = Namedlist([str(tmp_path / "out.txt")])
+        inputs = InputFiles([
+            str(tmp_path / "in.txt"),
+        ])
+        outputs = OutputFiles([
+            str(tmp_path / "out.txt"),
+        ])
 
-    params = Namedlist(fromdict=OrderedDict([("func", func_path), ("alpha", 42)]))
-    wildcards = Namedlist([("sample", "X1")])
-    resources = Namedlist([("mem_mb", 1024)])
+    params = Params( fromdict = {
+        "func": func_path,
+        "alpha": 42,  # will be converted to str
+    })
+    wildcards = Wildcards( fromdict = {
+        "sample": "X1",
+    })
+    resources = Resources( fromdict = {
+        "mem_mb": 1024,  # will be converted to int
+    })
 
     log_dir = tmp_path / "logs"
     log_dir.mkdir()
-    log = {"loguru": str(log_dir / "wrapper.log")}
+    log = Log( fromdict = {
+        "loguru": str(log_dir / "wrapper.log"),
+    })
 
-    return SimpleNamespace(
+    return Snakemake(
         input=inputs,
         output=outputs,
         params=params,
@@ -77,20 +104,6 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
 # --------------------------------------------------------------------------- #
 # Tests                                                                       #
 # --------------------------------------------------------------------------- #
-
-
-def test_namedlist_converters_roundtrip():
-    """A tiny sanity-check for the helper converter trio."""
-    # one *named* item, one positional, plus the two guard names
-    nl = Namedlist(fromdict=OrderedDict([("x", 1), ("sort", 99), ("index", 123)]))
-    nl.append("y")  # positional -> auto-key "1"
-    as_str = RULES.namedlist_to_dict_str(nl)
-    assert list(as_str.keys()) == ["x", "1"]  # guard names skipped, idx 1 auto-keyed
-    assert as_str["x"] == "1" and as_str["1"] == "y"
-
-    nl_path = Namedlist([("p", "foo/bar.txt")])
-    as_path = RULES.namedlist_to_dict_path(nl_path)
-    assert isinstance(as_path["p"], Path) and as_path["p"].name == "bar.txt"
 
 
 @pytest.mark.parametrize("multiple_io", [False, True])
@@ -115,7 +128,7 @@ def test_main_forwards_converted_objects(tmp_path, multiple_io):
     smk = _fake_snakemake(tmp_path, func_path=func_path, multiple_io=multiple_io)
 
     # ---------------------------------------------------------------- execute
-    RULES.main(smk)
+    rule_module.main(smk)
 
     # ---------------------------------------------------------------- asserts
     # 1. Every expected kwarg got through
