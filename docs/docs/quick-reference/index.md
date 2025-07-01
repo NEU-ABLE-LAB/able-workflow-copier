@@ -1,5 +1,7 @@
 # Quick Reference
 
+First, [setup the environment](setup.md).
+
 Apply this Copier template to create a new Snakemake workflow with an associated python package with the following commands:
 
 ```bash
