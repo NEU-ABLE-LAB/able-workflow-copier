@@ -12,6 +12,17 @@
       "console": "integratedTerminal"
     },
     {
+      "name": "PyTest Debugger: Current Test",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": [
+        "${file}",
+      ]
+    },
+    {
       "name": "Python Debugger with site-pages: Current File",
       "type": "debugpy",
       "request": "launch",

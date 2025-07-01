@@ -14,9 +14,9 @@ requires =
 envlist = \
     py{311,312}-lint, \
     py{311,312}-package-unit-{core,runner}, \
-    py{311,312}-typecheck-{core-runner}, \
+    py{311,312}-typecheck-{core,runner}, \
     py{311,312}-workflow-rules, \
-    py{311,312}-workflow-unit-{core,docs,runner,global}
+    py{311,312}-workflow-unit-{core,docs,global,runner}
 
 
 [gh-actions]
@@ -102,7 +102,7 @@ commands =
         {env:PYTEST_PATHS}
 
 
-[testenv:py{311,312}-workflow-unit-{global,core,docs}]
+[testenv:py{311,312}-workflow-unit-{core,docs,global,runner}]
 description = Snakemake unit tests for workflow utilities and rule scripts that do not require a custom conda environment
 package =
     core: editable
@@ -119,13 +119,13 @@ dependency_groups =
     core: snakemake,test
     docs: snakemake,docs,test
     global: workflow,test
-    runner: snakemake,runner,test
+    runner: snakemake,test
 setenv =
     {[testenv]setenv}
-	core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_CORE/
-	docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_DOCS/
+    core: PYTEST_PATHS = tests/workflow/scripts/rules_conda_CORE/
+    docs: PYTEST_PATHS = tests/workflow/scripts/rules_conda_DOCS/
     global: PYTEST_PATHS = tests/workflow/scripts/rules_global/
-    runner: PYTEST_PATHS = tests/workflow/scripts/rules_RUNNER/
+    runner: PYTEST_PATHS = tests/workflow/scripts/rules_conda_RUNNER/
 commands =
     # Workflow script unit tests
     # The `-o addopts=''` option overrides the default `pyproject.toml` settings

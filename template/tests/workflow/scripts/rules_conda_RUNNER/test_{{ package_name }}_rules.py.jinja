@@ -19,7 +19,7 @@ import types
 from collections import OrderedDict
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pytest
 from snakemake.io import (
@@ -32,6 +32,8 @@ from snakemake.io import (
 )
 from snakemake.script import Snakemake
 from snakemake.utils import Namedlist
+
+PathLike = Path | str
 
 # --------------------------------------------------------------------------- #
 # Load the wrapper module                                                     #
@@ -50,12 +52,11 @@ spec.loader.exec_module(rule_module)  # type: ignore[arg-type]
 # Helper factories                                                            #
 # --------------------------------------------------------------------------- #
 
-
-def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False):
+def _fake_snakemake(tmp_path: Path, *, func_path: str, io_is_dict: bool = False):
     """
     Build the *snakemake* stand-in expected by ``main()``.
     """
-    if multiple_io:
+    if io_is_dict:
         inputs = InputFiles( fromdict = {
             "one": str(tmp_path / "a.txt"),
             "two": str(tmp_path / "b.dat"),
@@ -65,7 +66,8 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
         })
     else:
         inputs = InputFiles([
-            str(tmp_path / "in.txt"),
+            str(tmp_path / "in0.txt"),
+            str(tmp_path / "in1.txt"),
         ])
         outputs = OutputFiles([
             str(tmp_path / "out.txt"),
@@ -89,7 +91,7 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
     })
 
     return Snakemake(
-        input=inputs,
+        input_=inputs,
         output=outputs,
         params=params,
         wildcards=wildcards,
@@ -97,7 +99,8 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
         threads=8,
         log=log,
         config={"answer": 42},
-        rule="dummy_rule",
+        rulename="dummy_rule",
+        bench_iteration=None,
     )
 
 
@@ -106,14 +109,14 @@ def _fake_snakemake(tmp_path: Path, *, func_path: str, multiple_io: bool = False
 # --------------------------------------------------------------------------- #
 
 
-@pytest.mark.parametrize("multiple_io", [False, True])
-def test_main_forwards_converted_objects(tmp_path, multiple_io):
+@pytest.mark.parametrize("io_is_dict", [False, True])
+def test_main_forwards_converted_objects(tmp_path, io_is_dict):
     """
     Run the wrapper's ``main()`` once with *single* IO and once with *multiple*
     IO files and check that the dummy target receives properly converted args.
     """
 
-    # ------------------------------------------------------------------ target
+    # --- target -------------------------------------------------------------
     captured: Dict[str, Any] = {}
 
     def _dummy_run(**kwargs):
@@ -124,41 +127,44 @@ def test_main_forwards_converted_objects(tmp_path, multiple_io):
     sys.modules["dummy_target"] = dummy_mod
     func_path = "dummy_target:run"
 
-    # ----------------------------------------------------------- fake snakemake
-    smk = _fake_snakemake(tmp_path, func_path=func_path, multiple_io=multiple_io)
+    # --- fake snakemake
+    smk = _fake_snakemake(
+        tmp_path,
+        func_path=func_path,
+        io_is_dict=io_is_dict
+    )
 
-    # ---------------------------------------------------------------- execute
-    rule_module.main(smk)
+    # --- execute
+    rule_module.main(smk=smk)
 
-    # ---------------------------------------------------------------- asserts
-    # 1. Every expected kwarg got through
-    expected_keys = {
-        "input",
-        "output",
-        "params",
-        "wildcards",
-        "threads",
-        "resources",
-        "log",
-        "config",
-        "rulename",
-    }
-    assert expected_keys == set(captured)
+    # --- asserts ------------------------------------------------------------
+    # 1. Check that the captured object is a Snakemake object
+    captured_smk = captured.get("smk", None)
+    assert isinstance(captured_smk, Snakemake), "Captured smk is not a Snakemake object"
 
     # 2. IO conversion logic
-    if multiple_io:
-        assert isinstance(captured["input"], dict) and len(captured["input"]) == 2
-        assert isinstance(captured["output"], dict)
+    if io_is_dict:
+        assert isinstance(captured_smk.input.get("one"), PathLike)
+        assert Path(captured_smk.input["one"]).name == "a.txt"
+        assert isinstance(captured_smk.input.get("two"), PathLike)
+        assert Path(captured_smk.input["two"]).name == "b.dat"
+
+        assert isinstance(captured_smk.output.get("result"), PathLike)
+        assert Path(captured_smk.output["result"]).name == "c.txt"
     else:
-        assert (
-            isinstance(captured["input"], Path) and captured["input"].name == "in.txt"
-        )
-        assert (
-            isinstance(captured["output"], Path)
-            and captured["output"].name == "out.txt"
-        )
+        assert isinstance(captured_smk.input, List)
+        assert len(captured_smk.input) == 2
+        assert isinstance(captured_smk.input[0], PathLike)
+        assert Path(captured_smk.input[0]).name == "in0.txt"
+        assert isinstance(captured_smk.input[1], PathLike)
+        assert Path(captured_smk.input[1]).name == "in1.txt"
+
+        assert isinstance(captured_smk.output, List)
+        assert len(captured_smk.output) == 1
+        assert isinstance(captured_smk.output[0], PathLike)
+        assert Path(captured_smk.output[0]).name == "out.txt"
 
     # 3. Other simple pass-throughs
-    assert captured["threads"] == 8
-    assert captured["rulename"] == "dummy_rule"
-    assert captured["params"]["alpha"] == "42"  # converted to str
+    assert captured_smk.threads == 8
+    assert captured_smk.rule == "dummy_rule"
+    assert captured_smk.params.get("alpha") == 42

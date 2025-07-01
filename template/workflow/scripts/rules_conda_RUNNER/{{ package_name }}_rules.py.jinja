@@ -33,7 +33,7 @@ def main(smk: Snakemake) -> None:
     func: Callable[..., Any] = getattr(module, func_name)
 
     # Call the target callable with converted arguments
-    func(smk)
+    func(smk=smk)
 
 
 if __name__ == "__main__":  # pragma: no cover - entry point for Snakemake
