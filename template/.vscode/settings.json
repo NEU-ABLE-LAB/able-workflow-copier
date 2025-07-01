@@ -99,6 +99,7 @@
         "**/dist/**",
         "**/logs/**"
     ],
+    "python.useEnvironmentsExtension": true,
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
