@@ -2,17 +2,57 @@
 
 TODO-copier-package clean this up and make it generic to any `able-workflow-copier` project.
 
-Welcome to the **WH Interviews** code‑base – an opinionated template for data‑centric Python
-projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully
-typed, continuously‑tested code‑base**.
-The layout you see here was pioneered in Michael Kane’s lab and will be reused in several
-up‑coming repos (e.g. _maharshi‑analysis_).
-This page summarises the key ideas Michael presented on the recorded call and should help
-new contributors get productive quickly.
+Welcome to the **WH Interviews** code‑base – an opinionated template for data‑centric Python projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base**. The layout you see here was pioneered in the Automation for the Built and Living Environment (ABLE lab)[https://www.thisismikekane.com] and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.
 
----
+## Foundation opinions
 
-## Big‑picture architecture
+This work started with a foundation and shared opinions of the [Cookiecutter Data Science](https://cookiecutter-data-science.drivendata.org/) project template:
+
+1. Data analysis is a directed acyclic graph
+
+   *Don't ever edit your raw data. Especially not manually. And especially not in Excel.*
+
+2. Raw data is immutable
+
+   *Data analysis is a directed acylcic graph (DAG)*
+
+   - ✅ **Do** write code that moves the raw data through a pipeline to your final analysis.
+   - ✅ **Do** serialize or cache the intermediate outputs of long-running steps.
+   - ✅ **Do** make it possible (and ideally, documented and automated) for anyone to reproduce your final data products with only the code in {{ cookiecutter.module_name }} and the data in data/raw/ (and data/external/).
+   - ⛔ **Don't** ever edit your raw data, especially not manually, and especially not in Excel. This includes changing file formats or fixing errors that might break a tool that's trying to read your data file.
+   - ⛔ **Don't** overwrite your raw data with a newly processed or cleaned version.
+   - ⛔ **Don't** save multiple versions of the raw data.
+
+3. Data should (mostly) *not* be kept in source control
+
+4. Notebooks are for exploration and communication, source files are for repetition
+
+   *Source code is superior for replicability because it is more portable, can be tested more easily, and is easier to code review.*
+
+5. Build from the environment up
+
+6. Keep secrets and configuration out of version control
+
+## Snakemake
+
+Cookiecutter Data Science uses [GNU Make](https://www.gnu.org/software/make/) to determine the relationships between each analysis/modeling step with `rules` (e.g., run process `A` with inputs `x` and `y`) and `targets` (e.g., to produce output `z`). While `make` is the defacto standard for building software from a DAG of source files. However, you'll spend a longer time explaining its terse verses written in invisible white spaces than you will explain your machine-learning model to the next person working on your project.
+
+**Snakemake** to the rescue: a workflow management system is a tool to create reproducible and scalable data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.
+
+Snakemake's [common use cases](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows_by_stars.html) seem to imply that Snakemake was developed with the assumption that the data analsys and modeling processes executed by each `rule` can be succinctly written in a single [python script](https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#python), in a Jupyter notebook (see opinion 4 above) and/or use standard domain specific command-line tools (e.g., [`bwa`](https://bio-bwa.sourceforge.net/bwa.shtml) for genomic analys.)
+
+However, for exploratory data analysis and machine learning, each analysis step can be 100-1,000s of lines of custom code that should be well formatted, typed, and tested.
+
+The "pure-snakemake" way to achieve this would be to keep your python source code and unit-tests [`https://www.github.com/YOUR_ORG/YOUR_PYTHON_PACKAGE`] and snakemake workflow and integration tests [`https://www.github.com/YOUR_ORG/YOUR_PYTHON_PACKAGE`] in separate git repositories. For every source code change you want to test while you simultaneously debug your source code and workflow, you have to do the following:
+
+- Commit that change to the `YOUR_PYTHON_PACKAGE` repo
+- Push it to GitHub
+- Pull that into a separate project on your machine
+- Run the test on your machine
+
+This can become very tedious (and embarassing in public repositories) if you are debugging a missed comma or trying to understand an algorithm. While separating the python source code and snakemake workflow may be the ideal solution (similar to the separation of integrations and their communication wrappers in [Home Assistant integrations](https://developers.home-assistant.io/docs/development_checklist/)), an approach for faster development iterations is proposed.
+
+## Big‑picture **architecture**
 
 | Layer            | Tooling                                                          | What lives here                                                                                                                                                                                             | Why it matters                                                                                                         |
 | ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -21,8 +61,6 @@ new contributors get productive quickly.
 | **Environments** | `pyproject‑to‑conda`, `conda‑inject`, `snakemake conda localize` | Generates per‑rule YAMLs from the dependency **groups** defined in _pyproject.toml_. The `conda localize` helper then pip‑installs **your local clone** into each env so rules can `import weh_interviews`. | Makes CI and HPC jobs reproducible **without** uploading the package to PyPI/GH packages.                              |
 | **Quality‑gate** | pre‑commit (Black, Ruff), MyPy, Pytest, Tox                      | Auto‑formatting, linting, type‑checking and unit tests. Tox spins up **matrix** envs so optional extras are tested as well.                                                                                 | You get immediate feedback locally and in CI before code lands on `main`.                                              |
 | **Docs**         | MkDocs + mkdocstrings                                            | API reference is built from the type‑hinted docstrings, narrative docs live under `docs/`.                                                                                                                  | “Docs as code” – updated on every push.                                                                                |
-
----
 
 ## 2. Repository layout (top‑level)
 
