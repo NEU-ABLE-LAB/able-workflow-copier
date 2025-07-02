@@ -1,8 +1,6 @@
 # Package & Workflow
 
-TODO-copier-package clean this up and make it generic to any `able-workflow-copier` project.
-
-Welcome to the **WH Interviews** code‑base – an opinionated template for data‑centric Python projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base**. The layout you see here was pioneered in the Automation for the Built and Living Environment (ABLE lab)[https://www.thisismikekane.com] and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.
+Welcome to the **{{ project_name }}** code‑base – an opinionated template for data‑centric Python projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base**. The layout you see here was pioneered in the Automation for the Built and Living Environment (ABLE lab)[https://www.thisismikekane.com] and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.
 
 ## Foundation opinions
 
@@ -18,7 +16,7 @@ This work started with a foundation and shared opinions of the [Cookiecutter Dat
 
    - ✅ **Do** write code that moves the raw data through a pipeline to your final analysis.
    - ✅ **Do** serialize or cache the intermediate outputs of long-running steps.
-   - ✅ **Do** make it possible (and ideally, documented and automated) for anyone to reproduce your final data products with only the code in {{ cookiecutter.module_name }} and the data in data/raw/ (and data/external/).
+   - ✅ **Do** make it possible (and ideally, documented and automated) for anyone to reproduce your final data products with only the code in {{ project_name }} package and the data in `data/raw/` (and `data/external/`).
    - ⛔ **Don't** ever edit your raw data, especially not manually, and especially not in Excel. This includes changing file formats or fixing errors that might break a tool that's trying to read your data file.
    - ⛔ **Don't** overwrite your raw data with a newly processed or cleaned version.
    - ⛔ **Don't** save multiple versions of the raw data.
