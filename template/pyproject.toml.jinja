@@ -308,6 +308,11 @@ extras-or-groups = ["workflow"]
 template-python = "workflow/envs/{{ package_name }}-py{py}-{env}"
 template = "workflow/envs/{{ package_name }}-{env}"
 
+[tool.pytest.ini_options]
+markers = [
+    # `remote_data` marker is defined by `pytest-remotedata`
+]
+
 [tool.ruff]
 line-length = 79
 src = ["{{ package_name }}", "workflow/scripts"]
