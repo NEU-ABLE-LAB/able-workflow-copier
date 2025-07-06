@@ -13,13 +13,17 @@ from typing import TYPE_CHECKING
 from loguru import logger
 from lxml import etree as ET
 
+from snakemake.script import Snakemake
+
 if TYPE_CHECKING:  # pragma: no cover
+    # For type checking only, when called as a `script:` in a Snakemake rule
+    # the `snakemake` object is injected at the top of the script
     from snakemake.script import snakemake
 
 
 STYLE = textwrap.dedent(
     """
-    <style>
+    <style xmlns="http://www.w3.org/2000/svg">
       /*  Use MkDocs-Material palette tokens
           ──────────────────────────────────
           default  : data-md-color-scheme="default"
@@ -49,30 +53,25 @@ def _neutralise_only_problematic_colours(root: ET.Element) -> None:
             break  # there’s only one like this
 
 
-def main(smk) -> None:  # type: ignore[no-untyped-def]
+def _generate_dag_svg(stderr_log: Path) -> str:
+    """
+    Generate DAG as SVG via graphviz.
 
-    # Setup logging
-    logger.remove()
-    logger.add(smk.log.loguru)
+    Args:
+        stderr_log: Path to the stderr log file
 
-    # No need to read snakemake `input:` entries
-
-    # Read snakemake `output:` entries
-    svg_path = Path(smk.output.svg).resolve()
-
-    # No need to read snakemake `params:` entries
-
-    # No need to read snakemake `wildcards:` entries
-
-    # Generate DAG as SVG via graphviz
+    Returns:
+        The raw SVG string
+    """
     logger.debug("Generating DAG SVG using Snakemake")
-    with open(smk.log.stderr, "a") as stdout_log:
+    with open(stderr_log, "a") as stderr_log_file:
+
         dag_dot = subprocess.run(
             ["snakemake", "--forceall", "--dag"],
             check=True,
             text=True,
             stdout=subprocess.PIPE,
-            stderr=stdout_log,
+            stderr=stderr_log_file,
         ).stdout
 
         # Convert DOT → SVG with Graphviz
@@ -82,9 +81,22 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
             check=True,
             text=True,
             stdout=subprocess.PIPE,
-            stderr=stdout_log,
+            stderr=stderr_log_file,
         ).stdout
 
+    return raw_svg
+
+
+def _process_svg_content(raw_svg: str) -> ET.Element:
+    """
+    Parse and manipulate SVG content.
+
+    Args:
+        raw_svg: Raw SVG string content
+
+    Returns:
+        Processed SVG root element
+    """
     # Parse & manipulate SVG as XML
     logger.debug("Parsing SVG DAG output")
     parser = ET.XMLParser(ns_clean=True, recover=True)
@@ -105,11 +117,45 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     logger.debug("Injecting CSS style into SVG")
     root.insert(0, ET.fromstring(STYLE))
 
-    # 3 - write out pretty-printed SVG
+    return root
+
+
+def main(
+    svg_path: Path,
+    stderr_log: Path,
+) -> None:
+    """
+    Generate a Snakemake DAG as an SVG file.
+    """
+
+    # Generate DAG as SVG via graphviz
+    raw_svg = _generate_dag_svg(stderr_log)
+
+    # Process SVG content
+    root = _process_svg_content(raw_svg)
+
+    # Write out pretty-printed SVG
     logger.debug(f"Writing SVG DAG to {svg_path}")
     svg_path.write_bytes(
         ET.tostring(root, xml_declaration=True, encoding="utf-8", pretty_print=True)
     )
+
+
+def main_smk(smk: Snakemake) -> None:
+    """
+    Wrapper for the main function that accepts a Snakemake object.
+    """
+
+    # Setup logging
+    logger.remove()
+    logger.add(smk.log.loguru)
+
+    # Ensure the output directory exists
+    svg_path = Path(smk.output.svg)
+    svg_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Call the main function with the provided paths
+    main(svg_path, smk.log.stderr)
 
 
 if __name__ == "__main__":
