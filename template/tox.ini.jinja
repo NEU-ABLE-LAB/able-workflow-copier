@@ -118,7 +118,7 @@ dependency_groups =
     # When snakemake uses `conda:` it injects `snakemake` as a dependency
     core: snakemake,test
     docs: snakemake,docs,test
-    global: workflow,test
+    global: snakemake, workflow,test
     runner: snakemake,test
 setenv =
     {[testenv]setenv}
