@@ -1,6 +1,3 @@
-# --------------------------------------------------------------------------- #
-# tests/workflow/scripts/rules_conda_DOCS/test_dag_svg.py
-# --------------------------------------------------------------------------- #
 """
 Unit-tests for ``workflow/scripts/rules_conda_DOCS/dag_svg.py``.
 
