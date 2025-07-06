@@ -52,7 +52,12 @@ spec.loader.exec_module(rule_module)  # type: ignore[arg-type]
 # Helper factories                                                            #
 # --------------------------------------------------------------------------- #
 
-def _fake_snakemake(tmp_path: Path, *, func_path: str, io_is_dict: bool = False):
+def _fake_snakemake(
+    tmp_path: Path,
+    *,
+    func_path: str,
+    io_is_dict: bool = False
+) -> Snakemake:
     """
     Build the *snakemake* stand-in expected by ``main()``.
     """
