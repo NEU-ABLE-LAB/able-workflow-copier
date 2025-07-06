@@ -8,12 +8,16 @@ meant to be executed via Snakemake.
 import re
 import sys
 from pathlib import Path
-from typing import Any, Mapping, Sequence, Union
+from typing import Any, Mapping, Sequence, TYPE_CHECKING, Union
 
 from loguru import logger
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
-from snakemake.script import snakemake
+
+if TYPE_CHECKING:  # pragma: no cover
+    # For type checking only, when called as a `script:` in a Snakemake rule
+    # the `snakemake` object is injected at the top of the script
+    from snakemake.script import snakemake
 
 GUIDANCE = (
     "The {{ package_name }} package needs to be available in `site-packages`.\n"

@@ -15,83 +15,95 @@ from __future__ import annotations
 
 import importlib.util
 import re
-import sys
-import types
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Iterable
+from typing import Iterable, Any
 
 import pytest
 from ruamel.yaml import YAML
+from snakemake.io import (
+    InputFiles,
+    OutputFiles,
+    Log,
+    Params,
+    Resources,
+    Wildcards,
+)
+from snakemake.script import Snakemake
 
-# --------------------------------------------------------------------------- #
-# Load the script under test                                                  #
-# --------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# Module-under-test loader (once per test module)                              #
+# -----------------------------------------------------------------------------
 
-ROOT = Path(__file__).parents[4]  # project root
-SCRIPT = ROOT / "workflow/scripts/rules_global/conda_localize_file.py"
 
-# --------------------------------------------------------------------------- #
-#  Inject a stub “snakemake” module so that the unconditional
-#  “from snakemake.script import snakemake” import inside the script
-#  under test succeeds even when the real Snakemake package is absent.
-# --------------------------------------------------------------------------- #
+@pytest.fixture(scope="module")
+def clf_module() -> Any:
+    """
+    Import the *runtime* module object for conda_localize_file.py (without
+    calling ``main_smk``).  The fixture mirrors the pattern used in
+    *test_dag_svg.py*.
+    """
+    root = Path(__file__).parents[4]  # project root
+    script = root / "workflow/scripts/rules_global/conda_localize_file.py"
 
-_fake_sm = types.ModuleType("snakemake")
-_fake_sm_script = types.ModuleType("snakemake.script")
-# The script only references the *name* `snakemake` when run as __main__,
-# so an empty namespace placeholder is sufficient:
-_fake_sm_script.snakemake = SimpleNamespace()
-_fake_sm.script = _fake_sm_script
-sys.modules.setdefault("snakemake", _fake_sm)
-sys.modules.setdefault("snakemake.script", _fake_sm_script)
+    if not script.exists():  # pragma: no cover
+        pytest.skip(
+            f"Cannot find {script} - are you running tests from the repo root?",
+            allow_module_level=True,
+        )
 
-if not SCRIPT.exists():  # pragma: no cover
-    pytest.skip(
-        f"Cannot find {SCRIPT} - are you running tests from the repo root?",
-        allow_module_level=True,
-    )
+    spec = importlib.util.spec_from_file_location("conda_localize_file", script)
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    assert spec and spec.loader
+    spec.loader.exec_module(module)  # type: ignore[arg-type]
+    return module
 
-spec = importlib.util.spec_from_file_location("conda_localize_file", str(SCRIPT))
-if spec is None or spec.loader is None:  # pragma: no cover
-    pytest.skip(f"Cannot import {SCRIPT}", allow_module_level=True)
 
-CLF = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(CLF)  # type: ignore[no-untyped-call]
-
-# --------------------------------------------------------------------------- #
-# Helper factories                                                            #
-# --------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# Helper factories                                                             #
+# -----------------------------------------------------------------------------
 
 
 def _write_yaml(path: Path, *, deps: Iterable[str]) -> None:
-    """Write a minimal env YAML with the given *dependencies*."""
+    """Write a minimal environment YAML with the given *dependencies*."""
     tpl = (
         "channels:\n"
         "  - defaults\n"
-        "dependencies:\n" + "\n".join(f"  - {d}" for d in deps) + "\n"
+        "dependencies:\n"
+        + "\n".join(f"  - {d}" for d in deps)
+        + "\n"
     )
     path.write_text(tpl, encoding="utf-8")
 
 
-def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
+def _fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
     """
-    Return a *snakemake* stand-in with the attrs required by ``main()``.
+    Build a minimal but *real* ``Snakemake`` instance for the script.
+
+    Only those attributes touched by ``main()`` are populated.
     """
     src = tmp_path / "src.yml"
     dst = tmp_path / "out" / "localized.yml"
-    log = tmp_path / "logs" / "conda_localize.log"
-    log.parent.mkdir(parents=True)
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
 
-    # Ensure project root exists because the script inserts -e <root>
     project_root = tmp_path / "my_project"
     project_root.mkdir()
 
-    return SimpleNamespace(
-        input=SimpleNamespace(src=str(src)),
-        output=SimpleNamespace(dst=str(dst)),
-        params=SimpleNamespace(project_root=str(project_root)),
-        log=SimpleNamespace(loguru=str(log)),
+    return Snakemake(
+        input_=InputFiles(fromdict={"src": str(src)}),
+        output=OutputFiles(fromdict={"dst": str(dst)}),
+        params=Params(fromdict={"project_root": str(project_root)}),
+        wildcards=Wildcards(),
+        resources=Resources(),
+        threads=4,
+        log=Log(
+            fromdict={
+                "loguru": str(log_dir / "conda_localize.log"),
+            }
+        ),
+        config={},
+        rulename="test_conda_localize_file",
+        bench_iteration=None,
     )
 
 
@@ -103,21 +115,22 @@ def _load_output_yaml(path: Path) -> dict:
         return y.load(fh)
 
 
-# --------------------------------------------------------------------------- #
-# Tests                                                                       #
-# --------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# Tests                                                                        #
+# -----------------------------------------------------------------------------
 
 
-def test_appends_pip_and_editable(tmp_path):
+def test_appends_pip_and_editable(tmp_path, clf_module):
     """
     When *no* pip dependency is present, the script must
-      * add ``pip>=23`` and
-      * create a ``pip:`` block containing the editable install.
+
+    * add ``pip>=23`` and
+    * create a ``pip:`` block containing the editable install.
     """
     smk = _fake_snakemake(tmp_path)
     _write_yaml(Path(smk.input.src), deps=["python=3.12"])
 
-    CLF.main(smk)
+    clf_module.main(smk)
 
     env = _load_output_yaml(Path(smk.output.dst))
     deps = env["dependencies"]
@@ -131,7 +144,7 @@ def test_appends_pip_and_editable(tmp_path):
     assert editable in pip_map["pip"]
 
 
-def test_does_not_duplicate_pip_requirement(tmp_path):
+def test_does_not_duplicate_pip_requirement(tmp_path, clf_module):
     """
     If the source already contains a pip spec >= 23,
     the script must *not* add another ``pip>=23`` entry.
@@ -145,7 +158,7 @@ def test_does_not_duplicate_pip_requirement(tmp_path):
         ],
     )
 
-    CLF.main(smk)
+    clf_module.main(smk)
     deps = _load_output_yaml(Path(smk.output.dst))["dependencies"]
 
     # Only one pip entry and it is the original >=25.1.1
@@ -153,7 +166,7 @@ def test_does_not_duplicate_pip_requirement(tmp_path):
     assert pip_strings == ["pip>=25.1.1"]
 
 
-def test_comment_and_dash_on_same_line(tmp_path):
+def test_comment_and_dash_on_same_line(tmp_path, clf_module):
     """
     The guidance comment should be attached to the *list-item* so the YAML
     contains no stray '-' on its own line and the comment starts immediately
@@ -161,7 +174,8 @@ def test_comment_and_dash_on_same_line(tmp_path):
     """
     smk = _fake_snakemake(tmp_path)
     _write_yaml(Path(smk.input.src), deps=["python=3.12"])
-    CLF.main(smk)
+
+    clf_module.main(smk)
 
     raw_text = Path(smk.output.dst).read_text(encoding="utf-8")
 
