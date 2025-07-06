@@ -251,17 +251,15 @@ Legend ── “+” = created | “*” = modified | blank = untouched
 +   │   │   ├── config.schema.json
 +   │   │   └── config.local.schema.json
 +   │   ├── scripts/
-+  +│   │   ├── rules_conda_{{ conda_env_key }}/ # (7)
++  +│   │   ├── rules_conda_RUNNER/ # (7)
++   │   │   │   └── weh_interviews_rules.py
 +   │   │   ├── rules_conda_CORE/ # (11)
 +   │   │   ├── rules_conda_DOCS/ # (8)
++   │   │   │   ├── dag_svg.py
 +   │   │   ├── rules_conda_RUNNER/ # (20)
 +   │   │   ├── rules_global/ # (9)
-+   │   │   ├── rules/
-+   │   │   │   ├── __init__.py
 +   │   │   │   ├── conda_localize_file.py
-+   │   │   │   ├── dag_svg.py
 +   │   │   │   ├── pyproject2conda.py
-+   │   │   │   └── weh_interviews_rules.py
 +   │   │   └── utils/
 +   │   │       ├── __init__.py
 +   │   │       └── config_loader.py
