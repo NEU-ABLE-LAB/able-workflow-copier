@@ -160,7 +160,7 @@ def main_smk(smk: Snakemake) -> None:
 
 if __name__ == "__main__":
     try:
-        main(snakemake)
+        main_smk(snakemake)
     except NameError:
         logger.error(
             "This script is designed to be run as part of a Snakemake workflow. "
