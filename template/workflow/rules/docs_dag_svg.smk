@@ -29,5 +29,8 @@ rule dag_svg_file:
         str(WORKFLOW_BASE / "scripts/rules_conda_DOCS/dag_svg.py")
 
 rule dag_svg_all:
+    """
+    Create an SVG of the main Snakemake DAG for all rules.
+    """
     input:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_all.svg").resolve(),
