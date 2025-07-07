@@ -53,12 +53,13 @@ def _neutralise_only_problematic_colours(root: ET.Element) -> None:
             break  # there’s only one like this
 
 
-def _generate_dag_svg(stderr_log: Path) -> str:
+def _generate_dag_svg(stderr_log: Path, rule_name: str = "all") -> str:
     """
     Generate DAG as SVG via graphviz.
 
     Args:
         stderr_log: Path to the stderr log file
+        rule_name: Name of the rule to generate the DAG for
 
     Returns:
         The raw SVG string
@@ -67,7 +68,13 @@ def _generate_dag_svg(stderr_log: Path) -> str:
     with open(stderr_log, "a") as stderr_log_file:
 
         dag_dot = subprocess.run(
-            ["snakemake", "--forceall", "--dag"],
+            [
+                "snakemake",
+                "--forceall",
+                "--rulegraph",
+                "dot",
+                rule_name,
+            ],
             check=True,
             text=True,
             stdout=subprocess.PIPE,
@@ -122,6 +129,7 @@ def _process_svg_content(raw_svg: str) -> ET.Element:
 
 def main(
     svg_path: Path,
+    rule_name: str,
     stderr_log: Path,
 ) -> None:
     """
@@ -129,7 +137,7 @@ def main(
     """
 
     # Generate DAG as SVG via graphviz
-    raw_svg = _generate_dag_svg(stderr_log)
+    raw_svg = _generate_dag_svg(stderr_log, rule_name)
 
     # Process SVG content
     root = _process_svg_content(raw_svg)
@@ -155,7 +163,7 @@ def main_smk(smk: Snakemake) -> None:
     svg_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Call the main function with the provided paths
-    main(svg_path, smk.log.stderr)
+    main(svg_path, smk.wildcards.rule_name, smk.log.stderr)
 
 
 if __name__ == "__main__":

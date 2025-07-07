@@ -1,4 +1,4 @@
-rule dag_svg:
+rule dag_svg_file:
     """
     Create an SVG of the main Snakemake DAG
 
@@ -12,13 +12,20 @@ rule dag_svg:
     """
     localrule: True
     input:
-        snakefile=workflow.source_path("../Snakefile"),
+        snakefile=workflow.source_path("../Snakefile").resolve(),
     output:
-        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_all.svg"),
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_{rule_name}.svg").resolve(),
+    wildcard_constraints:
+        rule_name=r"[a-zA-Z_][a-zA-Z0-9_]*",
+        # rule_name="|".join([rule.name for rule in workflow.rules]),
     log:
-        loguru=str(LOG_DIR / "dag_svg" / "loguru.log"),
-        stderr=str(LOG_DIR / "dag_svg" / "stderr.log"),
+        loguru=str(LOG_DIR / "dag_svg" / "{rule_name}" / "loguru.log"),
+        stderr=str(LOG_DIR / "dag_svg" / "{rule_name}" / "stderr.log"),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     script:
         str(WORKFLOW_BASE / "scripts/rules_conda_DOCS/dag_svg.py")
+
+rule dag_svg_all:
+    input:
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_all.svg").resolve(),
