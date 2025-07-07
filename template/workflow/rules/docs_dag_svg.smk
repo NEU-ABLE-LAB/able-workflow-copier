@@ -12,7 +12,7 @@ rule dag_svg_file:
     """
     localrule: True
     input:
-        snakefile=workflow.source_path("../Snakefile").resolve(),
+        snakefile=Path(workflow.source_path("../Snakefile")).resolve(),
     output:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_{rule_name}.svg").resolve(),
     wildcard_constraints:
