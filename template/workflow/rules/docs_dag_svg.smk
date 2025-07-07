@@ -9,6 +9,9 @@ rule dag_svg_file:
             worker has access to the entire directory. This very well may
             break if the job is sent out to multiple workers each with
             their own cache of this workflow.
+    wildcards:
+        rule_name: The name of the rule to generate the DAG for.
+            This is used to create a unique filename for the SVG.
     """
     localrule: True
     input:
@@ -16,8 +19,7 @@ rule dag_svg_file:
     output:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_{rule_name}.svg").resolve(),
     wildcard_constraints:
-        rule_name=r"[a-zA-Z_][a-zA-Z0-9_]*",
-        # rule_name="|".join([rule.name for rule in workflow.rules]),
+        rule_name="|".join([rule.name for rule in workflow.rules]),
     log:
         loguru=str(LOG_DIR / "dag_svg" / "{rule_name}" / "loguru.log"),
         stderr=str(LOG_DIR / "dag_svg" / "{rule_name}" / "stderr.log"),
