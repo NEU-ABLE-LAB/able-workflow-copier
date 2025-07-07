@@ -39,11 +39,11 @@
       "type": "pickString",
       "options": [
         {
-          "label": "Yes, add --remote-data=any",
+          "label": "Yes",
           "value": "--remote-data=any"
         },
         {
-          "label": "No, add --remote-data=none",
+          "label": "No",
           "value": "--remote-data=none"
         }
       ],
