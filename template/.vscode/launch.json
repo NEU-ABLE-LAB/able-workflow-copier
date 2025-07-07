@@ -20,15 +20,34 @@
       "justMyCode": false,
       "args": [
         "${file}",
+        "${input:remoteDataArg}"
       ]
     },
     {
-      "name": "Python Debugger with site-pages: Current File",
+      "name": "Python Debugger with site-packages: Current File",
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
       "justMyCode": false
+    }
+  ],
+  "inputs": [
+    {
+      "id": "remoteDataArg",
+      "description": "Run pytest with remote data?",
+      "type": "pickString",
+      "options": [
+        {
+          "label": "Yes, add --remote-data=any",
+          "value": "--remote-data=any"
+        },
+        {
+          "label": "No, add --remote-data=none",
+          "value": "--remote-data=none"
+        }
+      ],
+      "default": "--remote-data=any"
     }
   ]
 }
