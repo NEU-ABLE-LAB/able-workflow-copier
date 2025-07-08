@@ -21,8 +21,8 @@ rule dag_svg_file:
     wildcard_constraints:
         rule_name="|".join([rule.name for rule in workflow.rules]),
     log:
-        loguru=str(LOG_DIR / "dag_svg" / "{rule_name}" / "loguru.log"),
-        stderr=str(LOG_DIR / "dag_svg" / "{rule_name}" / "stderr.log"),
+        loguru=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "loguru.log"),
+        stderr=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "stderr.log"),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     script:

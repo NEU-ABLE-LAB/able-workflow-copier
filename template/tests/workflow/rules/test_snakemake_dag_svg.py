@@ -23,9 +23,9 @@ def create_dummy_input_data(
 
 # --- Tests ------------------------------------------------------------------
 def test_dag_svg(workspace: Path) -> None:
-    _snakemake(workspace, ["dag_svg"])
+    _snakemake(workspace, ["dag_svg_all"])
 
     # Ideally, we would check that the SVG file exists and is valid.
     # However, the file gets generated in the cached directory of the
-    # workflow mdoule under test within the dummary parent workspace.
+    # workflow module under test within the dummy parent workspace.
     # For now, we just check that the rule runs without errors.
