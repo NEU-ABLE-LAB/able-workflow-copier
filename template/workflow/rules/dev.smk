@@ -26,7 +26,7 @@ rule conda_localize_file:
     output:
         dst=str(Path(config["CONDA"]["LOCALIZED_DIR"]) / "{environment}.yaml"),
     wildcard_constraints:
-        environment=RE_VALID_FNAME_STEM,
+        environment="|".join(config["CONDA"]["ENVS"].values()),
     params:
         project_root=str((WORKFLOW_BASE / "..").resolve()),
     log:
@@ -53,7 +53,7 @@ rule conda_update_yaml:
         ),
     wildcard_constraints:
         yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|{config['CONDA']['ENVS_DIR']}",
-        environment=RE_VALID_FNAME_STEM,
+        environment="|".join(config["CONDA"]["ENVS"].values()),
     log:
         stdout=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stdout.log",
         stderr=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stderr.log",
