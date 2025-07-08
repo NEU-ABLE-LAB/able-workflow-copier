@@ -18,7 +18,7 @@ rule docs_build:
     localrule: True
     input:
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
-        dag_svg=rules.dag_svg_all.output,
+        dag_svg=rules.dag_svg_all.input.svg,
     output:
         site_dir=directory(Path(config["DOCS_SITE_DIR"]).resolve()),
     log:
