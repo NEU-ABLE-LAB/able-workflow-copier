@@ -19,7 +19,7 @@ rule docs_build:
     input:
 
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
-        dag_svg=rules.dag_svg.output,
+        dag_svg=rules.dag_svg_all.output,
     output:
         site_dir=directory(Path(config["DOCS_SITE_DIR"]).resolve()),
     log:
@@ -102,7 +102,7 @@ rule docs_serve:
         # so instead just point to the mkdocs.yml file and assume the
         # worker has access to the entire directory
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
-        dag_svg=rules.dag_svg.output,
+        dag_svg=rules.dag_svg_all.output,
     log:
         stdout=LOG_DIR / "docs_serve" / "stdout.log",
         stderr=LOG_DIR / "docs_serve" / "stderr.log",

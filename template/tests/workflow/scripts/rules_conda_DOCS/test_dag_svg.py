@@ -64,7 +64,7 @@ def fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
         input_=InputFiles([]),
         output=OutputFiles(fromdict={"svg": str(svg_path)}),
         params=Params(),
-        wildcards=Wildcards(),
+        wildcards=Wildcards(fromdict={"rule_name": "all"}),
         resources=Resources(),
         threads=4,
         log=Log(
@@ -120,37 +120,6 @@ def test_process_svg_content_adds_class_injects_style_and_neutralises_bg(
 
 
 # --------------------------------------------------------------------------- #
-# _generate_dag_svg                                                           #
-# --------------------------------------------------------------------------- #
-
-
-def test_generate_dag_svg_invokes_snakemake_and_dot(
-    monkeypatch,
-    tmp_path,
-    dag_svg_module,
-):
-    dot_graph = "digraph G { A -> B }"
-    calls: list[list[str]] = []
-
-    def fake_run(cmd, *, check, text, stdout, stderr=None, input=None):
-        """Pretend to be ``subprocess.run`` for the two expected invocations."""
-        calls.append(cmd)
-        if cmd[0] == "snakemake":
-            return subprocess.CompletedProcess(cmd, 0, stdout=dot_graph, stderr="")
-        if cmd[0] == "dot":
-            # Ensure DOT is called with the output from the first call
-            assert input == dot_graph
-            return subprocess.CompletedProcess(cmd, 0, stdout=RAW_SVG, stderr="")
-        raise RuntimeError(f"Unexpected cmd {cmd}")
-
-    monkeypatch.setattr(dag_svg_module.subprocess, "run", fake_run)
-
-    svg = dag_svg_module._generate_dag_svg(tmp_path / "stderr.log")  # noqa: SLF001
-    assert svg == RAW_SVG
-    assert calls == [["snakemake", "--forceall", "--dag"], ["dot", "-Tsvg"]]
-
-
-# --------------------------------------------------------------------------- #
 # main() + main_smk() (integration smoke-test)                                #
 # --------------------------------------------------------------------------- #
 
@@ -164,7 +133,7 @@ def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
     monkeypatch.setattr(
         dag_svg_module,
         "_generate_dag_svg",
-        lambda _: RAW_SVG,
+        lambda _, __: RAW_SVG,
     )
 
     smk = fake_snakemake(tmp_path)

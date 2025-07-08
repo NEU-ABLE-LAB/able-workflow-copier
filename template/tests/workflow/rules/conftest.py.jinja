@@ -85,18 +85,22 @@ def workspace(
 
     repo_root = request.config.rootdir
 
-    # Copy the repo’s config and profile
+    # Copy the repo’s config
     shutil.copytree(repo_root / "config", tmp_path / "config")
 
-    # Decide where the local Snakefile lives
+    # Decide where the local Snakefile and profiles lives
     if snakefile_loc == "proj_root":
         snakefile_dir = tmp_path
-        shutil.copytree(repo_root / "workflow" / "profiles", tmp_path / "profiles")
+        shutil.copytree(
+            repo_root / "workflow" / "profiles",
+            tmp_path / "profiles"
+        )
     elif snakefile_loc == "workflow":
         snakefile_dir = tmp_path / "workflow"
         snakefile_dir.mkdir()
         shutil.copytree(
-            repo_root / "workflow" / "profiles", tmp_path / "workflow" / "profiles"
+            repo_root / "workflow" / "profiles",
+            tmp_path / "workflow" / "profiles"
         )
     else:
         raise ValueError(f"Unknown location: {snakefile_loc}")

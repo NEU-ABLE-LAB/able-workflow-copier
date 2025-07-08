@@ -11,9 +11,72 @@ Use Snakemake to manage documentation tasks:
 
 ## Contributing to the documentation
 
-TODO-copier-package Add best-practices and overviiew of contributing to the documentation
+Welcome! This section covers best practices and guidelines for contributing to the project documentation.
 
-## Tools and tips for writing documentation
+### Getting started
+
+1. **Set up your environment**: Ensure you have the development environment configured with all required dependencies.
+2. **Understand the structure**: Familiarize yourself with the documentation structure and tools described below.
+3. **Test locally**: Always build and test documentation changes locally before submitting.
+
+### Best practices
+
+#### Writing guidelines
+
+- **Write clearly and concisely**: Use simple, direct language that's accessible to users of different skill levels.
+- **Be consistent**: Follow existing patterns for headings, formatting, and style throughout the documentation.
+- **Include examples**: Provide practical examples and code snippets to illustrate concepts.
+- **Use proper grammar**: Proofread your content and use tools like spell checkers.
+
+#### Documentation structure
+
+- **Follow the existing hierarchy**: Place content in appropriate sections and maintain the logical flow.
+- **Use descriptive headings**: Make headings clear and searchable.
+- **Cross-reference appropriately**: Link to related sections and external resources when helpful.
+- **Keep navigation in mind**: Consider how users will discover and navigate to your content.
+
+#### Code documentation
+
+- **Add type hints**: All Python functions should include proper type annotations.
+- **Write numpy-style docstrings**: Use the established docstring format for consistency with `mkdocstrings`.
+- **Document parameters and returns**: Clearly describe function inputs, outputs, and any exceptions.
+- **Include usage examples**: Add practical examples in docstrings when appropriate.
+
+#### Technical considerations
+
+- **Test your changes**: Run `docs_build` locally to ensure your changes compile without errors.
+- **Check links**: Verify that all internal and external links work correctly.
+- **Optimize images**: Use appropriate formats and sizes for any images or diagrams.
+- **Consider accessibility**: Use alt text for images and ensure content is screen-reader friendly.
+
+### Workflow for contributing
+
+1. **Create a branch**: Work on documentation changes in a dedicated feature branch.
+2. **Make your changes**: Edit the relevant `.md` files in the `docs/` directory.
+3. **Test locally**: Use `docs_serve` to preview your changes in a browser.
+4. **Review and refine**: Check formatting, links, and overall presentation.
+5. **Submit for review**: Create a pull request with a clear description of your changes.
+
+### Common pitfalls to avoid
+
+- **Don't break existing functionality**: Ensure your changes don't break existing documentation features.
+- **Avoid orphaned content**: Make sure new content is properly linked and discoverable.
+- **Don't ignore build warnings**: Address any warnings that appear during the build process.
+- **Keep formatting consistent**: Follow the established markdown patterns and conventions.
+
+## Tools for building documentation
+
+### Snakemake workflow graph
+
+??? info `dag_svg` rules
+
+    ```python
+    {%
+      include "../../../workflow/rules/docs_dag_svg.smk"
+    %}
+    ```
+
+## Tools for writing documentation
 
 ### [Admonitions](https://squidfunk.github.io/mkdocs-material/reference/admonitions/)
 

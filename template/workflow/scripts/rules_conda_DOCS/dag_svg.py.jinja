@@ -4,14 +4,17 @@ Script for the dag_svg rule
 Create an SVG of the main Snakemake DAG
 """
 
+import shutil
 import subprocess
 import sys
+import tempfile
 import textwrap
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from loguru import logger
 from lxml import etree as ET
+from ruamel.yaml import YAML
 
 from snakemake.script import Snakemake
 
@@ -53,21 +56,103 @@ def _neutralise_only_problematic_colours(root: ET.Element) -> None:
             break  # there’s only one like this
 
 
-def _generate_dag_svg(stderr_log: Path) -> str:
+def _create_dummy_parent_workspace(rule_name: str) -> Path:  # noqa: D401
+    """
+    Spin-up a *temporary* Snakemake workspace that imports the project workflow
+    as a **module** and pre-creates any dummy input files declared in
+    ``data/tests/{rule_name}.yaml``.
+    """
+
+    # Project structure:
+    #   project_root/
+    #     ├─ workflow/           ← real workflow root
+    #     └─ data/tests/*.yaml   ← per-rule dummy-input manifests
+    project_root = Path(__file__).resolve().parents[3]
+    project_snakefile = project_root / "workflow" / "Snakefile"
+
+    workspace = Path(tempfile.mkdtemp(prefix="dag-parent-"))
+    (workspace / "data").mkdir(parents=True, exist_ok=True)
+
+    # --- Copy the project config and profiles -------------------------------
+    config_dir = project_root / "config"
+    profiles_dir = project_root / "workflow" / "profiles"
+    shutil.copytree(config_dir, workspace / "config")
+    shutil.copytree(profiles_dir, workspace / "workflow" / "profiles")
+
+    # --- Snakefile that wraps the project workflow as a module --------------
+    (workspace / "workflow" / "Snakefile").write_text(
+        textwrap.dedent(
+            f"""
+            module {{ package_name }}:
+                snakefile: "{project_snakefile}"
+                config: config
+
+            use rule * from {{ package_name }}
+            """
+        )
+    )
+
+    # --- Touch dummy required input files -----------------------------------
+    yaml_manifest = project_root / "data" / "tests" / f"{rule_name}.yaml"
+    if not yaml_manifest.exists():
+        logger.error(
+            f"Manifest file for rule '{rule_name}' not found: {yaml_manifest}"
+        )
+        sys.exit(1)
+
+    yaml = YAML(typ="safe")
+    with yaml_manifest.open("r", encoding="utf-8") as fh:
+        manifest = yaml.load(fh) or {}
+
+    for rel_path in manifest.get("files", []):
+        fp = workspace / "data" / rel_path
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.touch()
+
+    return workspace
+
+
+def _generate_dag_svg(stderr_log: Path, rule_name: str = "all") -> str:
     """
     Generate DAG as SVG via graphviz.
 
     Args:
         stderr_log: Path to the stderr log file
+        rule_name: Name of the rule to generate the DAG for
 
     Returns:
         The raw SVG string
     """
-    logger.debug("Generating DAG SVG using Snakemake")
+
+    logger.debug("Generating DAG SVG using Snakemake (dummy-parent)")
+
+    parent_ws = _create_dummy_parent_workspace(rule_name)
+
     with open(stderr_log, "a") as stderr_log_file:
 
+        # Localize conda environment yamls
+        subprocess.run(
+            [
+                "snakemake",
+                "conda_localize",
+            ],
+            cwd=parent_ws,
+            check=True,
+            text=True,
+            stdout=stderr_log_file,
+            stderr=subprocess.STDOUT,
+        )
+
+        # Generate the DAG in DOT format
         dag_dot = subprocess.run(
-            ["snakemake", "--forceall", "--dag"],
+            [
+                "snakemake",
+                "--forceall",
+                "--rulegraph",
+                "dot",
+                f"{rule_name}",
+            ],
+            cwd=parent_ws,
             check=True,
             text=True,
             stdout=subprocess.PIPE,
@@ -122,6 +207,7 @@ def _process_svg_content(raw_svg: str) -> ET.Element:
 
 def main(
     svg_path: Path,
+    rule_name: str,
     stderr_log: Path,
 ) -> None:
     """
@@ -129,7 +215,7 @@ def main(
     """
 
     # Generate DAG as SVG via graphviz
-    raw_svg = _generate_dag_svg(stderr_log)
+    raw_svg = _generate_dag_svg(stderr_log, rule_name)
 
     # Process SVG content
     root = _process_svg_content(raw_svg)
@@ -155,7 +241,7 @@ def main_smk(smk: Snakemake) -> None:
     svg_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Call the main function with the provided paths
-    main(svg_path, smk.log.stderr)
+    main(svg_path, smk.wildcards.rule_name, smk.log.stderr)
 
 
 if __name__ == "__main__":
