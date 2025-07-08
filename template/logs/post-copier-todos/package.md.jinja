@@ -22,9 +22,11 @@ This issue is for tracking the development of the {{ project_name }} project cop
 
 4. Open the documentation in your browser and follow the instructions for setting up the development environment on the *Contributing* page.
 
-### Project Development
+### Development Environment
 
-1. **Initialize git**: If you haven't already, initialize a git repository in the project directory:
+#### Initialize git
+
+If you haven't already, initialize a git repository in the project directory:
 
    ```bash
    git init
@@ -43,7 +45,23 @@ This issue is for tracking the development of the {{ project_name }} project cop
    git commit -m "Initial commit from able-workflow-copier template"
    ```
 
-2. **Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/) template to create a new module for your project.
+#### Create conda development environment
+
+Use the `conda_update` Snakemake rule to create all the development conda ennvironments.
+
+   ```bash
+   snakemake conda_update
+   ```
+
+Then activate the main development environment:
+
+   ```bash
+   conda activate {{ package_name }}-py312-dev-runner
+   ```
+
+### Project Development
+
+**Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev/) template to create a new module for your project.
 
 ### Aspirational to-do's
 
