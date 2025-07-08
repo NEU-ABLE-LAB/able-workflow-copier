@@ -53,7 +53,11 @@ rule conda_update_yaml:
         ),
     wildcard_constraints:
         yaml_dir=f"{config['CONDA']['LOCALIZED_DIR']}|{config['CONDA']['ENVS_DIR']}",
-        environment="|".join(config["CONDA"]["ENVS"].values()),
+        environment=(
+            "|".join(config["CONDA"]["ENVS"].values())
+            + "|"
+            + "|".join(config["CONDA"]["ENVS_META"].values())
+        )
     log:
         stdout=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stdout.log",
         stderr=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stderr.log",
