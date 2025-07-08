@@ -122,6 +122,7 @@ conda_update_workflow_env:
     the conda environment after updating the template, run
     `snakemake --cores 1 conda_update`
   default: false
+  when: false # This feature will be depreciated in the future.
 
 conda_localize:
   type: bool
@@ -131,6 +132,7 @@ conda_localize:
     If you do not run this, you will need to run
     `snakemake conda_localize` manually after running `copier`.
   default: false
+  when: false # This feature will be depreciated in the future.
 
 format_code:
   type: bool
