@@ -17,7 +17,6 @@ rule docs_build:
     """
     localrule: True
     input:
-
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
         dag_svg=rules.dag_svg_all.output,
     output:
