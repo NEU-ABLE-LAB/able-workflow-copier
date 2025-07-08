@@ -19,7 +19,7 @@ rule dag_svg_file:
     output:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_{rule_name}.svg").resolve(),
     wildcard_constraints:
-        rule_name="|".join([rule.name for rule in workflow.rules]),
+        rule_name="[a-zA-Z_][a-zA-Z0-9_]*"
     log:
         loguru=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "loguru.log"),
         stderr=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "stderr.log"),
