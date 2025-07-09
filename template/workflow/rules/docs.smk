@@ -101,7 +101,7 @@ rule docs_serve:
         # so instead just point to the mkdocs.yml file and assume the
         # worker has access to the entire directory
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
-        dag_svg=rules.dag_svg_all.output,
+        dag_svg=rules.dag_svg_all.input.svg,
     log:
         stdout=LOG_DIR / "docs_serve" / "stdout.log",
         stderr=LOG_DIR / "docs_serve" / "stderr.log",
