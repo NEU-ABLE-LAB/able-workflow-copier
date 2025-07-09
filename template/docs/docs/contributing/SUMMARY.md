@@ -2,6 +2,6 @@
 
 - [Configuring VSCode](vscode.md)
 - [Templates](templates/)
-- [Adding an ETL process](etl.md)
-- [Testing the code](tests.md)
-- [Adding documentation](docs.md)
+- [Testing](tests.md)
+- [ETL processes](etl.md)
+- [Documentation](docs.md)
