@@ -57,7 +57,7 @@ rule conda_update_yaml:
             "|".join(config["CONDA"]["ENVS"].values())
             + "|"
             + "|".join(config["CONDA"]["ENVS_META"].values())
-        )
+        ),
     log:
         stdout=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stdout.log",
         stderr=LOG_DIR / "conda_update/{yaml_dir}/{environment}/stderr.log",
