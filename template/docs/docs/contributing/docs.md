@@ -68,7 +68,7 @@ Welcome! This section covers best practices and guidelines for contributing to t
 
 ### Snakemake workflow graph
 
-??? info `dag_svg` rules
+??? info "`dag_svg`" rules
 
     ```python
     {%
