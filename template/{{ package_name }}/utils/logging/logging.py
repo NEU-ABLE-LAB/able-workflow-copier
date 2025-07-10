@@ -18,6 +18,7 @@ from typing import Any
 
 import loguru
 from loguru import logger
+from tqdm import tqdm
 
 
 def _serialise_ctx(ctx: str | dict[str, str] | None) -> str:  # noqa: D401
@@ -34,7 +35,6 @@ def configure_file_logger(
     log_path: Path,
     *,
     context: Any,
-    rotation: str | int = "25 MB",
     enqueue: bool = True,
     log_level: str = "DEBUG",
 ) -> loguru.Logger:
@@ -48,8 +48,6 @@ def configure_file_logger(
     context
         Any JSON-serialisable object (usually `str` or `dict`) identifying
         the Snakemake job - printed on every log line via `{extra[ctx]}`.
-    rotation
-        Forwarded to :pyfunc:`loguru.logger.add` (size or time-based rotation).
     enqueue
         `True` enables process-safe queueing - **required** when Snakemake
         runs jobs in parallel.
@@ -68,29 +66,59 @@ def configure_file_logger(
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Provide a default for *all* records (even ones emitted before binding).
-    logger.configure(extra={"ctx": "-"})
+    logger.configure(extra={"ctx": _serialise_ctx(context)})
 
     # Wipe previous sinks (avoid duplicate emission)
     logger.remove()
 
     # Freeze the context for this *process*
-    bound = logger.bind(ctx=_serialise_ctx(context))
+    # bound = logger.bind(ctx=_serialise_ctx(context))
 
-    # Add the file sink with a readable format
+    # Add the context to the output format
+    # Note: `ctx` is a bound extra field, so it can be used in the format string.
+    #       It is not a global variable, so it won't leak into other modules.
+    #       The format string is human-friendly, so it can be used in the terminal
+    #       and in log files.
+    #       The format string is compatible with the default Loguru format.
     log_fmt = (
         "{time:YYYY-MM-DD HH:mm:ss.SSS} | "
         "{level:<8} | "
-        "{extra[ctx]:<25} | "
+        "{extra[ctx]} | "
+        "{name}:{function}:{line} | "
         "{message}"
     )
-    bound.add(
-        log_path,
-        rotation=rotation,
-        enqueue=enqueue,
-        backtrace=True,
-        diagnose=True,
-        format=log_fmt,
+
+    # Wrap loguru around tqdm.write to ensure that tqdm progress bars
+    # are not disrupted by log messages.
+    # This is useful when running Snakemake jobs in parallel, where
+    # log messages can interfere with the progress bars.
+    # See: https://github.com/Delgan/loguru/issues/135
+    def log_sink(message: str) -> None:
+        """Custom sink that uses tqdm.write to print log messages."""
+
+        # Open the log file in append mode
+        # TODO Consider alternative approaches since this open/closes
+        # the file for every log message.
+        # This is not ideal for performance, but it ensures that the log file
+        # is always up-to-date and avoids issues with concurrent writes.
+        # Look into how this works with the `enqueue` parameter.
+        with log_path.open("a", encoding="utf-8") as fh:
+            # Write the log message to the file
+            tqdm.write(
+                str(message),
+                file=fh,
+                end="",  # Loguru already adds a newline
+            )
+
+    # Add the file sink with the context-aware format
+    logger.add(
+        log_sink,
         level=log_level,
+        format=log_fmt,
+        colorize=True,  # Assume the log viewer supports colors
+        backtrace=True,  # Enable backtrace for exceptions
+        diagnose=True,  # Enable detailed error messages
+        enqueue=enqueue,
     )
 
-    return bound
+    return logger

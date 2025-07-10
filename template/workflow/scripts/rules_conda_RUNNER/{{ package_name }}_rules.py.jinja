@@ -5,32 +5,46 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict
 
-import snakemake
 from loguru import logger
 from snakemake.io import Namedlist
 from snakemake.script import Snakemake
 
-
-# ---------------------------------------------------------------------------
-# Main entry point
-# ---------------------------------------------------------------------------
+from {{ package_name }}.utils.logging.logging import configure_file_logger
 
 
 def main(smk: Snakemake) -> None:
-    """Import and invoke the target function whose dotted path is given in ``smk.params.func``."""
+    """
+    Import and invoke the target function whose
+    dotted path is given in ``smk.params.func``.
+    """
 
     # Make **sure** we can always find the dotted path
-    try:
-        func_path = smk.params.func
-    except AttributeError:
-        raise AttributeError(
-            "No «func» entry found in smk.params - did the rule forget to set it?"
+    func_path: str|None = smk.params.get("func", None)
+    if func_path is None:
+        raise ValueError(
+            "No `func` entry found in smk.params. "
+            "Did the rule forget to set it?"
         )
 
     # Import the target callable
     mod_path, func_name = func_path.rsplit(":", 1)
     module = importlib.import_module(mod_path)
     func: Callable[..., Any] = getattr(module, func_name)
+
+    # Configure the loguru logger using the package's logging utility
+    logger = configure_file_logger(
+        log_path=Path(smk.log.loguru),
+        context=[smk.rule, smk.wildcards],
+    )
+    logger.info(f"Running {func_path} for Snakemake rule {smk.rule}")
+    logger.info(f"  input: {smk.input}")
+    logger.info(f"  output: {smk.output}")
+    logger.info(f"  params: {smk.params}")
+    logger.info(f"  wildcards: {smk.wildcards}")
+    logger.info(f"  threads: {smk.threads}")
+    logger.info(f"  resources: {smk.resources}")
+    logger.info(f"  log: {smk.log}")
+    logger.info(f"  config: {smk.config}")
 
     # Call the target callable with converted arguments
     func(smk=smk)
