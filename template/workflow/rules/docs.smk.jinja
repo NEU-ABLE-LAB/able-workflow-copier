@@ -116,6 +116,21 @@ rule docs_serve_service:
         touch "{output.server}"
         exec 1>"{log.stdout}"
         exec 2>"{log.stderr}"
+
+        # --- automatic cleanup ----------------------------------------------
+        # Remove the server file on exit to stop the service
+        # This is a simple way to ensure the service stops
+        # when the Snakemake workflow is stopped or interrupted.
+        # This is a workaround for the fact that Snakemake
+        # does not automatically stop services when the workflow
+        # is stopped or interrupted.
+        cleanup() {% raw %}{{{% endraw %}
+            echo "Stopping MkDocs"
+            rm -f {output.server}
+        {% raw %}}}{% endraw %}
+        trap cleanup EXIT INT TERM HUP
+
+        # --- launch mkdocs --------------------------------------------------
         export JUPYTER_PLATFORM_DIRS=1
         export DOCS_ASSETS_DIR="{params.docs_assets}"
         mkdocs serve \
@@ -132,11 +147,8 @@ rule docs_serve:
         rules.docs_serve_service.output.server,
     shell:
         """
-        # This rule is a no-op, it just holds the service
-        # so that it can be run in the background.
-        echo "Serving documentation at http://localhost:8000"
+        # This rule is a no-op, it just holds the service running
+        echo "Serving {{ package_name }} documentation"
         echo "Press Ctrl+C to stop the server."
-        while true; do
-            sleep 1;
-        done
+        tail -f /dev/null  # an infinite but lightweight wait
         """
