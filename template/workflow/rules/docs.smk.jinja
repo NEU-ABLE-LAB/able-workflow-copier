@@ -113,7 +113,7 @@ rule docs_serve_service:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     shell:
         """
-
+        touch "{output.server}"
         exec 1>"{log.stdout}"
         exec 2>"{log.stderr}"
         export JUPYTER_PLATFORM_DIRS=1
