@@ -171,7 +171,7 @@ _tasks:
   # Run black, ruff, and snakefmt to format the code to fix line wraps
   # depending on length of generated code.
   - command: >-
-      black --exclude "^$" ./
+      if [ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]; then black --exclude "^$" ./; else black ./; fi
     when: "{{ format_code }}"
   - command: >-
       snakefmt --config snakefmt.toml workflow/
