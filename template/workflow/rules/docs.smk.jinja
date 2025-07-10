@@ -88,7 +88,7 @@ rule docs_build:
 #         """
 
 
-rule docs_serve:
+rule docs_serve_service:
     """
     Make and serve the documentation.
     NOTE: This rule is "blocking", and will not return until the server is stopped.
@@ -103,7 +103,7 @@ rule docs_serve:
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
         dag_svg=rules.dag_svg_all.input.svg,
     output:
-        service("{{ package_name }}-mkdocs-server"),
+        server=service("logs/services/{{ package_name }}-mkdocs.server"),
     log:
         stdout=LOG_DIR / "docs_serve" / "stdout.log",
         stderr=LOG_DIR / "docs_serve" / "stderr.log",
@@ -113,10 +113,30 @@ rule docs_serve:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     shell:
         """
+
         exec 1>"{log.stdout}"
         exec 2>"{log.stderr}"
         export JUPYTER_PLATFORM_DIRS=1
         export DOCS_ASSETS_DIR="{params.docs_assets}"
         mkdocs serve \
           --config-file {input.mkdocs_yml}
+        """
+
+rule docs_serve:
+    """
+    Hold the `docs_serve_service` rule in a service
+    so that it can be run in the background.
+    """
+    localrule: True
+    input:
+        rules.docs_serve_service.output.server,
+    shell:
+        """
+        # This rule is a no-op, it just holds the service
+        # so that it can be run in the background.
+        echo "Serving documentation at http://localhost:8000"
+        echo "Press Ctrl+C to stop the server."
+        while true; do
+            sleep 1;
+        done
         """
