@@ -100,7 +100,7 @@ def _configure_loguru() -> None:
             rotation="5 MB",
             filter=lambda record: record["extra"].get("site") == site,
         )
-    # Provide a default 'site' key so filters don’t raise KeyError
+    # Provide a default 'site' key so filters don't raise KeyError
     logger.patch(lambda record: record["extra"].setdefault("site", "global"))
 
 
@@ -113,7 +113,7 @@ def _start_mkdocs(site: str, cfg: Path, port: int) -> Popen[str]:
     site
         Short site identifier (e.g., ``"main"``).
     cfg
-        Path to the site’s ``mkdocs.yml``.
+        Path to the site's ``mkdocs.yml``.
     port
         Port for the development server (e.g., ``8001``).
 
