@@ -1,0 +1,14 @@
+"""
+Package-wide configurations
+"""
+
+from loguru import logger
+from tqdm import tqdm
+
+
+# Configure loguru with tqdm.write
+# https://github.com/Delgan/loguru/issues/135
+# This will get overridden if the `configure_file_logger` function
+# in the `{{ package_name }}.utils.logging` module is called.
+logger.remove(0)
+logger.add(lambda msg: tqdm.write(msg, end=""), colorize=True)

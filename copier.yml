@@ -165,13 +165,13 @@ _tasks:
   - command: >-
       conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
     when: "{{ conda_localize }}"
+  - command: >-
+      ruff check --fix ./
+    when: "{{ format_code }}"
   # Run black, ruff, and snakefmt to format the code to fix line wraps
   # depending on length of generated code.
   - command: >-
-      black ./
-    when: "{{ format_code }}"
-  - command: >-
-      ruff check --fix ./
+      black --exclude "^$" ./
     when: "{{ format_code }}"
   - command: >-
       snakefmt --config snakefmt.toml workflow/

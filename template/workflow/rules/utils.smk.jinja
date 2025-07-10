@@ -66,3 +66,21 @@ def get_localized_conda(env_name: str) -> str:
         )
 
     return str(env_path)
+
+
+rule test_logging:
+    """
+    Test the logging configuration.
+    """
+    localrule: True
+    input:
+        readme="data/README.md",
+    log:
+        loguru=str(LOG_DIR / "test_logging" / "loguru.log"),
+        stderr=str(LOG_DIR / "test_logging" / "stderr.log"),
+    conda:
+        get_localized_conda(config["CONDA"]["ENVS"]["RUNNER"])
+    params:
+        func="{{ package_name }}.utils.logging.runner.test_logging:main_smk",
+    script:
+        str(WORKFLOW_BASE / "scripts/rules_conda_RUNNER/{{ package_name }}_rules.py")
