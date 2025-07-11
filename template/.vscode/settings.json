@@ -1,4 +1,7 @@
 {
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
     "logViewer.logLevel": "warn",
     "logViewer.options": {},
     "logViewer.showStatusBarItemOnChange": true,
