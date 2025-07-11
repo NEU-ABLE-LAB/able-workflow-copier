@@ -28,19 +28,6 @@ description: The main configuration schema for the workflow.
 #     that the file can be accessed from any working directory, and
 # (b) downloads remote files to a local cache:
 properties:
-  DOCS_ASSETS_DIR:
-    type: string
-    description: >-
-      Directory for assets used by the documentation that have been
-      created by the workflow.
-
-      This should only be used relative to the working directory
-      (either the directory in which you have invoked Snakemake or
-      whatever was specified for `--directory` or the `workdir:` directive).
-
-      If this workflow is used as a module in another workflow,
-      the paths are relative to the working directory of the `snakemake`
-      call that imports this workflow.
 
   DOCS_SITE_DIR:
     type: string
@@ -231,7 +218,6 @@ properties:
       - ENVS_META
       - ENVS
 required:
-  - DOCS_ASSETS_DIR
   - DOCS_SITE_DIR
   - REPORTS_DIR
   - REPORT_TEMPLATES_DIR
