@@ -64,7 +64,12 @@ def fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
         input_=InputFiles([]),
         output=OutputFiles(fromdict={"svg": str(svg_path)}),
         params=Params(),
-        wildcards=Wildcards(fromdict={"rule_name": "all"}),
+        wildcards=Wildcards(
+            fromdict={
+                "rule_name": "all",
+                "graph_type": "dag",
+            }
+        ),
         resources=Resources(),
         threads=4,
         log=Log(
@@ -133,7 +138,7 @@ def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
     monkeypatch.setattr(
         dag_svg_module,
         "_generate_dag_svg",
-        lambda _, __: RAW_SVG,
+        lambda _, __, ___: RAW_SVG,
     )
 
     smk = fake_snakemake(tmp_path)
