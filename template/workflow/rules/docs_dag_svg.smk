@@ -12,6 +12,8 @@ rule dag_svg_file:
     wildcards:
         rule_name: The name of the rule to generate the DAG for.
             This is used to create a unique filename for the SVG.
+        graph_type: The type of the graph to generate
+            (e.g. "dag", "rulegraph", "filegraph").
     """
     localrule: True
     resources:
@@ -19,12 +21,13 @@ rule dag_svg_file:
     input:
         snakefile=Path(workflow.source_path("../Snakefile")).resolve(),
     output:
-        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_{rule_name}.svg").resolve(),
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/{graph_type}-{rule_name}.svg").resolve(),
     wildcard_constraints:
-        rule_name="[a-zA-Z_][a-zA-Z0-9_]*"
+        rule_name="[a-zA-Z_][a-zA-Z0-9_]*",
+        graph_type="[a-zA-Z_][a-zA-Z0-9_]*",
     log:
-        loguru=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "loguru.log"),
-        stderr=str(LOG_DIR / "dag_svg_file" / "{rule_name}" / "stderr.log"),
+        loguru=str(LOG_DIR / "dag_svg_file" / "{graph_type}-{rule_name}" / "loguru.log"),
+        stderr=str(LOG_DIR / "dag_svg_file" / "{graph_type}-{rule_name}" / "stderr.log"),
     conda:
         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
     script:
@@ -35,4 +38,4 @@ rule dag_svg_all:
     Create an SVG of the main Snakemake DAG for all rules.
     """
     input:
-        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag_all.svg").resolve(),
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag-all.svg").resolve(),

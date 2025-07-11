@@ -112,21 +112,41 @@ def _create_dummy_parent_workspace(rule_name: str) -> Path:  # noqa: D401
     return workspace
 
 
-def _generate_dag_svg(stderr_log: Path, rule_name: str = "all") -> str:
+def _generate_dag_svg(
+    stderr_log: Path,
+    rule_name: str = "all",
+    graph_type: str = "rulegraph",
+) -> str:
     """
     Generate DAG as SVG via graphviz.
 
-    Args:
-        stderr_log: Path to the stderr log file
-        rule_name: Name of the rule to generate the DAG for
+    Parameters
+    ----------
+    stderr_log: Path
+        Path to the stderr log file
+    rule_name: str
+        Name of the rule to generate the DAG for
+    graph_type: str
+        Type of DAG to generate
+          - "dag" for the full DAG
+          - "rulegraph" for the rule graph (default)
+          - "filegraph" for the file graph
 
-    Returns:
+    Returns
+    -------
+    str:
         The raw SVG string
     """
 
     logger.debug("Generating DAG SVG using Snakemake (dummy-parent)")
 
     parent_ws = _create_dummy_parent_workspace(rule_name)
+
+    if graph_type not in ["dag", "rulegraph", "filegraph"]:
+        raise ValueError(
+            f"Invalid graph type '{graph_type}'. Must be one of: "
+            "'dag', 'rulegraph', 'filegraph'."
+        )
 
     with open(stderr_log, "a") as stderr_log_file:
 
@@ -145,15 +165,24 @@ def _generate_dag_svg(stderr_log: Path, rule_name: str = "all") -> str:
             stderr=subprocess.STDOUT,
         )
 
+        cmd = [
+            "snakemake",
+            f"{rule_name}",
+            "--forceall",
+        ]
+
+        if graph_type == "filegraph":
+            # filegraph argument does not have a `dot` option
+            cmd.append("--filegraph")
+        else:
+            cmd.extend([
+                f"--{graph_type}",
+                "dot",
+            ])
+
         # Generate the DAG in DOT format
         dag_dot = subprocess.run(
-            [
-                "snakemake",
-                "--forceall",
-                "--rulegraph",
-                "dot",
-                f"{rule_name}",
-            ],
+            cmd,
             cwd=parent_ws,
             check=True,
             text=True,
@@ -211,13 +240,14 @@ def main(
     svg_path: Path,
     rule_name: str,
     stderr_log: Path,
+    graph_type: str = "rulegraph",
 ) -> None:
     """
     Generate a Snakemake DAG as an SVG file.
     """
 
     # Generate DAG as SVG via graphviz
-    raw_svg = _generate_dag_svg(stderr_log, rule_name)
+    raw_svg = _generate_dag_svg(stderr_log, rule_name, graph_type)
 
     # Process SVG content
     root = _process_svg_content(raw_svg)
@@ -243,7 +273,12 @@ def main_smk(smk: Snakemake) -> None:
     svg_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Call the main function with the provided paths
-    main(svg_path, smk.wildcards.rule_name, smk.log.stderr)
+    main(
+        svg_path=svg_path,
+        rule_name=smk.wildcards.rule_name,
+        stderr_log=smk.log.stderr,
+        graph_type=smk.wildcards.graph_type
+    )
 
 
 if __name__ == "__main__":
