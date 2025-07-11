@@ -14,6 +14,8 @@ rule dag_svg_file:
             This is used to create a unique filename for the SVG.
     """
     localrule: True
+    resources:
+        snakemake_calls=1
     input:
         snakefile=Path(workflow.source_path("../Snakefile")).resolve(),
     output:

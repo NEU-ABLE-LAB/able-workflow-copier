@@ -95,6 +95,7 @@ rule docs_serve_service:
           This rule is only for development purposes.
     """
     localrule: True
+    threads: 1
     input:
         # WORKFLOW_BASE is used here instead of workflow.source_path()
         # since workflow.source_path() cannot cache an entire directory
@@ -151,4 +152,5 @@ rule docs_serve:
         echo "Serving {{ package_name }} documentation"
         echo "Press Ctrl+C to stop the server."
         tail -f /dev/null  # an infinite but lightweight wait
+        echo "{{ package_name }} documentation server stopped"
         """

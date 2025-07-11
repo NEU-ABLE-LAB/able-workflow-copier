@@ -17,6 +17,12 @@ use-conda: true
 group-components:
   conda_group: 1
 
+# Avoid running multiple snakemake calls in parallel
+# This is important for the `dag_svg_file` rule, which
+# generates a DAG SVG file and can cause issues if run in parallel.
+resources:
+  snakemake_calls: 1
+
 # Configuration files
 # TODO-copier-package see if this can be moved to a shared location between profiles
 configfile:
