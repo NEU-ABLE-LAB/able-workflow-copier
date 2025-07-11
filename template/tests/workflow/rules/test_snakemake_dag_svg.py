@@ -18,8 +18,7 @@ def create_dummy_input_data(
 
     # Copy the test data for the `all_data` rule
     repo_root = request.config.rootdir
-    (workspace / "data" / "tests").mkdir(parents=True, exist_ok=True)
-    shutil.copytree(repo_root / "data/tests", workspace / "data" / "tests")
+    shutil.copytree(repo_root / "data/tests", workspace / "data")
 
 
 # --- Tests ------------------------------------------------------------------
