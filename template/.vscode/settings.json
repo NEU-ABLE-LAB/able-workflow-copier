@@ -1,4 +1,7 @@
 {
+    "[snakemake]": {
+        "editor.defaultFormatter": "tfehlmann.snakefmt"
+    },
     "[yaml]": {
         "editor.defaultFormatter": "redhat.vscode-yaml"
     },

@@ -3,7 +3,9 @@
         "adamviola.parquet-explorer",
         "charliermarsh.ruff",
         "davidanson.vscode-markdownlint",
+        "davidwang.ini-for-vscode",
         "github.vscode-github-actions",
+        "gruntfuggly.todo-tree",
         "mechatroner.rainbow-csv",
         "ms-python.black-formatter",
         "ms-python.mypy-type-checker",
@@ -14,8 +16,7 @@
         "redhat.vscode-yaml",
         "snakemake.snakemake-lang",
         "tamasfe.even-better-toml",
+        "tfehlmann.snakefmt",
         "yzhang.markdown-all-in-one",
-        "gruntfuggly.todo-tree",
-        "davidwang.ini-for-vscode"
     ]
 }
