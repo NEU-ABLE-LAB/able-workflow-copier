@@ -168,7 +168,6 @@ def _generate_dag_svg(
         cmd = [
             "snakemake",
             f"{rule_name}",
-            "--forceall",
         ]
 
         if graph_type == "filegraph":
