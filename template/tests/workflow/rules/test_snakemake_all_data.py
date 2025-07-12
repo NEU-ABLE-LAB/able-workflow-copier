@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from ruamel.yaml import YAML
 
 from .conftest import _snakemake
 
@@ -18,9 +19,25 @@ def create_dummy_input_data(
 ):
     """Create the expected input files so Snakemake can build the DAG."""
 
-    # Copy the test data for the `all_data` rule
-    repo_root = request.config.rootdir
-    shutil.copytree(repo_root / "data/tests", workspace / "data")
+    # Get the file manifest for the `all` rule
+    rule_name = "all"
+    project_root = request.config.rootdir
+    yaml_manifest = project_root / "data" / "tests" / f"{rule_name}.yaml"
+    if not yaml_manifest.exists():
+        raise FileNotFoundError(
+            f"Manifest file for rule '{rule_name}' not found: {yaml_manifest}"
+        )
+
+    # Load the YAML manifest to get the required input files
+    yaml = YAML(typ="safe")
+    with yaml_manifest.open("r", encoding="utf-8") as fh:
+        manifest = yaml.load(fh) or {}
+
+    # Touch the required input files based on the manifest
+    for rel_path in manifest.get("files", []):
+        fp = workspace / "data" / rel_path
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.touch()
 
 
 # --- Tests ------------------------------------------------------------------
