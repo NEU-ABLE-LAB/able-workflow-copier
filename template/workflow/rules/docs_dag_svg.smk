@@ -39,3 +39,17 @@ rule dag_svg_all:
     """
     input:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/dag-all.svg").resolve(),
+
+rule rulegraph_svg_all:
+    """
+    Create an SVG of the Snakemake rule graph for all rules.
+    """
+    input:
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/rulegraph-all.svg").resolve(),
+
+rule filegraph_svg_all:
+    """
+    Create an SVG of the Snakemake file graph for all rules.
+    """
+    input:
+        svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/filegraph-all.svg").resolve(),
