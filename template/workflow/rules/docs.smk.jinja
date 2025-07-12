@@ -120,10 +120,8 @@ rule docs_serve_service:
         # This is a workaround for the fact that Snakemake
         # does not automatically stop services when the workflow
         # is stopped or interrupted.
-        cleanup() {% raw %}{{{% endraw %}
-            echo "Stopping MkDocs"
-            rm -f {output.server}
-        {% raw %}}}{% endraw %}
+        CLEANUP_CMD='echo "Stopping MkDocs"; rm -f {output.server}'
+        trap "$CLEANUP_CMD" EXIT INT TERM HUP
         trap cleanup EXIT INT TERM HUP
 
         # --- launch mkdocs --------------------------------------------------
