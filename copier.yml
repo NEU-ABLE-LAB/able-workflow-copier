@@ -150,7 +150,6 @@ _exclude:
   # This rule should only be updated from within the template.
   - ".copier-answers/rule-dag_svg.yml"
   - "docs/docs/contributing/templates/rule-dag_svg.md"
-  - "logs/post-copier-todos/rule-dag_svg.md"
 
 # Post-generation hooks
 _tasks:
@@ -180,7 +179,7 @@ _tasks:
 _message_after_copy: |
   The "{{ project_name }}" project has been created successfully.
 
-  See `logs/post-copier-todos/package.md` for next steps on
+  See `.copier-answers/post-copier-todos/package.md` for next steps on
   implementing your project. You can copy-paste the contents
   of that file into a GitHub issue or a project management tool to track
   the implementation of the project.

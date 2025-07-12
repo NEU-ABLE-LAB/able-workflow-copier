@@ -4,12 +4,12 @@ render_macros: false
 
 # Post-Copy Checklist
 
-After running `copier copy`, see `logs/post-copier-todos/package.md` for next steps on
+After running `copier copy`, see `.copier-answers/post-copier-todos/package.md` for next steps on
 implementing your project. You can copy-paste the contents
 of that file into a GitHub issue or a project management tool to track
 the implementation of the project.
 
 {%
-    include-markdown "../../../template/logs/post-copier-todos/package.md.jinja"
+    include-markdown "../../../template/.copier-answers/post-copier-todos/package.md.jinja"
     heading-offset=1
 %}
