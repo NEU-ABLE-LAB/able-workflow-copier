@@ -11,6 +11,12 @@ on:
     paths:
       - '.github/labels.yml'
       - '.github/workflows/github-labeler.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (true/false)'
+        required: false
+        default: 'false'
 
 jobs:
   labeler:
