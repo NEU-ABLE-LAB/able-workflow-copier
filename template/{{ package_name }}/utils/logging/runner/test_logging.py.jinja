@@ -8,8 +8,6 @@ when called from a Snakemake rule.
 from loguru import logger
 from snakemake.script import Snakemake
 
-from {{ package_name }}.utils.logging.runner.logging_smk import setup_logging_smk
-
 def main_smk(smk: Snakemake) -> None:
     """
     Main function to configure the file logger and log a message.
