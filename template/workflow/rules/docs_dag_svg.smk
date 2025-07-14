@@ -23,8 +23,8 @@ rule dag_svg_file:
     output:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/{graph_type}-{rule_name}.svg").resolve(),
     wildcard_constraints:
+        graph_type="filegraph|rulegraph|dag",
         rule_name="[a-zA-Z_][a-zA-Z0-9_]*",
-        graph_type="[a-zA-Z_][a-zA-Z0-9_]*",
     log:
         loguru=str(LOG_DIR / "dag_svg_file" / "{graph_type}-{rule_name}" / "loguru.log"),
         stderr=str(LOG_DIR / "dag_svg_file" / "{graph_type}-{rule_name}" / "stderr.log"),
