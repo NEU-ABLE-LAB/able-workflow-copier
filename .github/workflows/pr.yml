@@ -23,17 +23,24 @@ jobs:
       FORCE_COLOR: "1"
       PYTEST_ADDOPTS: "--color=yes"
 
+    defaults:
+      run:
+        shell: bash -el {0}
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
           token: ${{ secrets.ABLE_REPOS_PAT }}
 
-      - name: Set up CPython ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
+          activate-environment: able-workflow-copier
+          channels: conda-forge, bioconda
+          channel-priority: strict
+          conda-remove-defaults: "true"
+          environment-file: environment-py312-dev.yaml
+          miniforge-version: latest
 
       - name: Install tox + tox-gh-actions plug-in
         run: |
