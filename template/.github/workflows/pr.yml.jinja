@@ -40,7 +40,7 @@ jobs:
           channels: conda-forge, bioconda
           channel-priority: strict
           conda-remove-defaults: "true"
-          environment-file: template/workflow/envs/{{ package_name }}-py312-tox.yaml
+          environment-file: workflow/envs/{{ package_name }}-py312-tox.yaml
           miniforge-version: latest
 
       - name: Install tox + tox-gh-actions plug-in
