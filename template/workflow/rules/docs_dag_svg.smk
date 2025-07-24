@@ -13,7 +13,6 @@ rule dag_svg_file:
         rule_name: The name of the rule to generate the DAG for.
             This is used to create a unique filename for the SVG.
         graph_type: The type of the graph to generate
-            (e.g. "dag", "rulegraph", "filegraph").
     """
     localrule: True
     resources:
