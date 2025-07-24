@@ -63,9 +63,7 @@ def _parse_env_list_from_config(project_dir: Path) -> list[str]:
     except tomllib.TOMLDecodeError as exc:  # pragma: no cover
         logger.warning("Invalid TOML in pyproject.toml: {}", exc)
         return []
-    except FileNotFoundError as exc:  # pragma: no cover
-        logger.warning("pyproject.toml not found: {}", exc)
-        return []
+# Removed redundant FileNotFoundError handler
 
 
 def _list_tox_envs(
