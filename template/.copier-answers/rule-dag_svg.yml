@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: 130fce3
-_src_path: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev.git
+_src_path: https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier.git
 conda_env_key: DOCS
 format_code: false
 rule_description: Create an SVG of the main Snakemake DAG
