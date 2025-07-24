@@ -1,0 +1,56 @@
+# {{ project_name }}
+
+[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-purple.json)](https://github.com/copier-org/copier)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/github/{{ organization_slug }}/{{ project_name_slug }}/graph/badge.svg)](https://codecov.io/github/{{ organization_slug }}/{{ project_name_slug }})
+
+{{ project_description }}
+
+A reproducible [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+workflow for data processing, feature extraction, and modeling using the
+`{{ package_name }}` python package.
+
+> Built with [`Copier`](https://copier.readthedocs.io/en/stable/) from the
+[`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier)
+template.
+
+---
+
+## The {{ project_name }} Workflow
+
+A Snakemake workflow is a reproducible and scalable data analysis pipeline that defines computational steps as rules, automatically handling dependencies, parallelization, and resource management. This workflow orchestrates the entire data processing pipeline from raw inputs through feature extraction to final modeling outputs, ensuring reproducibility and enabling easy scaling across different computing environments.
+
+### Environment setup and basics of workflow execution with Snakemake
+
+Create the minimal Conda environment to run the workflow.
+
+```bash
+conda env update --name {{ package_name }}-py312-workflow --file workflow/envs/{{ package_name }}-py312-workflow.yaml
+```
+
+Before running any Snakemake commands, you need to localize the package path in the Snakemake environment files. This is done by running the `conda_localize` rule:
+
+```bash
+conda activate {{ package_name }}-py312-workflow
+snakemake conda_localize
+```
+
+For more information on the Snakemake workflows in this repository, see the [full documentation]({{ documentation_url }}).
+
+If the documentation is not hosted on a public server, you can build it locally by running the snakemake rule `docs_serve`
+
+```bash
+conda activate {{ package_name }}-py312-workflow
+snakemake docs_serve
+```
+
+## Development guidelines
+
+See the [Contributing page]({{ documentation_url }}/contributing) for more information on how to contribute to this project.
+
+## 📜  License & citation
+
+This project is distributed under the MIT License — see [LICENSE](LICENSE) for details.
+If you reuse the dataset or pipeline, please cite.

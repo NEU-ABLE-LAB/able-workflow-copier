@@ -1,0 +1,172 @@
+"""
+Make and serve the documentation for the workflow and package.
+
+WORKFLOW_BASE is used here instead of workflow.source_path()
+since workflow.source_path() cannot cache an entire directory
+so instead just point to the mkdocs.yml file and assume the
+worker has access to the entire directory
+"""
+
+# TODO-copier-package add notebooks to docs
+
+
+rule docs_assets:
+    """
+    Make the contents of the `docs/docs/_assets/` directory
+    required by mkdocs to build the documentation.
+
+    input
+    -----
+    dag_svg:
+        An SVG of the DAG for the `all` rule.
+    """
+    localrule: True
+    input:
+        (WORKFLOW_BASE / "../docs/docs/_assets/filegraph-all.svg").resolve(),
+
+
+rule docs_build:
+    """
+    Build the documentation.
+
+    input
+    -----
+    *rules.docs_assets.input,:
+        The assets required by mkdocs to build the documentation.
+    mkdocs_yml: WORKFLOW_BASE is used here instead of workflow.source_path()
+        since workflow.source_path() cannot cache an entire directory
+        so instead just point to the mkdocs.yml file and assume the
+        worker has access to the entire directory
+
+    output
+    ------
+    site_dir:
+        The directory where the built documentation will be placed.
+    """
+    localrule: True
+    input:
+        *rules.docs_assets.input,
+        mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
+    output:
+        site_dir=directory(Path(config["DOCS_SITE_DIR"]).resolve()),
+    log:
+        stdout=LOG_DIR / "docs_build" / "stdout.log",
+        stderr=LOG_DIR / "docs_build" / "stderr.log",
+    conda:
+        get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+    shell:
+        """
+        exec 1>"{log.stdout}"
+        exec 2>"{log.stderr}"
+        export JUPYTER_PLATFORM_DIRS=1
+        mkdocs build \
+          --config-file {input.mkdocs_yml} \
+          --site-dir {output.site_dir}
+        """
+
+
+# TODO-copier-package deploy docs with `mike`
+# rule docs_deploy:
+#     """
+#     Deploy the documentation to the `gh-pages with
+#     [mike](https://github.com/jimporter/mike?tab=readme-ov-file#building-your-docs).
+#     """
+#     input:
+#         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
+#         dag_svg=rules.dag_svg.output,
+#     log:
+#         LOG_DIR / "docs.log",
+#     conda:
+#         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+#     shell:
+#         # TODO Configure versioning so `mike` grabs semantic tags
+#         """
+#         exec 1>"{log}"
+#         exec 2>"{log}"
+#         echo "TODO configure versioning"
+#         exit 1
+#         # mike deploy --config-file {input.mkdocs_yml}
+#         """
+
+
+# TODO-copier-package serve docs with `mike`
+# rule docs_serve_mike:
+#     """
+#     Serve the documentation committed to the `gh-pages` branch
+#     [using `mike`](https://github.com/jimporter/mike?tab=readme-ov-file#viewing-your-docs).
+#     NOTE: This rule is "blocking", and will not return until the server is stopped.
+#           This rule is only for development purposes.
+#     """
+#     input:
+#         mkdocs_yml=(DOCS_DIR / "mkdocs.yml"),
+#         dag_svg=rules.dag_svg.output,
+#     log:
+#         LOG_DIR / "docs_serve.log",
+#     conda:
+#         get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+#     shell:
+#         """
+#         exec 1>"{log}"
+#         exec 2>"{log}"
+#         export JUPYTER_PLATFORM_DIRS=1
+#         mike serve --config-file {input.mkdocs_yml}
+#         """
+
+
+rule docs_serve_service:
+    """
+    Make and serve the documentation.
+    NOTE: This rule is "blocking", and will not return until the server is stopped.
+          This rule is only for development purposes.
+    """
+    localrule: True
+    threads: 1
+    input:
+        *rules.docs_assets.input,
+        mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
+    output:
+        server=service("logs/services/{{ package_name }}-mkdocs.server"),
+    log:
+        stdout=LOG_DIR / "docs_serve" / "stdout.log",
+        stderr=LOG_DIR / "docs_serve" / "stderr.log",
+    conda:
+        get_localized_conda(config["CONDA"]["ENVS"]["DOCS"])
+    shell:
+        """
+        touch "{output.server}"
+        exec 1>"{log.stdout}"
+        exec 2>"{log.stderr}"
+
+        # --- automatic cleanup ----------------------------------------------
+        # Remove the server file on exit to stop the service
+        # This is a simple way to ensure the service stops
+        # when the Snakemake workflow is stopped or interrupted.
+        # This is a workaround for the fact that Snakemake
+        # does not automatically stop services when the workflow
+        # is stopped or interrupted.
+        CLEANUP_CMD='echo "Stopping MkDocs"; rm -f {output.server}'
+        trap "$CLEANUP_CMD" EXIT INT TERM HUP
+        trap cleanup EXIT INT TERM HUP
+
+        # --- launch mkdocs --------------------------------------------------
+        export JUPYTER_PLATFORM_DIRS=1
+        mkdocs serve \
+          --config-file {input.mkdocs_yml}
+        """
+
+rule docs_serve:
+    """
+    Hold the `docs_serve_service` rule in a service
+    so that it can be run in the background.
+    """
+    localrule: True
+    input:
+        rules.docs_serve_service.output.server,
+    shell:
+        """
+        # This rule is a no-op, it just holds the service running
+        echo "Serving {{ package_name }} documentation"
+        echo "Press Ctrl+C to stop the server."
+        tail -f /dev/null  # an infinite but lightweight wait
+        echo "{{ package_name }} documentation server stopped"
+        """

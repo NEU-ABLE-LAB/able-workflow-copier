@@ -1,0 +1,175 @@
+"""
+Unit-tests for `workflow/scripts/rules/{{ package_name }}_rules.py`.
+
+Key ideas
+---------
+* Provide a *very* small stand-in for Snakemake's ``Namedlist`` plus a fake
+  ``snakemake`` module so the unconditional import in the wrapper succeeds.
+* Dynamically import the wrapper under test from its file path.
+* Build a dummy target module *on-the-fly* whose ``run()`` function simply
+  records the keyword arguments it receives so that we can assert that the
+  wrapper converts and forwards everything correctly.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import sys
+import types
+from collections import OrderedDict
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, Dict, List
+
+import pytest
+from snakemake.io import (
+    InputFiles,
+    OutputFiles,
+    Params,
+    Wildcards,
+    Resources,
+    Log,
+)
+from snakemake.script import Snakemake
+from snakemake.utils import Namedlist
+
+PathLike = Path | str
+
+# --------------------------------------------------------------------------- #
+# Load the wrapper module                                                     #
+# --------------------------------------------------------------------------- #
+
+ROOT = Path(__file__).parents[4]
+SCRIPT = ROOT / "workflow/scripts/rules_conda_RUNNER/{{ package_name }}_rules.py"
+if not SCRIPT.exists():
+    pytest.skip(f"Cannot find {SCRIPT}", allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location("{{ package_name }}_rules", SCRIPT)
+rule_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(rule_module)  # type: ignore[arg-type]
+
+# --------------------------------------------------------------------------- #
+# Helper factories                                                            #
+# --------------------------------------------------------------------------- #
+
+def _fake_snakemake(
+    tmp_path: Path,
+    *,
+    func_path: str,
+    io_is_dict: bool = False
+) -> Snakemake:
+    """
+    Build the *snakemake* stand-in expected by ``main()``.
+    """
+    if io_is_dict:
+        inputs = InputFiles( fromdict = {
+            "one": str(tmp_path / "a.txt"),
+            "two": str(tmp_path / "b.dat"),
+        })
+        outputs = OutputFiles( fromdict = {
+            "result": str(tmp_path / "out" / "c.txt"),
+        })
+    else:
+        inputs = InputFiles([
+            str(tmp_path / "in0.txt"),
+            str(tmp_path / "in1.txt"),
+        ])
+        outputs = OutputFiles([
+            str(tmp_path / "out.txt"),
+        ])
+
+    params = Params( fromdict = {
+        "func": func_path,
+        "alpha": 42,  # will be converted to str
+    })
+    wildcards = Wildcards( fromdict = {
+        "sample": "X1",
+    })
+    resources = Resources( fromdict = {
+        "mem_mb": 1024,  # will be converted to int
+    })
+
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir()
+    log = Log( fromdict = {
+        "loguru": str(log_dir / "wrapper.log"),
+    })
+
+    return Snakemake(
+        input_=inputs,
+        output=outputs,
+        params=params,
+        wildcards=wildcards,
+        resources=resources,
+        threads=8,
+        log=log,
+        config={"answer": 42},
+        rulename="dummy_rule",
+        bench_iteration=None,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Tests                                                                       #
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize("io_is_dict", [False, True])
+def test_main_forwards_converted_objects(tmp_path, io_is_dict):
+    """
+    Run the wrapper's ``main()`` once with *single* IO and once with *multiple*
+    IO files and check that the dummy target receives properly converted args.
+    """
+
+    # --- target -------------------------------------------------------------
+    captured: Dict[str, Any] = {}
+
+    def _dummy_run(**kwargs):
+        captured.update(kwargs)
+
+    dummy_mod = types.ModuleType("dummy_target")
+    dummy_mod.run = _dummy_run
+    sys.modules["dummy_target"] = dummy_mod
+    func_path = "dummy_target:run"
+
+    # --- fake snakemake
+    smk = _fake_snakemake(
+        tmp_path,
+        func_path=func_path,
+        io_is_dict=io_is_dict
+    )
+
+    # --- execute
+    rule_module.main(smk=smk)
+
+    # --- asserts ------------------------------------------------------------
+    # 1. Check that the captured object is a Snakemake object
+    captured_smk = captured.get("smk", None)
+    assert isinstance(captured_smk, Snakemake), "Captured smk is not a Snakemake object"
+
+    # 2. IO conversion logic
+    if io_is_dict:
+        assert isinstance(captured_smk.input.get("one"), PathLike)
+        assert Path(captured_smk.input["one"]).name == "a.txt"
+        assert isinstance(captured_smk.input.get("two"), PathLike)
+        assert Path(captured_smk.input["two"]).name == "b.dat"
+
+        assert isinstance(captured_smk.output.get("result"), PathLike)
+        assert Path(captured_smk.output["result"]).name == "c.txt"
+    else:
+        assert isinstance(captured_smk.input, List)
+        assert len(captured_smk.input) == 2
+        assert isinstance(captured_smk.input[0], PathLike)
+        assert Path(captured_smk.input[0]).name == "in0.txt"
+        assert isinstance(captured_smk.input[1], PathLike)
+        assert Path(captured_smk.input[1]).name == "in1.txt"
+
+        assert isinstance(captured_smk.output, List)
+        assert len(captured_smk.output) == 1
+        assert isinstance(captured_smk.output[0], PathLike)
+        assert Path(captured_smk.output[0]).name == "out.txt"
+
+    # 3. Other simple pass-throughs
+    assert captured_smk.threads == 8
+    assert captured_smk.rule == "dummy_rule"
+    assert captured_smk.params.get("alpha") == 42

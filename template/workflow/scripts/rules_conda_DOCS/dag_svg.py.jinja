@@ -1,0 +1,293 @@
+"""
+Script for the dag_svg rule
+
+Create an SVG of the main Snakemake DAG
+"""
+
+import shutil
+import subprocess
+import sys
+import tempfile
+import textwrap
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from loguru import logger
+from lxml import etree as ET
+from ruamel.yaml import YAML
+
+from snakemake.script import Snakemake
+
+if TYPE_CHECKING:  # pragma: no cover
+    # For type checking only, when called as a `script:` in a Snakemake rule
+    # the `snakemake` object is injected at the top of the script
+    from snakemake.script import snakemake
+
+
+STYLE = textwrap.dedent(
+    """
+    <style xmlns="http://www.w3.org/2000/svg">
+      /*  Use MkDocs-Material palette tokens
+          ──────────────────────────────────
+          default  : data-md-color-scheme="default"
+          dark/slate: data-md-color-scheme="slate"
+      */
+
+      /* Labels */
+      svg.dag text { fill: var(--md-typeset-color, #000000de); }
+    </style>
+    """
+).strip()
+
+
+def _neutralise_only_problematic_colours(root: ET.Element) -> None:
+    """
+    Remove the white *background* polygon so the page background shows
+    through in both themes.
+    """
+    SVG_NS = "{http://www.w3.org/2000/svg}"
+
+    # Background polygon: first <polygon> child of the outermost <g>
+    for poly in root.findall(f".//{SVG_NS}polygon"):
+        if poly.get("stroke") == "none" and poly.get("fill", "").lower() == "white":
+            parent = poly.getparent()
+            if parent is not None:
+                parent.remove(poly)
+            break  # there’s only one like this
+
+
+def _create_dummy_parent_workspace(rule_name: str) -> Path:  # noqa: D401
+    """
+    Spin-up a *temporary* Snakemake workspace that imports the project workflow
+    as a **module** and pre-creates any dummy input files declared in
+    ``data/tests/{rule_name}.yaml``.
+    """
+
+    # Project structure:
+    #   project_root/
+    #     ├─ workflow/           ← real workflow root
+    #     └─ data/tests/*.yaml   ← per-rule dummy-input manifests
+    project_root = Path(__file__).resolve().parents[3]
+    project_snakefile = project_root / "workflow" / "Snakefile"
+
+    workspace = Path(tempfile.mkdtemp(prefix="dag-parent-"))
+    (workspace / "data").mkdir(parents=True, exist_ok=True)
+
+    # --- Copy the project config and profiles -------------------------------
+    config_dir = project_root / "config"
+    profiles_dir = project_root / "workflow" / "profiles"
+    shutil.copytree(config_dir, workspace / "config")
+    shutil.copytree(profiles_dir, workspace / "workflow" / "profiles")
+
+    # --- Snakefile that wraps the project workflow as a module --------------
+    (workspace / "workflow" / "Snakefile").write_text(
+        textwrap.dedent(
+            f"""
+            module {{ package_name }}:
+                snakefile: "{project_snakefile}"
+                config: config
+
+            use rule * from {{ package_name }}
+            """
+        )
+    )
+
+    # --- Touch dummy required input files -----------------------------------
+    yaml_manifest = project_root / "data" / "tests" / f"{rule_name}.yaml"
+    if not yaml_manifest.exists():
+        logger.error(
+            f"Manifest file for rule '{rule_name}' not found: {yaml_manifest}"
+        )
+        sys.exit(1)
+
+    yaml = YAML(typ="safe")
+    with yaml_manifest.open("r", encoding="utf-8") as fh:
+        manifest = yaml.load(fh) or {}
+
+    for rel_path in manifest.get("files", []):
+        fp = workspace / "data" / rel_path
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.touch()
+
+    return workspace
+
+
+def _generate_dag_svg(
+    stderr_log: Path,
+    rule_name: str = "all",
+    graph_type: str = "rulegraph",
+) -> str:
+    """
+    Generate DAG as SVG via graphviz.
+
+    Parameters
+    ----------
+    stderr_log: Path
+        Path to the stderr log file
+    rule_name: str
+        Name of the rule to generate the DAG for
+    graph_type: str
+        Type of DAG to generate
+          - "dag" for the full DAG
+          - "rulegraph" for the rule graph (default)
+          - "filegraph" for the file graph
+
+    Returns
+    -------
+    str:
+        The raw SVG string
+    """
+
+    logger.debug("Generating DAG SVG using Snakemake (dummy-parent)")
+
+    parent_ws = _create_dummy_parent_workspace(rule_name)
+
+    if graph_type not in ["dag", "rulegraph", "filegraph"]:
+        raise ValueError(
+            f"Invalid graph type '{graph_type}'. Must be one of: "
+            "'dag', 'rulegraph', 'filegraph'."
+        )
+
+    with open(stderr_log, "a") as stderr_log_file:
+
+        # Localize conda environment yamls
+        subprocess.run(
+            [
+                "snakemake",
+                "conda_localize",
+                "--show-failed-logs",
+                "--cores",
+                "1",
+            ],
+            cwd=parent_ws,
+            check=True,
+            text=True,
+            stdout=stderr_log_file,
+            stderr=subprocess.STDOUT,
+        )
+
+        cmd = [
+            "snakemake",
+            "--show-failed-logs",
+            f"{rule_name}",
+        ]
+
+        if graph_type == "filegraph":
+            # filegraph argument does not have a `dot` option
+            cmd.append("--filegraph")
+        else:
+            cmd.extend([
+                f"--{graph_type}",
+                "dot",
+            ])
+
+        # Generate the DAG in DOT format
+        dag_dot = subprocess.run(
+            cmd,
+            cwd=parent_ws,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stderr_log_file,
+        ).stdout
+
+        # Convert DOT → SVG with Graphviz
+        raw_svg = subprocess.run(
+            ["dot", "-Tsvg"],
+            input=dag_dot,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stderr_log_file,
+        ).stdout
+
+    return raw_svg
+
+
+def _process_svg_content(raw_svg: str) -> ET.Element:
+    """
+    Parse and manipulate SVG content.
+
+    Args:
+        raw_svg: Raw SVG string content
+
+    Returns:
+        Processed SVG root element
+    """
+    # Parse & manipulate SVG as XML
+    logger.debug("Parsing SVG DAG output")
+    parser = ET.XMLParser(ns_clean=True, recover=True)
+    root = ET.fromstring(raw_svg.encode(), parser=parser)
+
+    # mark root for CSS scoping
+    logger.debug("Marking SVG root element with 'dag' class")
+    if "class" in root.attrib:
+        root.attrib["class"] += " dag"
+    else:
+        root.attrib["class"] = "dag"
+
+    # neutralise only background + text colour
+    logger.debug("Neutralising problematic colours (background + text)")
+    _neutralise_only_problematic_colours(root)
+
+    # inject <style> block
+    logger.debug("Injecting CSS style into SVG")
+    root.insert(0, ET.fromstring(STYLE))
+
+    return root
+
+
+def main(
+    svg_path: Path,
+    rule_name: str,
+    stderr_log: Path,
+    graph_type: str = "rulegraph",
+) -> None:
+    """
+    Generate a Snakemake DAG as an SVG file.
+    """
+
+    # Generate DAG as SVG via graphviz
+    raw_svg = _generate_dag_svg(stderr_log, rule_name, graph_type)
+
+    # Process SVG content
+    root = _process_svg_content(raw_svg)
+
+    # Write out pretty-printed SVG
+    logger.debug(f"Writing SVG DAG to {svg_path}")
+    svg_path.write_bytes(
+        ET.tostring(root, xml_declaration=True, encoding="utf-8", pretty_print=True)
+    )
+
+
+def main_smk(smk: Snakemake) -> None:
+    """
+    Wrapper for the main function that accepts a Snakemake object.
+    """
+
+    # Setup logging
+    logger.remove()
+    logger.add(smk.log.loguru)
+
+    # Ensure the output directory exists
+    svg_path = Path(smk.output.svg)
+    svg_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Call the main function with the provided paths
+    main(
+        svg_path=svg_path,
+        rule_name=smk.wildcards.rule_name,
+        stderr_log=smk.log.stderr,
+        graph_type=smk.wildcards.graph_type
+    )
+
+
+if __name__ == "__main__":
+    try:
+        main_smk(snakemake)
+    except NameError:
+        logger.error(
+            "This script is designed to be run as part of a Snakemake workflow. "
+            "Please run it through Snakemake."
+        )
+        sys.exit(0)

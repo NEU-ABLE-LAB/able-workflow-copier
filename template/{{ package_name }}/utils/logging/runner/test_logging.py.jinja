@@ -1,0 +1,18 @@
+"""
+A simple test for the `configure_file_logger` function in the
+`{{ package_name }}.utils.logging` module that verifies it writes
+expected log lines to a file with the correct format and context
+when called from a Snakemake rule.
+"""
+
+from loguru import logger
+from snakemake.script import Snakemake
+
+def main_smk(smk: Snakemake) -> None:
+    """
+    Main function to configure the file logger and log a message.
+    This is intended to be called from a Snakemake rule.
+    """
+
+    # Log a message
+    logger.info("This is a test log message\nfrom the Snakemake rule.")

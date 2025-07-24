@@ -1,0 +1,53 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "PyTest Debugger: Current Test",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": [
+        "${file}",
+        "${input:remoteDataArg}"
+      ]
+    },
+    {
+      "name": "Python Debugger with site-packages: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ],
+  "inputs": [
+    {
+      "id": "remoteDataArg",
+      "description": "Run pytest with remote data?",
+      "type": "pickString",
+      "options": [
+        {
+          "label": "Yes",
+          "value": "--remote-data=any"
+        },
+        {
+          "label": "No",
+          "value": "--remote-data=none"
+        }
+      ],
+      "default": "--remote-data=any"
+    }
+  ]
+}

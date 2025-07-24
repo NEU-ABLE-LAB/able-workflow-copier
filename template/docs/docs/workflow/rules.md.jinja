@@ -1,0 +1,84 @@
+# Snakemake rules and CLI
+
+This document provides an overview of the Snakemake workflow rules and how to interact with them using the Snakemake command-line interface (CLI).
+
+## Snakemake CLI Overview
+
+Snakemake provides a powerful command-line interface for executing workflows. Here are the most commonly used commands:
+
+### Workflow conda environment initialization
+
+After cloning the repository, first "localize" the conda environment yaml files to load the projects python package.
+
+```bash
+snakemake conda_localize
+```
+
+### Basic Execution
+
+This will run the targets defined in the `all` rule using the profile settings in `workflow/profiles/default/config.yaml` which loads the workflow configuration from `config/`
+
+```bash
+# Run the workflow with default settings
+snakemake
+```
+
+For a complete list of options, run `snakemake --help` or consult the [Snakemake documentation](https://snakemake.readthedocs.io/).
+
+## Utility rules
+
+### `build` rules
+
+- `pyproject2conda` rules create environment YAML files from `pyproject.toml`.
+
+??? info "`build.smk`"
+
+    ```python
+    {% raw %}
+    {%
+      include "../../../workflow/rules/build.smk"
+    %}
+    {% endraw %}
+    ```
+
+### `dev` rules
+
+- `conda_localize` rules modify the environment YAML files so that they also install the project's python package using a full path.
+
+- `conda_update` rule create local named conda environments for development purposes. Running `snakemake conda_update` builds all the conda environments. To only build a desired conda environment, tell snakemake to target an environment file, but replace `.yaml` with `.snakemake_conda_update_stamp`
+
+  To create just the `{{ package_name }}-py312-dev-runner` conda environment from the localized environment file `workflow/envs/localized/{{ package_name }}-py312-dev-runner.yaml`, run:
+
+  ```bash
+  snakemake `workflow/envs/localized/{{ package_name }}-py312-dev-runner.snakemake_conda_update_stamp`
+  ```
+
+??? info "`dev.smk`"
+
+    ```python
+    {% raw %}
+    {%
+      include "../../../workflow/rules/dev.smk"
+    %}
+    {% endraw %}
+    ```
+
+## Rules for documentation
+
+See [contributing/docs](../contributing/docs.md) for rules to serve locally, build, and deploy the documentation.
+
+## Rules for datasets
+
+See rules defined for each of the [datasets modules](../datasets/index.md)
+
+## Rules for features
+
+See rules defined for each of the [features modules](../features/index.md)
+
+## Rules for models
+
+See rules defined for each of the [models modules](../models/index.md)
+
+## Rules for reporting
+
+TODO-copier-package section to add new features rules

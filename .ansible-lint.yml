@@ -1,0 +1,10 @@
+# .ansible-lint.yml  (put at repo root)
+profile: min            # disables the big playbook rule-set
+enable_list: [yaml]     # run only the YAML rule
+exclude_paths:
+  - able-workflow/
+  - docs/docs/_submodules/
+  - docs/mkdocs.yml
+skip_list:
+  - yaml[line-length]
+  - yaml[truthy]

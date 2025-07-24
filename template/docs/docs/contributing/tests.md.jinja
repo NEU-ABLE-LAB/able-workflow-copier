@@ -1,0 +1,98 @@
+# Testing
+
+Tests in this project are orchestrated with [tox](https://tox.wiki/), ensuring that each test in conducted in an environment with the correct dependencies. The types of tests and run-options are summarized below; see `tox.ini` for details.
+
+## Run all tests
+
+Run all the test environments in series.
+
+```bash
+tox run
+```
+
+Or simply `tox r` or `tox`:
+
+```bash
+tox
+```
+
+Run all the test enironments in parallel.
+
+```bash
+tox run-parallel
+```
+
+Or simply `tox p`
+
+This will run tests in both Python 3.12 and the default environment. To only run the tests in Python 3.12, use:
+
+```bash
+tox run-parallel -f py312
+```
+
+## Linting and typechecking
+
+Only run tests that check the code formatting, syntax, and types
+
+```bash
+tox run-parallel -f lint -f typecheck
+```
+
+Only run these tests in Python 3.12
+
+```bash
+tox run-parallel -f py312 lint -f py312 typecheck
+```
+
+## Unit tests for the `{{ package_name }}` package
+
+These are the unit tests for the `{{ package_name }}` package. This runs two sets of tests: the unit tests for the core package, and the unit tests with the `runner` package extras.
+
+```bash
+tox run-parallel -f py312 package-unit
+```
+
+To just run the core package unit tests, use:
+
+```bash
+tox run-parallel -f py312 package-unit-core
+```
+
+To run the unit tests with the `runner` package extras, use:
+
+```bash
+tox run-parallel -f py312 package-unit-runner
+```
+
+## Snakemake workflow script unit tests
+
+These are the unit tests for scripts that specified by the `script:` directive in a Snakemake rule. Since these scripts may run in different environments as specified by the rule's `conda:` directive, the tests should be run in the same environment as the rule.
+
+To run all the workflow script unit tests:
+
+```bash
+tox run-parallel -f py312 workflow-script-unit
+```
+
+Altneratively, run only the unit tests for one of the following convironment names:
+
+- `core`
+- `docs`
+- `global`
+- `runner`
+
+To run the workflow script unit tests for the `core` environment:
+
+```bash
+tox run-parallel -f py312 workflow-script-unit-core
+```
+
+## Snakemake workflow integration tests
+
+These are the integration tests for the Snakemake workflow. They run the entire workflow with a small test dataset, ensuring that all rules can be executed successfully.
+
+To run the integration tests:
+
+```bash
+tox run-parallel -f py312 workflow-rules
+```

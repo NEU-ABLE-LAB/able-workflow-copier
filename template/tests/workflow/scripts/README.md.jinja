@@ -1,0 +1,15 @@
+# `tests/workflow/scripts`
+
+Unit tests for Snakemake workflow utilities and rule scripts.
+
+## Requirements
+
+Scripts in Snakemake may run in the base `workflow` environment or in the conda environment specified by the rule's `conda:` directive.
+
+To ensure that the tests are run in the correct environment, all scripts in the `utils/` directory assumed to run in the `workflow` environment, while rule scripts should run in the environment specified by the directory.
+
+  - `tests/workflow/scripts/utils/`: Utility scripts that can be run in the same environment as Snakemake.
+  - `tests/workflow/scripts/rules_global/`: Tests that can be run in the same environment as Snakemake.
+  - `tests/workflow/scripts/rules_conda_*/`: Tests that can be run in the conda environment specified by the rule's `conda:` directive.
+  - `tests/workflow/scripts/rules_conda_{{ package_name }}/`: Tests that require the {{ package_name }} python package
+  - `tests/workflow/scripts/rules_conda_{{ package_name }}_runner/`: Tests that require the optional extras for the {{ package_name }} runner (e.g., `main.py`).

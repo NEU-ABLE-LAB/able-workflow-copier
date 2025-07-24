@@ -1,0 +1,77 @@
+"""
+Main Snakefile for the workflow.
+
+Run `snakemake conda_localize` to create the conda environment
+yaml files that are required by the `conda:` directive in the pipeline.
+
+Run `snakemake --cores 1 conda_update` first if running in development
+environment. This will create local conda environments that VSCode can
+use for testing, formatting, linting, and debugging.
+
+Run `snakemake logs_to_watch` to create a json list of all rules that
+have a log output directive. This can be pasted into the workspace's
+`.vscode/settings.json` file to enable the Log Viewer extension to
+track all log files.
+"""
+
+from dataclasses import dataclass
+import json
+import os
+from pathlib import Path
+import shutil
+
+from loguru import logger
+from snakemake.utils import validate
+
+
+# --- VALIDATION -------------------------------------------------------------
+validate(config, "schemas/config.schema.yaml")
+
+
+# --- CONSTANTS ---------------------------------------------------------------
+# Any valid Unix file name stem
+RE_VALID_FNAME_STEM = r"[^/\x00]+"
+# Any valid SQL table name
+RE_VALID_SQL_TABLE = r"^(?:[A-Za-z_][A-Za-z0-9_]*|\"[^\"]+\")$"
+
+
+# --- PATHS ------------------------------------------------------------------
+WORKFLOW_BASE = Path(workflow.current_basedir)
+logger.debug(f"WORKFLOW_BASE: {WORKFLOW_BASE}")
+
+LOG_DIR = Path(config["LOG_DIR"])
+REPORTS_DIR = Path(config["REPORTS_DIR"])
+REPORT_TEMPLATES_DIR = Path(config["REPORT_TEMPLATES_DIR"])
+
+
+# --- INCLUDES ---------------------------------------------------------------
+include: "rules/includes.smk"
+
+
+# --- DAG ROOT ---------------------------------------------------------------
+rule all_data:
+    """Run all data rules."""
+    input:
+        # TODO-copier-etl Add data ouputs here
+        readme="data/README.md",  # TODO-copier-etl Delete this dummy input
+
+
+rule all_reports:
+    """Run all report rules."""
+    input:
+        *rules.notebook_to_report_all.input,
+
+
+rule all:
+    """Run all data and report rules."""
+    default_target: True
+    input:
+        *rules.all_data.input,
+        *rules.all_reports.input,
+
+
+rule help:
+    """Print all rules with their first docstring line"""
+    run:
+        for r in workflow.rules:
+            print(f"{r.name:20} {r.docstring.splitlines()[0]}")
