@@ -148,6 +148,7 @@ format_code:
 # --- Post-answers Configurations ---
 _exclude:
   # This rule should only be updated from within the template.
+  - ".copier-answers/project.yml"
   - ".copier-answers/rule-dag_svg.yml"
   - "docs/docs/contributing/templates/rule-dag_svg.md"
 

@@ -6,4 +6,3 @@ rule_description: Create an SVG of the main Snakemake DAG
 rule_name: dag_svg
 smk_file_name: docs_dag_svg.smk
 uses_conda: true
-package_name:  \{\{ package_name \}\}
