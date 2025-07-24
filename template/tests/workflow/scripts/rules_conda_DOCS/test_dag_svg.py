@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from lxml import etree as ET
 from snakemake.io import InputFiles, OutputFiles, Log, Params, Resources, Wildcards
 from snakemake.script import Snakemake
 
@@ -145,7 +146,7 @@ def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
         lambda _, __, ___: RAW_SVG,
     )
 
-    smk = fake_snakemake(tmp_path)
+    smk = _build_snakemake(tmp_path)
     dag_svg_module.main_smk(smk)
 
     svg_path = Path(smk.output[0])
