@@ -18,7 +18,8 @@
                 ".copier-answers/rule-dag_svg.yml",
                 "-r",
                 "f786a1b"
-            ]
+            ],
+            "justMyCode": false
         }
     ]
 }
