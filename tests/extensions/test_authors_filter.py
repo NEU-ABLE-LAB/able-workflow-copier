@@ -18,7 +18,7 @@ def _render(authors: list[dict[str, Any]], *, indent: int = 4) -> str:
         (" " * indent)
         + "{ "
         + ", ".join(f'{k} = "{v}"' for k, v in author.items())  # pragma: no branch
-        + " }"  # noqa: W503
+        + " }"
         for author in authors
     )
     return "[\n" + body + "\n]"
