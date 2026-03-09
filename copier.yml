@@ -1,7 +1,7 @@
 # --- Configurations ---------------------------------------------------------
 _jinja_extensions:
   - "cookiecutter.extensions.SlugifyExtension"
-  - "copier_templates_extensions.TemplateExtensionLoader"
+  - "copier_template_extensions.TemplateExtensionLoader"
   - "extensions/authors_filter.py:AuthorsFilter"
   - "extensions/strict_undefined.py:SetStrictUndefined"
   - "jinja2_jsonschema.JsonSchemaExtension"
