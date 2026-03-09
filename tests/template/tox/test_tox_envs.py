@@ -16,6 +16,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
 from copier import run_copy
 from loguru import logger
 
@@ -28,6 +29,48 @@ def _answers_for(var_id: str):
     Get the answers for a given variant ID from the global answer_sets.
     """
     return next(v["answers"] for v in answer_sets if v["id"] == var_id)
+
+
+def _template_head_ref(template_root: Path) -> str:
+    """Return the immutable git ref for the template root."""
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"],
+        cwd=template_root,
+        text=True,
+    ).strip()
+
+
+def _assert_template_repo_is_clean(template_root: Path) -> None:
+    """Raise a usage error when the template repository has local changes."""
+    try:
+        status = subprocess.check_output(
+            ["git", "status", "--porcelain", "--ignore-submodules=none"],
+            cwd=template_root,
+            text=True,
+        ).splitlines()
+    except FileNotFoundError as exc:
+        raise pytest.UsageError("`git` executable not found in PATH") from exc
+    except subprocess.CalledProcessError as exc:
+        raise pytest.UsageError(
+            f"Failed to check git status for template root: {template_root}"
+        ) from exc
+
+    dirty = [line for line in status if line.strip()]
+    if not dirty:
+        return
+
+    max_items = 20
+    shown = "\n".join(f"  {line}" for line in dirty[:max_items])
+    suffix = (
+        f"\n  ... and {len(dirty) - max_items} more" if len(dirty) > max_items else ""
+    )
+    raise pytest.UsageError(
+        "Template repo is dirty; refusing to run template-tox collection.\n"
+        "Please commit/stash/discard local changes first.\n"
+        f"Template root: {template_root}\n"
+        "Dirty entries:\n"
+        f"{shown}{suffix}"
+    )
 
 
 def _bootstrap_git_repo(path: Path) -> None:
@@ -87,6 +130,9 @@ def pytest_generate_tests(metafunc):
         env_matrix = metafunc.config._env_matrix_cache = getattr(
             metafunc.config, "_env_matrix_cache", {}
         )
+        template_root = Path(__file__).resolve().parents[3]
+        _assert_template_repo_is_clean(template_root)
+        template_ref = _template_head_ref(template_root)
 
         for entry in answer_sets:
             var_id = entry["id"]
@@ -97,11 +143,10 @@ def pytest_generate_tests(metafunc):
                 tmpdir: Path = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
                 try:
                     run_copy(
-                        src_path=str(
-                            Path(__file__).resolve().parents[3]
-                        ),  # template root
+                        src_path=str(template_root),
                         dst_path=str(tmpdir),
                         data=entry["answers"],
+                        vcs_ref=template_ref,
                         defaults=True,
                         quiet=True,
                         unsafe=True,

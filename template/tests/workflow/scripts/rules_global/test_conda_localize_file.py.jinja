@@ -25,10 +25,14 @@ from snakemake.io import (
     OutputFiles,
     Log,
     Params,
-    Resources,
     Wildcards,
 )
 from snakemake.script import Snakemake
+
+try:
+    from snakemake.io import Resources
+except ImportError:  # Snakemake>=9
+    from snakemake.io import ResourceList as Resources
 
 # -----------------------------------------------------------------------------
 # Module-under-test loader (once per test module)                              #

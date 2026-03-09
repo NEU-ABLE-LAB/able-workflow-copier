@@ -27,11 +27,15 @@ from snakemake.io import (
     OutputFiles,
     Params,
     Wildcards,
-    Resources,
     Log,
 )
 from snakemake.script import Snakemake
 from snakemake.utils import Namedlist
+
+try:
+    from snakemake.io import Resources
+except ImportError:  # Snakemake>=9
+    from snakemake.io import ResourceList as Resources
 
 PathLike = Path | str
 

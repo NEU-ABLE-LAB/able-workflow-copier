@@ -14,8 +14,13 @@ from typing import Any, Callable
 
 import pytest
 from lxml import etree as ET
-from snakemake.io import InputFiles, OutputFiles, Log, Params, Resources, Wildcards
+from snakemake.io import InputFiles, OutputFiles, Log, Params, Wildcards
 from snakemake.script import Snakemake
+
+try:
+    from snakemake.io import Resources
+except ImportError:  # Snakemake>=9
+    from snakemake.io import ResourceList as Resources
 
 # --------------------------------------------------------------------------- #
 # Load script under test once per module                                      #
