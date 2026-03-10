@@ -20,6 +20,7 @@ from typing import Iterable, Any
 
 import pytest
 from ruamel.yaml import YAML
+from snakemake.io import ResourceList as Resources
 from snakemake.io import (
     InputFiles,
     OutputFiles,
@@ -29,10 +30,6 @@ from snakemake.io import (
 )
 from snakemake.script import Snakemake
 
-try:
-    from snakemake.io import Resources
-except ImportError:  # Snakemake>=9
-    from snakemake.io import ResourceList as Resources
 
 # -----------------------------------------------------------------------------
 # Module-under-test loader (once per test module)                              #
