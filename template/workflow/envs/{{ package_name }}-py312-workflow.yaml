@@ -8,7 +8,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  - bioconda::snakemake>=9.3.3
+  - bioconda::snakemake>=9.16.3
   - conda-forge::graphviz>=0.20.3
   - graphviz>=12.2.1
   - json5>=0.12.0
