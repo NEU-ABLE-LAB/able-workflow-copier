@@ -7,7 +7,7 @@ repos:
         entry: hooks/snakemake_pyproject2conda.py
         language: python
         additional_dependencies:
-          - snakemake>=9.16.3
+          - snakemake==9.16.3
           - loguru>=0.7.2
           - pyproject2conda>=0.19.1
         files: >-
