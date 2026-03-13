@@ -14,15 +14,28 @@ from typing import Any, Callable
 
 import pytest
 from lxml import etree as ET
-from snakemake.io.container import (
-    InputFiles,
-    OutputFiles,
-    Log,
-    Params,
-    ResourceList,
-    Wildcards,
-)
 from snakemake.script import Snakemake
+
+try:
+    # Snakemake v9.17.0+ (with snakemake.io.container)
+    from snakemake.io.container import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
+except ImportError:
+    # Snakemake v9.16.3 fallback
+    from snakemake.io import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
 
 
 # --------------------------------------------------------------------------- #
