@@ -14,8 +14,14 @@ from typing import Any, Callable
 
 import pytest
 from lxml import etree as ET
-from snakemake.io import ResourceList as Resources
-from snakemake.io import InputFiles, OutputFiles, Log, Params, Wildcards
+from snakemake.io.container import (
+    InputFiles,
+    OutputFiles,
+    Log,
+    Params,
+    ResourceList,
+    Wildcards,
+)
 from snakemake.script import Snakemake
 
 
@@ -72,7 +78,7 @@ def fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
                 "graph_type": "dag",
             }
         ),
-        resources=Resources(),
+        resources=ResourceList(),
         threads=4,
         log=Log(
             fromdict={

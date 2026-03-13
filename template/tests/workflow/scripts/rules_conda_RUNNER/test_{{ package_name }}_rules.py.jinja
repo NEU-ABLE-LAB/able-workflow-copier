@@ -22,11 +22,11 @@ from types import SimpleNamespace
 from typing import Any, Dict, List
 
 import pytest
-from snakemake.io import ResourceList as Resources
-from snakemake.io import (
+from snakemake.io.container import (
     InputFiles,
     OutputFiles,
     Params,
+    ResourceList,
     Wildcards,
     Log,
 )
@@ -86,7 +86,7 @@ def _fake_snakemake(
     wildcards = Wildcards( fromdict = {
         "sample": "X1",
     })
-    resources = Resources( fromdict = {
+    resources = ResourceList( fromdict = {
         "mem_mb": 1024,  # will be converted to int
     })
 

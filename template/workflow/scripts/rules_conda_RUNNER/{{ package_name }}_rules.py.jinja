@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict
 
 from loguru import logger
-from snakemake.io import Namedlist
+from snakemake.io.container import Namedlist
 from snakemake.script import Snakemake
 
 from {{ package_name }}.utils.logging.logging import configure_file_logger

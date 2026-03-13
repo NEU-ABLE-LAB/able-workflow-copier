@@ -22,12 +22,12 @@ from typing import Iterable, Any
 
 import pytest
 from ruamel.yaml import YAML
-from snakemake.io import ResourceList as Resources
 from snakemake.io import (
     InputFiles,
     OutputFiles,
     Log,
     Params,
+    ResourceList,
     Wildcards,
 )
 from snakemake.script import Snakemake
@@ -97,7 +97,7 @@ def _fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
         output=OutputFiles(fromdict={"dst": str(dst)}),
         params=Params(fromdict={"project_root": str(project_root)}),
         wildcards=Wildcards(),
-        resources=Resources(),
+        resources=ResourceList(),
         threads=4,
         log=Log(
             fromdict={
