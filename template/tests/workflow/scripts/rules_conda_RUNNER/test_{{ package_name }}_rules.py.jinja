@@ -3,8 +3,7 @@ Unit-tests for `workflow/scripts/rules/{{ package_name }}_rules.py`.
 
 Key ideas
 ---------
-* Provide a *very* small stand-in for Snakemake's ``Namedlist`` plus a fake
-  ``snakemake`` module so the unconditional import in the wrapper succeeds.
+* Provide a fake ``snakemake`` module for the import wrapper.
 * Dynamically import the wrapper under test from its file path.
 * Build a dummy target module *on-the-fly* whose ``run()`` function simply
   records the keyword arguments it receives so that we can assert that the
@@ -23,14 +22,12 @@ from typing import Any, Dict, List
 
 import pytest
 from snakemake.script import Snakemake
-from snakemake.utils import Namedlist
 
 try:
     # Snakemake v9.17.0+ (with snakemake.io.container)
     from snakemake.io.container import (
         InputFiles,
         Log,
-        Namedlist,
         OutputFiles,
         Params,
         ResourceList,
@@ -41,7 +38,6 @@ except ImportError:
     from snakemake.io import (
         InputFiles,
         Log,
-        Namedlist,
         OutputFiles,
         Params,
         ResourceList,
