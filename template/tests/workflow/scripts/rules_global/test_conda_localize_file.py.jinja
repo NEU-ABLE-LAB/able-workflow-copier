@@ -243,3 +243,50 @@ def test_no_mtime_warning_when_dst_not_older(tmp_path, clf_module):
 
     log_text = _read_log(Path(smk.log.loguru))
     assert "Adjusted output mtime to avoid filesystem clock skew" not in log_text
+
+
+def test_retries_after_sleep_if_future_mtime_is_clamped(
+    tmp_path, clf_module, monkeypatch
+):
+    """Retry path handles filesystems that clamp future mtimes to current time."""
+    smk = _fake_snakemake(tmp_path)
+    src = Path(smk.input.src)
+    _write_yaml(src, deps=["python=3.12"])
+
+    real_utime = os.utime
+    now = time.time()
+    src_mtime = now + 1.5
+    real_utime(src, (src_mtime, src_mtime))
+
+    fake_clock = {"now": now}
+    sleep_calls: list[float] = []
+    first_utime = {"value": True}
+
+    def _fake_time() -> float:
+        return fake_clock["now"]
+
+    def _fake_sleep(seconds: float) -> None:
+        sleep_calls.append(seconds)
+        fake_clock["now"] += seconds
+
+    def _fake_utime(path, times):  # type: ignore[no-untyped-def]
+        atime, mtime = times
+        if first_utime["value"]:
+            first_utime["value"] = False
+            clamped = fake_clock["now"]
+            real_utime(path, (clamped, clamped))
+            return
+        real_utime(path, (atime, mtime))
+
+    monkeypatch.setattr(clf_module.time, "time", _fake_time)
+    monkeypatch.setattr(clf_module.time, "sleep", _fake_sleep)
+    monkeypatch.setattr(clf_module.os, "utime", _fake_utime)
+
+    clf_module.main(smk)
+
+    assert sleep_calls, "Expected retry path to sleep before second utime"
+    dst = Path(smk.output.dst)
+    assert dst.stat().st_mtime >= src.stat().st_mtime
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "sleeping" in log_text and "retrying" in log_text

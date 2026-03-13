@@ -47,13 +47,36 @@ def _ensure_output_mtime_not_older_than_input(src: Path, dst: Path) -> None:
     """
     src_mtime = src.stat().st_mtime
     dst_mtime = dst.stat().st_mtime
-    if dst_mtime < src_mtime:
-        safe_mtime = max(src_mtime, time.time()) + 1.0
-        os.utime(dst, (safe_mtime, safe_mtime))
+    if dst_mtime >= src_mtime:
+        return
+
+    safe_mtime = max(src_mtime, time.time()) + 1.0
+    os.utime(dst, (safe_mtime, safe_mtime))
+    logger.warning(
+        "Adjusted output mtime to avoid filesystem clock skew: "
+        f"dst ({dst_mtime:.6f}) < src ({src_mtime:.6f}); "
+        f"set dst mtime to {safe_mtime:.6f}"
+    )
+
+    updated_dst_mtime = dst.stat().st_mtime
+    if updated_dst_mtime >= src_mtime:
+        return
+
+    wait_seconds = max(src_mtime - time.time(), 0.0) + 1.0
+    logger.warning(
+        "Output mtime still older than input after adjustment; "
+        f"sleeping {wait_seconds:.3f}s and retrying"
+    )
+    time.sleep(wait_seconds)
+
+    fallback_mtime = max(src_mtime, time.time()) + 1.0
+    os.utime(dst, (fallback_mtime, fallback_mtime))
+
+    final_dst_mtime = dst.stat().st_mtime
+    if final_dst_mtime < src_mtime:
         logger.warning(
-            "Adjusted output mtime to avoid filesystem clock skew: "
-            f"dst ({dst_mtime:.6f}) < src ({src_mtime:.6f}); "
-            f"set dst mtime to {safe_mtime:.6f}"
+            "Output mtime remains older than input after retry: "
+            f"dst ({final_dst_mtime:.6f}) < src ({src_mtime:.6f})"
         )
 
 
