@@ -42,7 +42,7 @@ dependencies = [
 # must be able to be installed simultaneously.
 runner = [
   # This snakemake version should match the version in `dependency-groups.snakemake`
-  "snakemake>=9.16.3",
+  "snakemake==9.16.3",
   # Add additional dependencies for new modules and ETL process here.
 ]
 
@@ -57,7 +57,7 @@ snakemake = [
   # This snakemake version should match the version in `project.optional-dependencies.runner`
   {# Also update snakemake version in `{{ package_name }}-py312-workflow.yaml` if modifying template -#}
   {# Also update snakemake version in `hooks/pyproject2conda.py` if modifying template -#}
-  "snakemake>=9.16.3",
+  "snakemake==9.16.3",
 ]
 workflow = [
   { include-group = "snakemake" },
