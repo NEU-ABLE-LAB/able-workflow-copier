@@ -14,7 +14,9 @@ Strategy
 from __future__ import annotations
 
 import importlib.util
+import os
 import re
+import time
 from pathlib import Path
 from typing import Iterable, Any
 
@@ -116,6 +118,11 @@ def _load_output_yaml(path: Path) -> dict:
         return y.load(fh)
 
 
+def _read_log(path: Path) -> str:
+    """Return text from a log file."""
+    return path.read_text(encoding="utf-8")
+
+
 # -----------------------------------------------------------------------------
 # Tests                                                                        #
 # -----------------------------------------------------------------------------
@@ -194,3 +201,32 @@ def test_comment_and_dash_on_same_line(tmp_path, clf_module):
         raw_text,
         re.M,
     )
+
+
+def test_adjusts_mtime_and_warns_when_dst_is_older(tmp_path, clf_module):
+    """When dst mtime is older than src mtime, mtime is bumped and warning logged."""
+    smk = _fake_snakemake(tmp_path)
+    src = Path(smk.input.src)
+    _write_yaml(src, deps=["python=3.12"])
+
+    future_src_mtime = time.time() + 60
+    os.utime(src, (future_src_mtime, future_src_mtime))
+
+    clf_module.main(smk)
+
+    dst = Path(smk.output.dst)
+    assert dst.stat().st_mtime > src.stat().st_mtime
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "Adjusted output mtime to avoid filesystem clock skew" in log_text
+
+
+def test_no_mtime_warning_when_dst_not_older(tmp_path, clf_module):
+    """No skew warning is logged when dst mtime is not older than src mtime."""
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(Path(smk.input.src), deps=["python=3.12"])
+
+    clf_module.main(smk)
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "Adjusted output mtime to avoid filesystem clock skew" not in log_text

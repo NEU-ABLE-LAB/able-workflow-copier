@@ -6,7 +6,9 @@ meant to be executed via Snakemake.
 """
 
 import re
+import os
 import sys
+import time
 from pathlib import Path
 from typing import Any, Mapping, Sequence, TYPE_CHECKING, Union
 
@@ -28,6 +30,31 @@ GUIDANCE = (
 )
 
 CondaDep = Union[str, Mapping[str, Any]]
+
+
+def _ensure_output_mtime_not_older_than_input(src: Path, dst: Path) -> None:
+    """Keep output mtime newer than input when filesystem clocks jitter.
+
+    Some virtualized or bridged filesystems (notably WSL-backed workflows) can
+    produce tiny timestamp inversions when files are created in rapid succession.
+    Build tools may then emit false "clock skew" diagnostics even though content
+    generation was correct, so we defensively bump the output mtime only when
+    ``dst`` appears older than ``src``.
+
+    References:
+    - https://github.com/microsoft/WSL/issues/10006
+    - https://github.com/microsoft/WSL/issues/8318
+    """
+    src_mtime = src.stat().st_mtime
+    dst_mtime = dst.stat().st_mtime
+    if dst_mtime < src_mtime:
+        safe_mtime = max(src_mtime, time.time()) + 1.0
+        os.utime(dst, (safe_mtime, safe_mtime))
+        logger.warning(
+            "Adjusted output mtime to avoid filesystem clock skew: "
+            f"dst ({dst_mtime:.6f}) < src ({src_mtime:.6f}); "
+            f"set dst mtime to {safe_mtime:.6f}"
+        )
 
 
 def main(smk) -> None:  # type: ignore[no-untyped-def]
@@ -103,6 +130,9 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     dst.parent.mkdir(parents=True, exist_ok=True)
     with dst.open("w") as fh:
         yaml.dump(env, fh)
+
+    _ensure_output_mtime_not_older_than_input(src=src, dst=dst)
+
     logger.info(f"Localized {src} to {dst}")
 
 
