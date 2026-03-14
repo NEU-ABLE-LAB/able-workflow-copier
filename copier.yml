@@ -147,8 +147,9 @@ format_code:
 
 # --- Post-answers Configurations ---
 _exclude:
-  # This rule should only be updated from within the template.
-  - ".copier-answers/project.yml"
+  # Exclude the rule-dag_svg files since that template was applied
+  # to generate the rule-dag_svg files within the template
+  # and cannot be updated after generation since they are generated files.
   - ".copier-answers/rule-dag_svg.yml"
   - "docs/docs/contributing/templates/rule-dag_svg.md"
 
