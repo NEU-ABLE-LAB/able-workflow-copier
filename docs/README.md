@@ -16,7 +16,7 @@ The following assumes that you have already set up the development environment.
 ### Serving just the `able-workflow-copier` docs
 
 ```bash
-./scritps/mkdocs_serve.sh
+./scripts/mkdocs_serve.sh
 ```
 
 ### Serving ALL the `able-workflow` docs
