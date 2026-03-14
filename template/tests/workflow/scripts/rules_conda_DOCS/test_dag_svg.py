@@ -1,16 +1,14 @@
 """
-Unit-tests for ``workflow/scripts/rules_conda_DOCS/dag_svg.py``.
+Unit-tests for dag_svg.
 
-Every public helper is exercised in isolation, with very limited monkey-patching.
+Create an SVG of the main Snakemake DAG
 """
 
 from __future__ import annotations
 
 import importlib.util
-import subprocess
-import sys
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 from lxml import etree as ET
@@ -39,17 +37,23 @@ except ImportError:
 
 
 # --------------------------------------------------------------------------- #
-# Load script under test once per module                                      #
+# Load the script under test once per module                                  #
 # --------------------------------------------------------------------------- #
 
 
 @pytest.fixture(scope="module")
 def dag_svg_module() -> Any:
-    """Import the *runtime* module object for dag_svg.py (without executing it)."""
+    """Import the runtime module object for dag_svg.py."""
     root = Path(__file__).parents[4]  # project root
     script = root / "workflow/scripts/rules_conda_DOCS/dag_svg.py"
 
-    spec = importlib.util.spec_from_file_location("dag_svg", script)
+    if not script.exists():  # pragma: no cover
+        pytest.skip(
+            f"Cannot find {script} - are you running tests from the repo root?",
+            allow_module_level=True,
+        )
+
+    spec = importlib.util.spec_from_file_location("dag_svg", str(script))
     module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     assert spec and spec.loader
     spec.loader.exec_module(module)  # type: ignore[arg-type]
@@ -57,8 +61,9 @@ def dag_svg_module() -> Any:
 
 
 # --------------------------------------------------------------------------- #
-# Helpers                                                                     #
+# Helper factories                                                            #
 # --------------------------------------------------------------------------- #
+
 
 RAW_SVG = """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -71,11 +76,10 @@ RAW_SVG = """\
 """
 
 
-def fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
+def _build_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
     """
-    Build a minimal but *real* ``Snakemake`` instance for the wrapper.
-
-    Only those attributes the script touches are populated.
+    Construct a *real* Snakemake object with only the attributes required
+    by ``main_smk``.
     """
     svg_path = tmp_path / "docs" / "_images" / "dag.svg"
     log_dir = tmp_path / "logs"
@@ -106,11 +110,15 @@ def fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
 
 
 # --------------------------------------------------------------------------- #
-# _neutralise_only_problematic_colours                                        #
+# Tests                                                                       #
 # --------------------------------------------------------------------------- #
 
 
 def test_neutralise_removes_background_polygon(dag_svg_module):
+    """
+    Test that the function `_neutralise_only_problematic_colours` removes
+    the white background polygon from the SVG content.
+    """
     SVG_NS = "{http://www.w3.org/2000/svg}"
 
     root = ET.fromstring(RAW_SVG.encode())
@@ -123,14 +131,15 @@ def test_neutralise_removes_background_polygon(dag_svg_module):
     assert root.find(f".//{SVG_NS}polygon") is None
 
 
-# --------------------------------------------------------------------------- #
-# _process_svg_content                                                        #
-# --------------------------------------------------------------------------- #
-
-
 def test_process_svg_content_adds_class_injects_style_and_neutralises_bg(
     dag_svg_module,
 ):
+    """
+    Test that the SVG content is processed correctly:
+    - Adds a class to the root element
+    - Injects a <style> block with custom CSS variables
+    - Removes the white background polygon
+    """
     root = dag_svg_module._process_svg_content(RAW_SVG)  # noqa: SLF001
 
     # 1. Dag-scoping class
@@ -145,11 +154,6 @@ def test_process_svg_content_adds_class_injects_style_and_neutralises_bg(
     assert not polygons
 
 
-# --------------------------------------------------------------------------- #
-# main() + main_smk() (integration smoke-test)                                #
-# --------------------------------------------------------------------------- #
-
-
 def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
     """
     Integration smoke-test of *everything* without touching the real filesystem
@@ -162,7 +166,7 @@ def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
         lambda _, __, ___: RAW_SVG,
     )
 
-    smk = fake_snakemake(tmp_path)
+    smk = _build_snakemake(tmp_path)
     dag_svg_module.main_smk(smk)
 
     svg_path = Path(smk.output[0])

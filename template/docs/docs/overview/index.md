@@ -1,6 +1,6 @@
 # Package & Workflow
 
-Welcome to the **{{ project_name }}** code‑base – an opinionated template for data‑centric Python projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base**. The layout you see here was pioneered in the Automation for the Built and Living Environment (ABLE lab)[https://www.thisismikekane.com] and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.
+Welcome to the **{{ project_name }}** code‑base – an opinionated template for data‑centric Python projects that need a **repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base**. The layout you see here was pioneered in the Automation for the Built and Living Environment [ABLE lab](https://www.thisismikekane.com) and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.
 
 ## Foundation opinions
 
