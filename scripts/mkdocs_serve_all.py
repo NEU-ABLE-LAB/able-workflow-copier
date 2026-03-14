@@ -67,13 +67,13 @@ SITES: List[Tuple[str, Path, int]] = [
 
 
 ENV_VARS: Dict[str, str] = {
-    "ABLE_WORKFLOW_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev",
+    "ABLE_WORKFLOW_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-copier",
     "ABLE_WORKFLOW_COPIER_DOCS": "http://localhost:8011",
-    "ABLE_WORKFLOW_MODULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev",
+    "ABLE_WORKFLOW_MODULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-module-copier",
     "ABLE_WORKFLOW_MODULE_COPIER_DOCS": "http://localhost:8012",
-    "ABLE_WORKFLOW_ETL_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev",
+    "ABLE_WORKFLOW_ETL_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier",
     "ABLE_WORKFLOW_ETL_COPIER_DOCS": "http://localhost:8013",
-    "ABLE_WORKFLOW_RULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev",
+    "ABLE_WORKFLOW_RULE_COPIER_REPO": "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier",
     "ABLE_WORKFLOW_RULE_COPIER_DOCS": "http://localhost:8014",
 }
 
