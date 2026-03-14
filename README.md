@@ -4,16 +4,17 @@
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
+[![codecov](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier/graph/badge.svg?token=8BX19PLPQ8)](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier)
+[![test-and-build](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/pr.yml/badge.svg)](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/pr.yml)
 
 A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.
 
 ## Overview of ABLE Workflow copier templates
 
-- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier)
-- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier)
-- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier)
-- `able-workflow-rule-script-copier`
-  - TODO-copier-package create this repo to template python scripts used as snakemake rules (e.g., `workflow/scripts/rules_global/conda_localize_file.py` and `template/workflow/scripts/rules_conda_DOCS/dag_svg.py`). And their associated unit tests which need the requirements specifed by the `conda:` directive the script is used in.
+- [`able-workflow-copier`]({{ able_workflow_copier_docs }})
+- [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }})
+- [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
+- [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
 
 ## Contributing
 
