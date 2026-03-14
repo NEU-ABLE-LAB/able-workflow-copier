@@ -1,0 +1,19 @@
+# See workflow/schemas/config.schema.yaml for the schema description.
+DOCS_SITE_DIR: "docs/site"
+REPORTS_DIR: "reports/"
+REPORT_TEMPLATES_DIR: "reports/notebook_templates"
+LOG_DIR: "logs/rules"
+CONDA:
+  ENVS_DIR: "workflow/envs"
+  PYPROJECT2CONDA_DIR: "workflow/envs/pyproject2conda"
+  LOCALIZED_DIR: "workflow/envs/localized"
+  ENVS_META:
+    TOX: "{{ package_name }}-py312-tox"
+    WORKFLOW: "{{ package_name }}-py312-workflow"
+  ENVS:
+    CORE: "{{ package_name }}-py312-core"
+    RUNNER: "{{ package_name }}-py312-core-runner"
+    DEV: "{{ package_name }}-py312-dev"
+    DEV_RUNNER: "{{ package_name }}-py312-dev-runner"
+    DOCS: "{{ package_name }}-py312-docs"
+    NOTEBOOK: "{{ package_name }}-py312-notebook"

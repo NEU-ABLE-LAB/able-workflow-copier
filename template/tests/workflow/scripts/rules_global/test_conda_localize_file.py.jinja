@@ -1,0 +1,292 @@
+"""
+Unit-tests for `workflow/scripts/rules/conda_localize_file.py`.
+
+Strategy
+--------
+* Build a minimal “fake” *snakemake* object (``SimpleNamespace`` with
+  *input*, *output*, *params*, and *log* attributes) that the wrapper expects.
+* Provide a tiny YAML file as *src*, run ``main()``, and then inspect
+  - the *output* YAML to check dependency handling, and
+  - the raw text to be sure the guidance comment is attached correctly
+    (no stray dash in its own line).
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import os
+import re
+import time
+from pathlib import Path
+from typing import Iterable, Any
+
+import pytest
+from ruamel.yaml import YAML
+from snakemake.script import Snakemake
+
+try:
+    # Snakemake v9.17.0+ (with snakemake.io.container)
+    from snakemake.io.container import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
+except ImportError:
+    # Snakemake v9.16.3 fallback
+    from snakemake.io import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
+
+
+# -----------------------------------------------------------------------------
+# Module-under-test loader (once per test module)                              #
+# -----------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def clf_module() -> Any:
+    """
+    Import the *runtime* module object for conda_localize_file.py (without
+    calling ``main_smk``).  The fixture mirrors the pattern used in
+    *test_dag_svg.py*.
+    """
+    root = Path(__file__).parents[4]  # project root
+    script = root / "workflow/scripts/rules_global/conda_localize_file.py"
+
+    if not script.exists():  # pragma: no cover
+        pytest.skip(
+            f"Cannot find {script} - are you running tests from the repo root?",
+            allow_module_level=True,
+        )
+
+    spec = importlib.util.spec_from_file_location("conda_localize_file", script)
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    assert spec and spec.loader
+    spec.loader.exec_module(module)  # type: ignore[arg-type]
+    return module
+
+
+# -----------------------------------------------------------------------------
+# Helper factories                                                             #
+# -----------------------------------------------------------------------------
+
+
+def _write_yaml(path: Path, *, deps: Iterable[str]) -> None:
+    """Write a minimal environment YAML with the given *dependencies*."""
+    tpl = (
+        "channels:\n"
+        "  - defaults\n"
+        "dependencies:\n"
+        + "\n".join(f"  - {d}" for d in deps)
+        + "\n"
+    )
+    path.write_text(tpl, encoding="utf-8")
+
+
+def _fake_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
+    """
+    Build a minimal but *real* ``Snakemake`` instance for the script.
+
+    Only those attributes touched by ``main()`` are populated.
+    """
+    src = tmp_path / "src.yml"
+    dst = tmp_path / "out" / "localized.yml"
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    project_root = tmp_path / "my_project"
+    project_root.mkdir()
+
+    return Snakemake(
+        input_=InputFiles(fromdict={"src": str(src)}),
+        output=OutputFiles(fromdict={"dst": str(dst)}),
+        params=Params(fromdict={"project_root": str(project_root)}),
+        wildcards=Wildcards(),
+        resources=ResourceList(),
+        threads=4,
+        log=Log(
+            fromdict={
+                "loguru": str(log_dir / "conda_localize.log"),
+            }
+        ),
+        config={},
+        rulename="test_conda_localize_file",
+        bench_iteration=None,
+    )
+
+
+def _load_output_yaml(path: Path) -> dict:
+    """Return ruamel-parsed YAML from *path*."""
+    y = YAML()
+    y.preserve_quotes = True
+    with path.open("r", encoding="utf-8") as fh:
+        return y.load(fh)
+
+
+def _read_log(path: Path) -> str:
+    """Return text from a log file."""
+    return path.read_text(encoding="utf-8")
+
+
+# -----------------------------------------------------------------------------
+# Tests                                                                        #
+# -----------------------------------------------------------------------------
+
+
+def test_appends_pip_and_editable(tmp_path, clf_module):
+    """
+    When *no* pip dependency is present, the script must
+
+    * add ``pip>=23`` and
+    * create a ``pip:`` block containing the editable install.
+    """
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(Path(smk.input.src), deps=["python=3.12"])
+
+    clf_module.main(smk)
+
+    env = _load_output_yaml(Path(smk.output.dst))
+    deps = env["dependencies"]
+
+    # string 'pip>=23' was appended
+    assert any(isinstance(d, str) and d.startswith("pip>=") for d in deps)
+
+    # dict containing a 'pip' key with the editable install
+    pip_map = next(d for d in deps if isinstance(d, dict) and "pip" in d)
+    editable = f"-e {smk.params.project_root}"
+    assert editable in pip_map["pip"]
+
+
+def test_does_not_duplicate_pip_requirement(tmp_path, clf_module):
+    """
+    If the source already contains a pip spec >= 23,
+    the script must *not* add another ``pip>=23`` entry.
+    """
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(
+        Path(smk.input.src),
+        deps=[
+            "python=3.12",
+            "pip>=25.1.1",  # already sufficient
+        ],
+    )
+
+    clf_module.main(smk)
+    deps = _load_output_yaml(Path(smk.output.dst))["dependencies"]
+
+    # Only one pip entry and it is the original >=25.1.1
+    pip_strings = [d for d in deps if isinstance(d, str) and d.startswith("pip")]
+    assert pip_strings == ["pip>=25.1.1"]
+
+
+def test_comment_and_dash_on_same_line(tmp_path, clf_module):
+    """
+    The guidance comment should be attached to the *list-item* so the YAML
+    contains no stray '-' on its own line and the comment starts immediately
+    after the dash.
+    """
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(Path(smk.input.src), deps=["python=3.12"])
+
+    clf_module.main(smk)
+
+    raw_text = Path(smk.output.dst).read_text(encoding="utf-8")
+
+    # 1. No orphan dash lines
+    assert not any(line.strip() == "-" for line in raw_text.splitlines())
+
+    # 2. Guidance comment block (one or more “# …” lines) directly precedes
+    #    the list-item that starts with “- pip:”.
+    assert re.search(
+        # first comment line, then any number of further “# …” lines,
+        # then the list-item “- pip:”
+        r"^\s*# The {{ package_name }} package needs to be available[^\n]*\n"
+        r"(?:^\s*#.*\n)*"
+        r"\s*- pip:",
+        raw_text,
+        re.M,
+    )
+
+
+def test_adjusts_mtime_and_warns_when_dst_is_older(tmp_path, clf_module):
+    """When dst mtime is older than src mtime, mtime is bumped and warning logged."""
+    smk = _fake_snakemake(tmp_path)
+    src = Path(smk.input.src)
+    _write_yaml(src, deps=["python=3.12"])
+
+    future_src_mtime = time.time() + 60
+    os.utime(src, (future_src_mtime, future_src_mtime))
+
+    clf_module.main(smk)
+
+    dst = Path(smk.output.dst)
+    assert dst.stat().st_mtime > src.stat().st_mtime
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "Adjusted output mtime to avoid filesystem clock skew" in log_text
+
+
+def test_no_mtime_warning_when_dst_not_older(tmp_path, clf_module):
+    """No skew warning is logged when dst mtime is not older than src mtime."""
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(Path(smk.input.src), deps=["python=3.12"])
+
+    clf_module.main(smk)
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "Adjusted output mtime to avoid filesystem clock skew" not in log_text
+
+
+def test_retries_after_sleep_if_future_mtime_is_clamped(
+    tmp_path, clf_module, monkeypatch
+):
+    """Retry path handles filesystems that clamp future mtimes to current time."""
+    smk = _fake_snakemake(tmp_path)
+    src = Path(smk.input.src)
+    _write_yaml(src, deps=["python=3.12"])
+
+    real_utime = os.utime
+    now = time.time()
+    src_mtime = now + 1.5
+    real_utime(src, (src_mtime, src_mtime))
+
+    fake_clock = {"now": now}
+    sleep_calls: list[float] = []
+    first_utime = {"value": True}
+
+    def _fake_time() -> float:
+        return fake_clock["now"]
+
+    def _fake_sleep(seconds: float) -> None:
+        sleep_calls.append(seconds)
+        fake_clock["now"] += seconds
+
+    def _fake_utime(path, times):  # type: ignore[no-untyped-def]
+        atime, mtime = times
+        if first_utime["value"]:
+            first_utime["value"] = False
+            clamped = fake_clock["now"]
+            real_utime(path, (clamped, clamped))
+            return
+        real_utime(path, (atime, mtime))
+
+    monkeypatch.setattr(clf_module.time, "time", _fake_time)
+    monkeypatch.setattr(clf_module.time, "sleep", _fake_sleep)
+    monkeypatch.setattr(clf_module.os, "utime", _fake_utime)
+
+    clf_module.main(smk)
+
+    assert sleep_calls, "Expected retry path to sleep before second utime"
+    dst = Path(smk.output.dst)
+    assert dst.stat().st_mtime >= src.stat().st_mtime
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "sleeping" in log_text and "retrying" in log_text

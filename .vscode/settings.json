@@ -1,0 +1,43 @@
+{
+    "mypy-type-checker.ignorePatterns": [
+        "**/tests/**",
+        "**/docs/**",
+        "**/.snakemake/**",
+        "**/.tox/**",
+        "**/.venv/**",
+        "**/.env/**",
+        "**/.eggs/**",
+        "**/build/**",
+        "**/dist/**",
+        "**/logs/**",
+        "**/template/**",
+    ],
+    "python.useEnvironmentsExtension": true,
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#d42238",
+        "activityBar.background": "#d42238",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#33c01f",
+        "activityBarBadge.foreground": "#15202b",
+        "commandCenter.border": "#e7e7e799",
+        "sash.hoverBorder": "#d42238",
+        "statusBar.background": "#a81b2c",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#d42238",
+        "statusBarItem.remoteBackground": "#a81b2c",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "titleBar.activeBackground": "#a81b2c",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#a81b2c99",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.remoteColor": "#a81b2c"
+}

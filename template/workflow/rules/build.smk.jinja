@@ -1,0 +1,87 @@
+rule pyproject2conda_package_file:
+    """
+    Generate an environment YAML from `pyproject.toml`
+    that includes the `{{ package_name }}` pacakge.
+    """
+    localrule: True
+    input:
+        toml=workflow.source_path("../../pyproject.toml"),
+    output:
+        # This should be placed in the parent workflow directory if this
+        # workflow is imported as a module.
+        {% raw -%}
+        yaml=str(
+            Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+            / f"{{environment}}.yaml"
+        ),
+        {%- endraw %}
+    wildcard_constraints:
+        environment="|".join(config["CONDA"]["ENVS"].values()),
+    params:
+        env_name="{environment}",
+    log:
+        loguru=LOG_DIR / "pyproject2conda/{environment}.loguru.log",
+        stdout=LOG_DIR / "pyproject2conda/{environment}.stdout.log",
+        stderr=LOG_DIR / "pyproject2conda/{environment}.stderr.log",
+    script:
+        str(WORKFLOW_BASE / "scripts/rules_global/pyproject2conda.py")
+
+
+rule pyproject2conda_package_all:
+    """Generate all the environment YAMLs that include the package"""
+    localrule: True
+    input:
+        {% raw -%}
+        expand(
+            str(
+                Path(config["CONDA"]["PYPROJECT2CONDA_DIR"])
+                / f"{{environment}}.yaml"
+            ),
+            environment=config["CONDA"]["ENVS"].values(),
+        ),
+        {%- endraw %}
+
+
+rule pyproject2conda_meta_file:
+    """
+    Generate workflow and tox environment YAMLs.
+    That are committed to the repository for as the minimal
+    environments for running and testing the workflow.
+    """
+    localrule: True
+    input:
+        toml=workflow.source_path("../../pyproject.toml"),
+    output:
+        {% raw -%}
+        yaml=str(Path(config["CONDA"]["ENVS_DIR"]) / f"{{environment}}.yaml"),
+        {%- endraw %}
+    wildcard_constraints:
+        environment="|".join(config["CONDA"]["ENVS_META"].values()),
+    params:
+        env_name="{environment}",
+    log:
+        loguru=LOG_DIR / "pyproject2conda/{environment}.log",
+        stdout=LOG_DIR / "pyproject2conda/{environment}.stdout.log",
+        stderr=LOG_DIR / "pyproject2conda/{environment}.stderr.log",
+    script:
+        str(WORKFLOW_BASE / "scripts/rules_global/pyproject2conda.py")
+
+
+rule pyproject2conda_meta_all:
+    """Generate both the workflow and tox environment YAMLs."""
+    localrule: True
+    input:
+        {% raw -%}
+        expand(
+            str(Path(config["CONDA"]["ENVS_DIR"]) / f"{{environment}}.yaml"),
+            environment=config["CONDA"]["ENVS_META"].values(),
+        ),
+        {%- endraw %}
+
+
+rule pyproject2conda_all:
+    """Generate all the environment YAMLs"""
+    localrule: True
+    input:
+        rules.pyproject2conda_package_all.input,
+        rules.pyproject2conda_meta_all.input,

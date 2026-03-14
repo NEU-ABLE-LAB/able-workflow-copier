@@ -1,0 +1,36 @@
+__use_yte__: true
+__definitions__:
+  - from pathlib import Path
+
+# This default snakemake profile is for running snakemake
+# within VSCode on a local machine (within WSL on Windows).
+
+# FIX pulp/cbc/default scheduler issue
+# - https://github.com/snakemake/snakemake/issues/3719
+scheduler: greedy
+
+# Hardware configuration
+cores: 4
+
+# Conda configuration
+software-deployment-method: conda
+use-conda: true
+
+# Prevent the `conda_update_yaml` command from running multiple `conda env update`
+# commands in parallel, which can cause issues.
+group-components:
+  conda_group: 1
+
+# Avoid running multiple snakemake calls in parallel
+# This is important for the `dag_svg_file` rule, which
+# generates a DAG SVG file and can cause issues if run in parallel.
+resources:
+  snakemake_calls: 1
+
+# Configuration files
+# TODO-copier-package see if this can be moved to a shared location between profiles
+configfile:
+  - "config/config.yaml"
+  # Load the local configuration file if it exists
+  - ?("config/config.local.yaml" if Path("config/config.local.yaml").is_file() else SKIP)
+  # TODO-copier-etl add SLURM config files

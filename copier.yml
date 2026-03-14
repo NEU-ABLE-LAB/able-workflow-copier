@@ -1,0 +1,186 @@
+# --- Configurations ---------------------------------------------------------
+_jinja_extensions:
+  - "cookiecutter.extensions.SlugifyExtension"
+  - "copier_template_extensions.TemplateExtensionLoader"
+  - "extensions/authors_filter.py:AuthorsFilter"
+  - "extensions/strict_undefined.py:SetStrictUndefined"
+  - "jinja2_jsonschema.JsonSchemaExtension"
+
+_subdirectory: "template"
+
+_answers_file: .copier-answers/project.yml
+
+# --- Questions --------------------------------------------------------------
+project_name:
+  type: str
+  help: A human-readable name for the project.
+
+project_name_slug:
+  type: str
+  help: A name for the project. (Must be a valid github project name.)
+  validator: >-
+    {% if not (project_name_slug | regex_search('^[a-z][a-z0-9\-_]+$')) %}
+    project_name_slug must start with a letter, followed one or more letters, digits or dash all lowercase.
+    {% endif %}
+  default: "{{ project_name | lower | slugify }}"
+
+project_description:
+  type: str
+  help: Describe the project in a sentence or two.
+
+organization_name:
+  type: str
+  help: The name of the organization or individual that owns the project.
+  default: "{{ organization_name | default('Northeastern University ABLE Lab') }}"
+
+organization_slug:
+  type: str
+  help: The github organization or individual that owns the project. (Must be a valid github organization name.)
+  validator: >-
+    {% if not (organization_slug | regex_search('^[a-zA-Z][a-zA-Z0-9\-]+$')) %}
+    organization must start with a letter, followed one or more letters, digits or dash.
+    {% endif %}
+  default: >-
+    {% if 'Northeastern University ABLE Lab' == organization_name -%}
+    {{ organization_slug | default('NEU-ABLE-LAB') }}
+    {%- else -%}
+    {{ organization_slug | default(organization_name | slugify) }}
+    {%- endif %}
+
+repository_url:
+  type: str
+  help: The URL of the project's repository. (Must be a valid URL or blank.)
+  validator: >-
+    {% if repository_url and not (repository_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    repository_url must be a valid URL.
+    {% endif %}
+  default: >-
+    {{ repository_url | default('https://github.com/' ~ organization_slug ~ '/' ~ project_name_slug) }}
+
+documentation_url:
+  type: str
+  help: The URL of the project's documentation. (Must be a valid URL or blank.)
+  validator: >-
+    {% if (documentation_url) and not (documentation_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    documentation_url must be a valid URL.
+    {% endif %}
+  default: >-
+    {{ documentation_url | default(repository_url) }}
+
+homepage_url:
+  type: str
+  help: The URL of the project's homepage. (Must be a valid URL or blank.)
+  validator: >-
+    {% if (homepage_url) and not (homepage_url | regex_search('^https?://[a-z0-9][a-z0-9\-]+(\.[a-z0-9][a-z0-9\-]+)+(/[a-z0-9][a-z0-9\-]*)*') ) %}
+    homepage_url must be a valid URL.
+    {% endif %}
+  default: >-
+    {{ homepage_url | default(documentation_url) }}
+
+project_authors:
+  type: json
+  help: |
+    Provide the project authors as a JSON array. Each author object must include a "name" field (string) and may optionally include an "email" field (string).
+
+    For example:
+
+    - Single author:
+      [{ "name": "Alice Example", "email": "alice@example.com" }]
+
+    - Multiple authors:
+      [{
+        "name": "Alice Example", "email": "alice@example.com"
+      },{
+        "name": "Bob Contributor", "email": "bob@contrib.org"
+      }]
+
+    - Authors without email:
+      [{
+        "name": "Alice Example"
+      },{
+        "name": "Carol NoEmail"
+      }]
+  validator: >-
+    {{ project_authors | jsonschema('schemas/project-authors.schema.json') }}
+  default: >-
+    {{ project_authors | default('[{"name": "Michael Kane", "email": "mi.kane@northeastern.edu"}]') }}
+
+package_name:
+  type: str
+  help: The name for the python package within this project. (Must be a valid python package name.)
+  validator: >-
+      {% if not (package_name | regex_search('^[a-z][a-z0-9_]+$') ) %}
+      package_name must start with a letter, followed one or more letters, digits or underscores all lowercase.
+      {% endif %}
+  default: "{{ project_name_slug | lower | replace('-', '_') }}"
+
+conda_update_workflow_env:
+  type: bool
+  help: >-
+    Whether to create/update the conda environment for the workflow.
+    Disable this whenever running `copier update`. If you would like to update
+    the conda environment after updating the template, run
+    `snakemake --cores 1 conda_update`
+  default: false
+  when: false # This feature will be depreciated in the future.
+
+conda_localize:
+  type: bool
+  help: >-
+    Whether to run `snakemake conda_localize` to localize
+    the conda environment yaml files with the python package location.
+    If you do not run this, you will need to run
+    `snakemake conda_localize` manually after running `copier`.
+  default: false
+  when: false # This feature will be depreciated in the future.
+
+format_code:
+  type: bool
+  help: >-
+    Whether to format the generated code after generation.
+    You must have `black`, `ruff`, and `snakefmt` installed
+    in your conda environment for this to work.
+    If you do not run this, you will need to run
+    `black`, `ruff`, and `snakefmt` manually
+    after running `copier` in order for lint tests to pass.
+  default: true
+
+# --- Post-answers Configurations ---
+_exclude:
+  # This rule should only be updated from within the template.
+  - ".copier-answers/project.yml"
+  - ".copier-answers/rule-dag_svg.yml"
+  - "docs/docs/contributing/templates/rule-dag_svg.md"
+
+# Post-generation hooks
+_tasks:
+  # Create conda environment for the workflow
+  - command: >-
+      conda env update --name "{{ package_name }}-py312-workflow" --file "workflow/envs/{{ package_name }}-py312-workflow.yaml"
+    when: "{{ conda_update_workflow_env }}"
+  - command: >-
+      conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
+    when: "{{ conda_update_workflow_env }}"
+  # Localize conda environment files
+  - command: >-
+      conda run --name "{{ package_name }}-py312-workflow" snakemake conda_localize
+    when: "{{ conda_localize }}"
+  - command: >-
+      ruff check --fix ./
+    when: "{{ format_code }}"
+  # Run black, ruff, and snakefmt to format the code to fix line wraps
+  # depending on length of generated code.
+  - command: >-
+      if [ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]; then black --exclude "^$" ./; else black ./; fi
+    when: "{{ format_code }}"
+  - command: >-
+      snakefmt --config snakefmt.toml workflow/
+    when: "{{ format_code }}"
+
+_message_after_copy: |
+  The "{{ project_name }}" project has been created successfully.
+
+  See `.copier-answers/post-copier-todos/package.md` for next steps on
+  implementing your project. You can copy-paste the contents
+  of that file into a GitHub issue or a project management tool to track
+  the implementation of the project.
