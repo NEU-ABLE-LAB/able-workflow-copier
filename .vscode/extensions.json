@@ -7,7 +7,6 @@
         "github.vscode-pull-request-github",
         "gruntfuggly.todo-tree",
         "ms-python.mypy-type-checker",
-        "ms-python.vscode-python-envs",
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "the-compiler.python-tox",
