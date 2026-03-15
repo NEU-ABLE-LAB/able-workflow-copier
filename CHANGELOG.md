@@ -7,6 +7,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Changed
 
 - Codecov only gets uploaded on pushes to main. (#14)
+- Removed duplicate tox installs in gh-actions (#23)
 
 ### Added
 
