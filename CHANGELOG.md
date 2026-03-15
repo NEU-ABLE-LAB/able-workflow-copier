@@ -7,6 +7,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Changed
 
 - Github actions `pr.yaml` test name to `tox Tests`
+- gh-pages `dev` alias now tracks `main` and `latest` alias tracks last release.
 
 ### Added
 
