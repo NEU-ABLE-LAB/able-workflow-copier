@@ -2,6 +2,22 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## dev
+
+### Changed
+
+- Codecov only gets uploaded on pushes to main. (#14)
+
+### Added
+
+- Concurrency limit for GH actions from PRs. (#14)
+
+### Removed
+
+### Fixed
+
+- GH actions from PRs no longer require secrets. (#14)
+
 ## v0.1.1 - 2026-03-14
 
 ### Changed
