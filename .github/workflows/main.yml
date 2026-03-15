@@ -62,7 +62,9 @@ jobs:
               -o .cover/coverage.${{ matrix.python-version }}.xml
 
       - name: Upload coverage to Codecov
-        if: always() # Upload even if the build or tests fail, so we can see partial coverage reports
+        # Upload even if the build or tests fail, so we can see partial coverage reports
+        # Only upload if CODECOV_TOKEN is set, to avoid errors in forks without the secret configured
+        if: ${{ always() && secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@v5
         with:
           files: .cover/coverage.${{ matrix.python-version }}.xml
@@ -71,7 +73,8 @@ jobs:
           slug: NEU-ABLE-LAB/able-workflow-copier
 
       - name: Upload test results to Codecov
-        if: always() # Upload even if the build or tests fail, so we can see partial coverage reports
+        # Upload even if the build or tests fail, so we can see partial coverage reports
+        # Only upload if CODECOV_TOKEN is set, to avoid errors in forks without the secret configured
         uses: codecov/codecov-action@v5
         with:
           # pick up every junit.*.xml written by tox in the `.junit/` directory
