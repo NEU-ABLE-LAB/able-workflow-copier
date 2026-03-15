@@ -5,7 +5,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 [![codecov](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier/graph/badge.svg?token=8BX19PLPQ8)](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier)
-[![tox Main Tests](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/pr.yml/badge.svg)](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/pr.yml)
+[![tox Main Tests](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/main.yml)
 
 A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.
 
