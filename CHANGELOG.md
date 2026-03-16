@@ -7,6 +7,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Changed
 
 - Enforced uniformity of scripts and tests across `able-workflow*-copier` repos
+- `sandbox_examples_generate` is now module `scripts.sandbox_examples_generate` instead of script
 
 ### Added
 

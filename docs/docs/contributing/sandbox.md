@@ -24,7 +24,7 @@ The `.gitignore` file tells git to ignore the entire `sandbox/` project director
 After generating the sandbox with the follwoing command:
 
     ```bash
-    ./scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
     ```
 
 You can then run `cd ./sandbox/example-answers-able` to enter `able` example in the sandbox. To run snakemake, you need to activate

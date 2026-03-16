@@ -16,7 +16,7 @@ For each YAML file we:
 
 Usage
 -----
-    python scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
 """
 
 from __future__ import annotations
@@ -111,10 +111,10 @@ def generate(
     --------
 
     # Render all defaults
-    python scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
 
     # Render only a subset
-    python scripts/sandbox_examples_generate.py example-answers-able.yml
+    python -m scripts.sandbox_examples_generate example-answers-able.yml
     """
     SANDBOX_ROOT.mkdir(exist_ok=True)
 
