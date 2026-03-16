@@ -2,6 +2,22 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## dev
+
+### Changed
+
+- Enforced uniformity of scripts and tests across `able-workflow*-copier` repos
+
+### Added
+
+- Refactored `copie_helpers.py` functions into their own file.
+
+### Removed
+
+### Fixed
+
+- Added explicit `tenacity` dependency to `pyrpoject.toml.jinja`. See #46 to remove this.
+
 ## v0.1.2 - 2026-03-15
 
 ### Changed
