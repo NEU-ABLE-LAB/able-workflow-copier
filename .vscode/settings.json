@@ -1,17 +1,4 @@
 {
-    "mypy-type-checker.ignorePatterns": [
-        "**/tests/**",
-        "**/docs/**",
-        "**/.snakemake/**",
-        "**/.tox/**",
-        "**/.venv/**",
-        "**/.env/**",
-        "**/.eggs/**",
-        "**/build/**",
-        "**/dist/**",
-        "**/logs/**",
-        "**/template/**",
-    ],
     "python.useEnvironmentsExtension": true,
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
