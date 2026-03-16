@@ -1,11 +1,11 @@
-import os
-import sys
 from pathlib import Path
 from typing import Any, Dict, cast
 
 import pytest
 from loguru import logger
 from ruamel.yaml import YAML
+
+from scripts.copie_helpers import run_copie_with_output_control
 
 ANSWERS_YAMLS = [
     Path("example-answers-able.yml"),
@@ -47,18 +47,16 @@ def rendered(request, copie_session):
 
     variant = request.param
 
-    # Only suppress output if verbosity < 2 (i.e., not -vv or higher)
-    if request.config.option.verbose < 2:
-        with open(os.devnull, "w") as devnull:
-            old_stdout, old_stderr = sys.stdout, sys.stderr
-            sys.stdout, sys.stderr = devnull, devnull
-            try:
-                result = copie_session.copy(extra_answers=variant["answers"])
-            finally:
-                sys.stdout, sys.stderr = old_stdout, old_stderr
-    else:
+    if request.config.option.verbose >= 2:
         logger.info(f"Rendering variant {variant['id']} with answers")
-        result = copie_session.copy(extra_answers=variant["answers"])
+
+    result = run_copie_with_output_control(
+        request.config,
+        copie_session,
+        variant["answers"],
+    )
+
+    if request.config.option.verbose >= 2:
         logger.info(f"Copier successfully rendered variant {variant['id']}")
 
     # Basic smoke-tests

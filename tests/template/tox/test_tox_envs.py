@@ -20,6 +20,7 @@ import pytest
 from copier import run_copy
 from loguru import logger
 
+from scripts.copie_helpers import run_copie_with_output_control
 from .conftest import answer_sets
 
 
@@ -197,19 +198,13 @@ def test_inner_tox_env_passes(copie_session, variant_id, env_name, request):
     # Render the template for this variant
     answers = _answers_for(variant_id)
 
-    # Only suppress stdout/stderr of copie_session.copy() if verbosity < 2
     verbosity = request.config.getoption("verbose")
-    if verbosity < 2:
-        with open(os.devnull, "w") as devnull:
-            old_stdout, old_stderr = sys.stdout, sys.stderr
-            sys.stdout, sys.stderr = devnull, devnull
-            try:
-                result = copie_session.copy(extra_answers=answers)
-            finally:
-                sys.stdout, sys.stderr = old_stdout, old_stderr
-    else:
+    if verbosity >= 2:
         logger.info(f"Rendering variant {variant_id}")
-        result = copie_session.copy(extra_answers=answers)
+
+    result = run_copie_with_output_control(request.config, copie_session, answers)
+
+    if verbosity >= 2:
         logger.info(f"Copier successfully rendered variant {variant_id}")
 
     # Ensure the project directory is a Git repo (for setuptools-scm)

@@ -1,8 +1,8 @@
 """
 Unit tests for `scripts/sandbox_examples_generate.py`.
 
-These tests avoid running Copier for real by monkey-patching the
-`Copie` class with light stubs.
+These tests avoid running Copier for real by monkey-patching
+script-level copier helper calls with light stubs.
 """
 
 from __future__ import annotations
@@ -46,9 +46,13 @@ class _DummyCopie:
     """Successful copy that creates an inner directory the code will flatten."""
 
     def __init__(
-        self, template_dir: Path, dest_dir: Path, cfg_path: Path
-    ) -> None:  # noqa: D401
-        self._dest_dir = dest_dir
+        self,
+        default_template_dir: Path,
+        test_dir: Path,
+        config_file: Path,
+        parent_result: _Result | None = None,
+    ):
+        self._dest_dir = test_dir
 
     def copy(self, *, extra_answers: dict[str, Any]) -> _Result:  # noqa: D401
         inner = self._dest_dir / "copie0001"
@@ -60,7 +64,13 @@ class _DummyCopie:
 class _FailingCopie:
     """Simulates a Copier run that errored out."""
 
-    def __init__(self, *a, **kw):  # noqa: D401, ANN001
+    def __init__(
+        self,
+        default_template_dir: Path,
+        test_dir: Path,
+        config_file: Path,
+        parent_result: _Result | None = None,
+    ):
         pass
 
     def copy(self, *, extra_answers: dict[str, Any]) -> _Result:  # noqa: D401
@@ -70,8 +80,8 @@ class _FailingCopie:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
-def test_create_copier_config_creates_expected_artifacts(tmp_path: Path) -> None:
-    cfg_path = seg._create_copier_config(tmp_path)
+def test_make_copier_config_creates_expected_artifacts(tmp_path: Path) -> None:
+    cfg_path = seg.make_copier_config(tmp_path)
 
     #  paths exist
     assert cfg_path.is_file()
@@ -97,8 +107,17 @@ def test_render_example_happy_path_flattens(
     answers_yml = tmp_path / "answers.yml"
     answers_yml.write_text("foo: bar\n")
 
-    #  Patch Copie
-    monkeypatch.setattr(seg, "Copie", _DummyCopie)
+    #  Patch new_copie
+    monkeypatch.setattr(
+        seg,
+        "new_copie",
+        lambda *, template_dir, test_dir, config_file, parent_result=None: _DummyCopie(
+            default_template_dir=template_dir,
+            test_dir=test_dir,
+            config_file=config_file,
+            parent_result=parent_result,
+        ),
+    )
 
     #  Act
     seg._render_example(answers_yml)
@@ -121,7 +140,16 @@ def test_render_example_raises_on_copy_error(
     monkeypatch.setattr(seg, "SANDBOX_ROOT", tmp_path / "sandbox")
     seg.TEMPLATE_DIR.mkdir()
     seg.SANDBOX_ROOT.mkdir()
-    monkeypatch.setattr(seg, "Copie", _FailingCopie)
+    monkeypatch.setattr(
+        seg,
+        "new_copie",
+        lambda *, template_dir, test_dir, config_file, parent_result=None: _FailingCopie(
+            default_template_dir=template_dir,
+            test_dir=test_dir,
+            config_file=config_file,
+            parent_result=parent_result,
+        ),
+    )
 
     with pytest.raises(SystemExit) as excinfo:
         seg._render_example(answers_yml)

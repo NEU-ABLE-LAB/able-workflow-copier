@@ -26,8 +26,9 @@ from pathlib import Path
 from typing import List, Optional
 
 import typer
-from pytest_copie.plugin import Copie
 from ruamel.yaml import YAML
+
+from scripts.copie_helpers import make_copier_config, new_copie
 
 # List extra-answers YAML files to render as examples.
 # Files whose name ends with ``_update.yml`` are *not* processed here.
@@ -63,10 +64,14 @@ def _render_example(answers_yml: Path) -> None:
         answers_dict = yaml.load(fp) or {}
 
     # --- 2. build a minimal copier configuration ------------------------------
-    copier_cfg = _create_copier_config(dest_dir / ".copier_config")
+    copier_cfg = make_copier_config(dest_dir / ".copier_config")
 
     # --- 3. run the copy through pytest-copie ---------------------------------
-    copie = Copie(TEMPLATE_DIR, dest_dir, copier_cfg)
+    copie = new_copie(
+        template_dir=TEMPLATE_DIR,
+        test_dir=dest_dir,
+        config_file=copier_cfg,
+    )
     result = copie.copy(extra_answers=answers_dict)
 
     if result.exception:
@@ -86,28 +91,6 @@ def _render_example(answers_yml: Path) -> None:
                 shutil.rmtree(target) if target.is_dir() else target.unlink()
             p.rename(target)
         shutil.rmtree(inner, ignore_errors=True)
-
-
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
-
-
-def _create_copier_config(base: Path) -> Path:
-    """Create the minimal config file expected by `Copie` and return its path."""
-    copier_dir = base / "copier"
-    replay_dir = base / "copier_replay"
-    copier_dir.mkdir(parents=True, exist_ok=True)
-    replay_dir.mkdir(exist_ok=True)
-
-    cfg = {"copier_dir": str(copier_dir), "replay_dir": str(replay_dir)}
-    cfg_path = base / "config"
-
-    yaml = YAML(typ="safe")
-    with cfg_path.open("w") as fp:
-        yaml.dump(cfg, fp)
-
-    return cfg_path
 
 
 app = typer.Typer(help="Render sandbox examples from Copier extra-answer files.")
