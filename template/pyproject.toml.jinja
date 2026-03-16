@@ -43,6 +43,9 @@ dependencies = [
 runner = [
   # This snakemake version should match the version in `dependency-groups.snakemake`
   "snakemake>=9.16.3",
+  #TODO Remove once https://github.com/bioconda/bioconda-recipes/pull/63513
+  #  is live on bioconda channel
+  "tenacity >=9.1.4,<10.0",
   # Add additional dependencies for new modules and ETL process here.
 ]
 
@@ -58,6 +61,9 @@ snakemake = [
   {# Also update snakemake version in `{{ package_name }}-py312-workflow.yaml` if modifying template -#}
   {# Also update snakemake version in `hooks/pyproject2conda.py` if modifying template -#}
   "snakemake>=9.16.3",
+  #TODO Remove once https://github.com/bioconda/bioconda-recipes/pull/63513
+  #  is live on bioconda channel
+  "tenacity >=9.1.4,<10.0",
 ]
 workflow = [
   { include-group = "snakemake" },
