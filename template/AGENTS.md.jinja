@@ -1,77 +1,45 @@
-# Contributor Guide
+# Agent Contributor Guide
 
 {{ project_name }}
 
 {{ project_description }}
 
-This repository contains the `{{ package_name }}` python package and an associated Snakemake workflow. The package is used to create ETL processes that are run by rules with the Snakemake workflow.
+This repository contains the `{{ package_name }}` python package and an associated Snakemake workflow.
 
-This project was created with the [able-workflow-copier](https://github.com/NEU-ABLE-LAB/able-workflow) suite of Copier templates for creating ETL processes and workflows with Snakemake and Python. For more information on the templates applied see the copier answers in the `./copier-answers/` directory (DO NOT EDIT THESE FILES) and the documentation for each applied template in the `template/docs/docs/contributing/templates/` directory.
+This project was created with the [able-workflow-copier](https://github.com/NEU-ABLE-LAB/able-workflow)
+suite of Copier templates for creating ETL processes and workflows with Snakemake and Python.
+For more information on the templates applied see the copier answers in the `./copier-answers/`
+directory (DO NOT EDIT THESE FILES) and the documentation for each applied template in the
+`template/docs/docs/contributing/templates/` directory.
 
-## Initializing development environment
+## Envornment
 
-The agent environment setup script installs miniforge for conda and tox for unit tests. The following environment variable (and secrets) are already configured:
+The setup script `AGENTS-setup.sh` should have already been run, setting up the environment as follows:
 
-- `GITHUB_PAT`: The github personal access token (PAT) to use with private repositories
-- `GITHUB_USERNAME`: The github username to use for authentication with the PAT
-
-The setup script also installs tox and caches all of the  and conda environments.
-
-For a development environment, activate the `{{ package_name }}-py312-dev-runner` conda environment.
-
-```bash
-conda activate {{ package_name }}-py312-dev-runner
-```
+- The `.bashrc` file has been modified to activate the conda environment `{{ package_name }}-py312-dev-runner` 
+  that includes all the development dependencies.
+- `tox` is available for environment isolation fur testing
 
 ## The `{{ package_name }}` python package
 
-This package contains the `runner` extras that are specified in `pyproject.toml`. Sub-modules that require extras reside in a `runner/` subdirectory.
+This package contains the `runner` extras that are specified in `pyproject.toml`.
+Sub-modules that require extras reside in a `runner/` subdirectory.
 
 ## Snakemake workflows
 
-Many of the snakemake rules require specialized conda environments as specified by the `conda:` directive that are available (after environment initialization) in the `workflow/envs/localized` directory.
+Many of the snakemake rules require specialized conda environments as specified by the `conda:` directive
+that are available (after environment initialization and localization) in the `workflow/envs/localized` directory.
 
-## Documentation
+## Testing
 
-Tox is used to run all the tests. The environment initialization already installed all the packages. The rule integration tests depend on snakemake which requires an internet connection to create conda environments, so skip those. To speed things up, run tox in parallel and skip the rule integration environments:
+Tox is used to run all the tests. The environment initialization already installed all the packages.
+The rule integration tests depend on snakemake which requires an internet connection to create
+conda environments, so skip those. To speed things up, run tox in parallel and skip the rule integration environments:
 
 ```bash
 tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install --skip-env='py.*-workflow-rules'
 ```
 
-Parallel execution is safe because each tox environment writes its own files in `.cover/` and `.junit/`. Directory creation uses `mkdir -p`, so races are avoided. If any environment needs exclusive access to a resource, add a check in its `commands_pre` section and raise an error.
-
-## Set-up script
-
-```bash
-# Install miniforge
-wget -O "${HOME}/Miniforge3.sh" "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-bash "${HOME}/Miniforge3.sh" -b -p "${HOME}/conda"
-${HOME}/conda/bin/conda init
-source "${HOME}/conda/etc/profile.d/conda.sh"
-conda activate
-
-# Install snakemake
-conda env update --quiet \
-  --name "{{ package_name }}_py312_workflow" \
-  --file "workflow/envs/{{ package_name }}-py312-workflow.yaml"
-conda activate {{ package_name }}_py312_workflow
-
-# Configure git to use token via credential helper
-git config --global credential.helper 'store --file ~/.git-credentials'
-echo "https://$GITHUB_USERNAME:$GITHUB_PAT@github.com" > ~/.git-credentials
-
-# Load the submodules
-git submodule update --init --recursive
-
-# Write conda dev environments yaml files
-snakemake conda_localize
-snakemake --conda-create-envs-only
-
-# Install uv and tox
-pipx install uv
-uv tool install tox --with tox-uv
-
-# Cache Tox environment with access to conda
-tox run --recreate --notest --skip-missing-interpreters false
-```
+Parallel execution is safe because each tox environment writes its own files in `.cover/` and `.junit/`.
+Directory creation uses `mkdir -p`, so races are avoided. If any environment needs exclusive access to a resource,
+add a check in its `commands_pre` section and raise an error.

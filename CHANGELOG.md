@@ -17,17 +17,23 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Added
 
+- Better comments in code
+
 ### Removed
 
 - Removed `able-workflow-rule-copier` files that were used within template to generate `docs_dag_svg.smk`
   - `template/.copier-answers/project.yml`
   - `template/.copier-answers/rule-dag_svg.yml`
   - `template/docs/docs/contributing/templates/rule-dag_svg.md`
+- Workaround for fixed [snakemake bug](https://github.com/snakemake/snakemake/issues/3719)
+- Removed duplicate install of tox in `pr.yml`
+- `"python-envs.pythonProjects": [],` from template `settings.json`
 
 ### Fixed
 
 - syntax in docs example (#42)
 - Updated contributor docs and post-copier guidance to describe the dry-run manifest layout and recursive includes.
+- unrendered jinja
 
 ## v0.1.3 - 2026-03-16
 

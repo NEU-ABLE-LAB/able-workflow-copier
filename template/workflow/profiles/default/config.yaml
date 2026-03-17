@@ -5,10 +5,6 @@ __definitions__:
 # This default snakemake profile is for running snakemake
 # within VSCode on a local machine (within WSL on Windows).
 
-# FIX pulp/cbc/default scheduler issue
-# - https://github.com/snakemake/snakemake/issues/3719
-scheduler: greedy
-
 # Hardware configuration
 cores: 4
 
