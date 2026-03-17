@@ -12,6 +12,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
   - `template/tests/workflow/rules/test_snakemake_dag_svg.py`
   - `template/tests/workflow/scripts/rules_conda_DOCS/test_dag_svg.py`
 - Bump submodules to track their `main` branches.
+- Moved `example-answers-*.yml` into `example-answers/` directory.
 
 ### Added
 
