@@ -72,7 +72,7 @@ def _load_touch_paths(
     manifest_path: Path,
     seen: set[Path] | None = None,
 ) -> list[str]:
-    manifest_path = manifest_path.resolve()
+    manifest_path = Path(str(manifest_path)).resolve()
     if seen is None:
         seen = set()
     if manifest_path in seen:
