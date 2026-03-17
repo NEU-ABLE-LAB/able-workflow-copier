@@ -24,6 +24,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
   - `template/.copier-answers/project.yml`
   - `template/.copier-answers/rule-dag_svg.yml`
   - `template/docs/docs/contributing/templates/rule-dag_svg.md`
+- Workaround for fixed [snakemake bug](https://github.com/snakemake/snakemake/issues/3719)
 
 ### Fixed
 
