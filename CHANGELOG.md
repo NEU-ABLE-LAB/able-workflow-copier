@@ -26,6 +26,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
   - `template/docs/docs/contributing/templates/rule-dag_svg.md`
 - Workaround for fixed [snakemake bug](https://github.com/snakemake/snakemake/issues/3719)
 - Removed duplicate install of tox in `pr.yml`
+- `"python-envs.pythonProjects": [],` from template `settings.json`
 
 ### Fixed
 
