@@ -1,23 +1,18 @@
-# Contributor Guide
+# Agent Contribution Guide
 
 This repository contains a Copier template for creating a Snakemake workflow and an associated python package.
 
-## Initializing development environment
+## Environment
 
-The agent environment setup script installs miniforge for conda and tox for unit tests. The following environment variable (and secrets) are already configured:
+The setup script `AGENTS-setup.sh` should have already been run, setting up the environment as follows:
 
-- `GITHUB_PAT`: The github personal access token (PAT) to use with private repositories
-- `GITHUB_USERNAME`: The github username to use for authentication with the PAT
-
-The setup script also installs tox and caches all of the tox environments. For a development environment, activate the desired tox environment, e.g., `py312-dev`.
-
-```bash
-source ".tox/py312-dev/bin/activate"
-```
+- The `.bashrc` file has been modified to activate the conda environment `able-workflow-copier` that include all the development dependencies.
+- `tox` is available for environment isolation for testing
+- Example templates from `example-answers/` are rendered in the `sandbox/`
 
 ## Documentation
 
-The mkdocs documentation for the ETL template resides in the `docs/docs/` directory. Additionally, many directories contain `README.md` files.
+The mkdocs documentation for the template resides in the `docs/docs/` directory. Additionally, many directories contain `README.md` files.
 
 ## Testing
 
@@ -28,29 +23,3 @@ tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
 ```
 
 See `tox.ini` for the configuration and `sandbox/able-workflow-copier-dev/docs/docs/contributing/testing.md` for more details on testing different parts of the code.
-
-## Set-up script
-
-```bash
-# Install miniforge
-wget -O "${HOME}/Miniforge3.sh" "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-bash "${HOME}/Miniforge3.sh" -b -p "${HOME}/conda"
-${HOME}/conda/bin/conda init
-source "${HOME}/conda/etc/profile.d/conda.sh"
-conda activate
-
-# Install uv and tox
-pipx install uv
-uv tool install tox --with tox-uv
-
-# Cache Tox environment with access to conda
-tox run --recreate --notest --skip-missing-interpreters false
-tox run --recreate --notest --skip-missing-interpreters false -e py312-dev
-
-# Configure git to use token via credential helper
-git config --global credential.helper 'store --file ~/.git-credentials'
-echo "https://$GITHUB_USERNAME:$GITHUB_PAT@github.com" > ~/.git-credentials
-
-# Create the sandbox
-.tox/py312-dev/bin/python -m scripts.sandbox_examples_generate
-```
