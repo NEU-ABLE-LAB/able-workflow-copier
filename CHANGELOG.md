@@ -16,6 +16,8 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Added
 
+- Better comments in code
+
 ### Removed
 
 - Removed `able-workflow-rule-copier` files that were used within template to generate `docs_dag_svg.smk`
