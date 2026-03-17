@@ -4,8 +4,8 @@ The `.gitignore` file tells git to ignore the entire `sandbox/` project director
 
 ## Example answer files
 
-- **`example-answers-able.yml`**: A generic example.
-- **`example-answers-weh_interviews.yml`**: This should produce results similar to the [`whole_energy_homes_interviews`](https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews) project. Use winmerge or a similar program to compare the results in sandbox from this example against a local copy of the `whole_energy_homes_interviews` repo.
+- **`example-answers/example-answers-able.yml`**: A generic example.
+- **`example-answers/example-answers-weh_interviews.yml`**: This should produce results similar to the [`whole_energy_homes_interviews`](https://github.com/NEU-ABLE-LAB/whole_energy_homes_interviews) project. Use winmerge or a similar program to compare the results in sandbox from this example against a local copy of the `whole_energy_homes_interviews` repo.
 
 !!! note
 
@@ -24,7 +24,7 @@ The `.gitignore` file tells git to ignore the entire `sandbox/` project director
 After generating the sandbox with the follwoing command:
 
     ```bash
-    ./scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
     ```
 
 You can then run `cd ./sandbox/example-answers-able` to enter `able` example in the sandbox. To run snakemake, you need to activate

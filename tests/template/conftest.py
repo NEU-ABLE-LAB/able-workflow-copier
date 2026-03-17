@@ -7,10 +7,9 @@ from ruamel.yaml import YAML
 
 from scripts.copie_helpers import run_copie_with_output_control
 
-ANSWERS_YAMLS = [
-    Path("example-answers-able.yml"),
-    Path("example-answers-weh_interviews.yml"),
-]
+REPO_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE_ANSWERS_DIR = REPO_ROOT / "example-answers"
+ANSWERS_YAMLS = sorted(EXAMPLE_ANSWERS_DIR.glob("*.yml"))
 
 
 def read_answers_yaml(answers_yaml: Path) -> Dict[Any, Any]:

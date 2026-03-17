@@ -146,12 +146,6 @@ format_code:
   default: true
 
 # --- Post-answers Configurations ---
-_exclude:
-  # Exclude the rule-dag_svg files since that template was applied
-  # to generate the rule-dag_svg files within the template
-  # and cannot be updated after generation since they are generated files.
-  - ".copier-answers/rule-dag_svg.yml"
-  - "docs/docs/contributing/templates/rule-dag_svg.md"
 
 # Post-generation hooks
 _tasks:
