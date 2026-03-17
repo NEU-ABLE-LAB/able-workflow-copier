@@ -146,7 +146,6 @@ format_code:
   default: true
 
 # --- Post-answers Configurations ---
-_exclude:
 
 # Post-generation hooks
 _tasks:
