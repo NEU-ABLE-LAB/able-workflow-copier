@@ -2,6 +2,28 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## dev
+
+### Changed
+
+- `docs_dag_svg.smk` can no longer be `copier upate` from within this repo. The following files must be manually updated if needed:
+  - `template/workflow/rules/docs_dag_svg.smk`
+  - `template/workflow/scripts/rules_conda_DOCS/dag_svg.py.jinja`
+  - `template/tests/workflow/rules/test_snakemake_dag_svg.py`
+  - `template/tests/workflow/scripts/rules_conda_DOCS/test_dag_svg.py`
+- Bump submodules to track their `main` branches.
+
+### Added
+
+### Removed
+
+- Removed `able-workflow-rule-copier` files that were used within template to generate `docs_dag_svg.smk`
+  - `template/.copier-answers/project.yml`
+  - `template/.copier-answers/rule-dag_svg.yml`
+  - `template/docs/docs/contributing/templates/rule-dag_svg.md`
+
+### Fixed
+
 ## v0.1.3 - 2026-03-16
 
 ### Changed
