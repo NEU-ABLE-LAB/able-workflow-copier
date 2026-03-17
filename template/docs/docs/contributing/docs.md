@@ -9,6 +9,12 @@ Use Snakemake to manage documentation tasks:
 - **`docs_serve`**: Build and serve the documentation from the files in `docs/`.
 - **`docs_serve_mike`**: serve the most recent version of the docs stored on `gh-pages`.
 
+For example run the following to serve the docs locally
+
+```bash
+snakemake docs_serve
+```
+
 ## Contributing to the documentation
 
 Welcome! This section covers best practices and guidelines for contributing to the project documentation.

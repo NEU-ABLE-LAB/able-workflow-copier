@@ -123,6 +123,10 @@ rule docs_serve_service:
     threads: 1
     input:
         *rules.docs_assets.input,
+        # WORKFLOW_BASE is used here instead of workflow.source_path()
+        # since workflow.source_path() cannot cache an entire directory
+        # so instead just point to the mkdocs.yml file and assume the
+        # worker has access to the entire directory
         mkdocs_yml=WORKFLOW_BASE / "../docs/mkdocs.yml",
     output:
         server=service("logs/services/{{ package_name }}-mkdocs.server"),
