@@ -16,7 +16,7 @@ For each YAML file we:
 
 Usage
 -----
-    python scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
 """
 
 from __future__ import annotations
@@ -30,17 +30,37 @@ from ruamel.yaml import YAML
 
 from scripts.copie_helpers import make_copier_config, new_copie
 
+TEMPLATE_DIR: Path = Path(__file__).resolve().parents[1]  # project root
+EXAMPLE_ANSWERS_DIR: Path = TEMPLATE_DIR / "example-answers"
+SANDBOX_ROOT: Path = TEMPLATE_DIR / "sandbox"  # output root
+
 # List extra-answers YAML files to render as examples.
 # Files whose name ends with ``_update.yml`` are *not* processed here.
 # They are handled by :pyfile:`sandbox_examples_update.py`.
-EXTRA_ANSWER_FILES: List[Path] = [
-    Path("example-answers-able.yml"),
-    Path("example-answers-weh_interviews.yml"),
-]
+EXTRA_ANSWER_FILES: List[Path] = sorted(
+    path
+    for path in EXAMPLE_ANSWERS_DIR.glob("*.yml")
+    if not path.name.endswith("_update.yml")
+)
 
 
-TEMPLATE_DIR: Path = Path(__file__).resolve().parents[1]  # project root
-SANDBOX_ROOT: Path = TEMPLATE_DIR / "sandbox"  # output root
+def _resolve_answers_file(answers_yml: Path) -> Path:
+    """Resolve an answers file path from the repo root or example-answers directory."""
+    if answers_yml.is_file():
+        return answers_yml.resolve()
+
+    if answers_yml.is_absolute():
+        return answers_yml
+
+    candidates = (
+        TEMPLATE_DIR / answers_yml,
+        EXAMPLE_ANSWERS_DIR / answers_yml.name,
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve()
+
+    return TEMPLATE_DIR / answers_yml
 
 
 def _render_example(answers_yml: Path) -> None:
@@ -51,6 +71,7 @@ def _render_example(answers_yml: Path) -> None:
     answers_yml
         Extra-answers YAML file that overrides template defaults.
     """
+    answers_yml = _resolve_answers_file(answers_yml)
     if not answers_yml.is_file():
         raise FileNotFoundError(f"Answers file not found: {answers_yml}")
 
@@ -111,10 +132,10 @@ def generate(
     --------
 
     # Render all defaults
-    python scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
 
     # Render only a subset
-    python scripts/sandbox_examples_generate.py example-answers-able.yml
+    python -m scripts.sandbox_examples_generate example-answers/example-answers-able.yml
     """
     SANDBOX_ROOT.mkdir(exist_ok=True)
 
