@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from .conftest import _snakemake
+from . import _snakemake
 
 
 # --- Fixtures ---------------------------------------------------------------

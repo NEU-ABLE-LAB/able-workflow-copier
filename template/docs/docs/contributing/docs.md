@@ -82,6 +82,26 @@ Welcome! This section covers best practices and guidelines for contributing to t
     %}
     ```
 
+#### Dry-run manifests for tests and DAG creation
+
+The `dag_svg` rules and the dry-run test (`tests/workflow/rules/`) consume manifests from
+`data/tests/dry-run/`. These rules and tests `touch` (i.e., create dummy files in a temp `data/` directory) in the manifest, allowing `snakemake --dry-run` to assume these input files exist`
+
+These manifest yaml files may include the following:
+
+- `touch:` to list files that should be created relative to `data/`.
+- `include:` to merge other manifest files recursively.
+- Resolve `include:` paths relative to the manifest that declares them.
+
+For example:
+
+```yaml
+include:
+    - common.yaml
+touch:
+    - raw/example/input.csv
+```
+
 ## Tools for writing documentation
 
 ### [Admonitions](https://squidfunk.github.io/mkdocs-material/reference/admonitions/)

@@ -56,17 +56,70 @@ def _neutralise_only_problematic_colours(root: ET.Element) -> None:
             break  # there’s only one like this
 
 
-def _create_dummy_parent_workspace(rule_name: str) -> Path:  # noqa: D401
+def _manifest_entries(
+    entries: object,
+    key: str,
+    manifest_path: Path,
+) -> list[str]:
+    if entries is None:
+        return []
+    if not isinstance(entries, list) or any(not isinstance(item, str) for item in entries):
+        raise TypeError(
+            f"Manifest key '{key}' in {manifest_path} must be a list of strings."
+        )
+    return entries
+
+
+def _load_touch_paths(
+    manifest_path: Path,
+    seen: set[Path] | None = None,
+) -> list[str]:
+    manifest_path = manifest_path.resolve()
+    if seen is None:
+        seen = set()
+    if manifest_path in seen:
+        raise ValueError(f"Recursive dry-run manifest include detected: {manifest_path}")
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"Dry-run manifest not found: {manifest_path}")
+
+    yaml = YAML(typ="safe")
+    with manifest_path.open("r", encoding="utf-8") as fh:
+        manifest = yaml.load(fh) or {}
+
+    if not isinstance(manifest, dict):
+        raise TypeError(f"Dry-run manifest must be a mapping: {manifest_path}")
+
+    next_seen = seen | {manifest_path}
+    touch_paths: list[str] = []
+
+    for include_rel in _manifest_entries(manifest.get("include"), "include", manifest_path):
+        touch_paths.extend(_load_touch_paths(manifest_path.parent / include_rel, next_seen))
+
+    touch_paths.extend(_manifest_entries(manifest.get("touch"), "touch", manifest_path))
+    return list(dict.fromkeys(touch_paths))
+
+
+def _touch_manifest_inputs(manifest_path: Path, data_root: Path) -> None:
+    for rel_path in _load_touch_paths(manifest_path):
+        fp = data_root / rel_path
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.touch()
+
+
+def _create_dummy_parent_workspace(
+    rule_name: str,
+    manifest_path: Path,
+) -> Path:  # noqa: D401
     """
     Spin-up a *temporary* Snakemake workspace that imports the project workflow
-    as a **module** and pre-creates any dummy input files declared in
-    ``data/tests/{rule_name}.yaml``.
+    as a **module** and pre-creates any dummy input files declared in a
+    dry-run manifest.
     """
 
     # Project structure:
     #   project_root/
     #     ├─ workflow/           ← real workflow root
-    #     └─ data/tests/*.yaml   ← per-rule dummy-input manifests
+    #     └─ data/tests/dry-run/ ← dry-run manifests for DAG helpers/tests
     project_root = Path(__file__).resolve().parents[3]
     project_snakefile = project_root / "workflow" / "Snakefile"
 
@@ -93,27 +146,24 @@ def _create_dummy_parent_workspace(rule_name: str) -> Path:  # noqa: D401
     )
 
     # --- Touch dummy required input files -----------------------------------
-    yaml_manifest = project_root / "data" / "tests" / f"{rule_name}.yaml"
-    if not yaml_manifest.exists():
+    if not manifest_path.exists():
         logger.error(
-            f"Manifest file for rule '{rule_name}' not found: {yaml_manifest}"
+            f"Dry-run manifest for rule '{rule_name}' not found: {manifest_path}"
         )
         sys.exit(1)
 
-    yaml = YAML(typ="safe")
-    with yaml_manifest.open("r", encoding="utf-8") as fh:
-        manifest = yaml.load(fh) or {}
-
-    for rel_path in manifest.get("files", []):
-        fp = workspace / "data" / rel_path
-        fp.parent.mkdir(parents=True, exist_ok=True)
-        fp.touch()
+    try:
+        _touch_manifest_inputs(manifest_path, workspace / "data")
+    except (FileNotFoundError, TypeError, ValueError) as exc:
+        logger.error(str(exc))
+        sys.exit(1)
 
     return workspace
 
 
 def _generate_dag_svg(
     stderr_log: Path,
+    manifest_path: Path,
     rule_name: str = "all",
     graph_type: str = "rulegraph",
 ) -> str:
@@ -124,6 +174,8 @@ def _generate_dag_svg(
     ----------
     stderr_log: Path
         Path to the stderr log file
+    manifest_path: Path
+        Path to the dry-run manifest used to create dummy inputs
     rule_name: str
         Name of the rule to generate the DAG for
     graph_type: str
@@ -140,7 +192,7 @@ def _generate_dag_svg(
 
     logger.debug("Generating DAG SVG using Snakemake (dummy-parent)")
 
-    parent_ws = _create_dummy_parent_workspace(rule_name)
+    parent_ws = _create_dummy_parent_workspace(rule_name, manifest_path)
 
     if graph_type not in ["dag", "rulegraph", "filegraph"]:
         raise ValueError(
@@ -239,6 +291,7 @@ def _process_svg_content(raw_svg: str) -> ET.Element:
 
 def main(
     svg_path: Path,
+    manifest_path: Path,
     rule_name: str,
     stderr_log: Path,
     graph_type: str = "rulegraph",
@@ -248,7 +301,7 @@ def main(
     """
 
     # Generate DAG as SVG via graphviz
-    raw_svg = _generate_dag_svg(stderr_log, rule_name, graph_type)
+    raw_svg = _generate_dag_svg(stderr_log, manifest_path, rule_name, graph_type)
 
     # Process SVG content
     root = _process_svg_content(raw_svg)
@@ -276,6 +329,7 @@ def main_smk(smk: Snakemake) -> None:
     # Call the main function with the provided paths
     main(
         svg_path=svg_path,
+        manifest_path=Path(smk.input.manifest),
         rule_name=smk.wildcards.rule_name,
         stderr_log=smk.log.stderr,
         graph_type=smk.wildcards.graph_type

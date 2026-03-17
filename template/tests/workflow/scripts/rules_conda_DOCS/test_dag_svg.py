@@ -83,10 +83,13 @@ def _build_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
     """
     svg_path = tmp_path / "docs" / "_images" / "dag.svg"
     log_dir = tmp_path / "logs"
+    manifest_path = tmp_path / "data" / "tests" / "dry-run" / "all.yaml"
     log_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text("touch:\n  - README.md\n", encoding="utf-8")
 
     return Snakemake(
-        input_=InputFiles([]),
+        input_=InputFiles(fromdict={"manifest": str(manifest_path)}),
         output=OutputFiles(fromdict={"svg": str(svg_path)}),
         params=Params(),
         wildcards=Wildcards(
@@ -154,23 +157,52 @@ def test_process_svg_content_adds_class_injects_style_and_neutralises_bg(
     assert not polygons
 
 
+def test_load_touch_paths_merges_recursive_includes(tmp_path, dag_svg_module):
+    common_manifest = tmp_path / "common.yaml"
+    common_manifest.write_text("touch:\n  - shared.txt\n", encoding="utf-8")
+
+    all_manifest = tmp_path / "all.yaml"
+    all_manifest.write_text(
+        "include:\n  - common.yaml\ntouch:\n  - local.txt\n  - shared.txt\n",
+        encoding="utf-8",
+    )
+
+    assert dag_svg_module._load_touch_paths(all_manifest) == [
+        "shared.txt",
+        "local.txt",
+    ]  # noqa: SLF001
+
+
 def test_main_smk_writes_processed_svg(monkeypatch, tmp_path, dag_svg_module):
     """
     Integration smoke-test of *everything* without touching the real filesystem
     outside *tmp_path* and without running external commands.
     """
+    captured: dict[str, Path | str] = {}
+
     # We only patch the heavy part: _generate_dag_svg
-    monkeypatch.setattr(
-        dag_svg_module,
-        "_generate_dag_svg",
-        lambda _, __, ___: RAW_SVG,
-    )
+    def _fake_generate_dag_svg(
+        stderr_log: Path,
+        manifest_path: Path,
+        rule_name: str,
+        graph_type: str,
+    ) -> str:
+        captured["stderr_log"] = stderr_log
+        captured["manifest_path"] = manifest_path
+        captured["rule_name"] = rule_name
+        captured["graph_type"] = graph_type
+        return RAW_SVG
+
+    monkeypatch.setattr(dag_svg_module, "_generate_dag_svg", _fake_generate_dag_svg)
 
     smk = _build_snakemake(tmp_path)
     dag_svg_module.main_smk(smk)
 
     svg_path = Path(smk.output[0])
     assert svg_path.exists()
+    assert captured["manifest_path"] == Path(smk.input.manifest)
+    assert captured["rule_name"] == "all"
+    assert captured["graph_type"] == "dag"
 
     root = ET.parse(svg_path).getroot()
     # Final SVG should already have the class and no white poly

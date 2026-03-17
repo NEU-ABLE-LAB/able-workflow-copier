@@ -19,6 +19,7 @@ rule dag_svg_file:
     resources:
         snakemake_calls=1
     input:
+        manifest=Path(WORKFLOW_BASE / "../data/tests/dry-run/{rule_name}.yaml").resolve(),
         snakefile=Path(workflow.source_path("../Snakefile")).resolve(),
     output:
         svg=Path(WORKFLOW_BASE / "../docs/docs/_assets/{graph_type}-{rule_name}.svg").resolve(),

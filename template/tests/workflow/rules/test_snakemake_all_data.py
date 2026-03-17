@@ -2,13 +2,11 @@
 Integration tests for running the `all_data` rule in the Snakemake workflow.
 """
 
-import shutil
 from pathlib import Path
 
 import pytest
-from ruamel.yaml import YAML
 
-from .conftest import _snakemake
+from . import _load_touch_paths, _snakemake
 
 
 # --- Fixtures ---------------------------------------------------------------
@@ -19,22 +17,11 @@ def create_dummy_input_data(
 ):
     """Create the expected input files so Snakemake can build the DAG."""
 
-    # Get the file manifest for the `all` rule
-    rule_name = "all"
     project_root = request.config.rootdir
-    yaml_manifest = project_root / "data" / "tests" / f"{rule_name}.yaml"
-    if not yaml_manifest.exists():
-        raise FileNotFoundError(
-            f"Manifest file for rule '{rule_name}' not found: {yaml_manifest}"
-        )
-
-    # Load the YAML manifest to get the required input files
-    yaml = YAML(typ="safe")
-    with yaml_manifest.open("r", encoding="utf-8") as fh:
-        manifest = yaml.load(fh) or {}
+    yaml_manifest = project_root / "data" / "tests" / "dry-run" / "all.yaml"
 
     # Touch the required input files based on the manifest
-    for rel_path in manifest.get("files", []):
+    for rel_path in _load_touch_paths(yaml_manifest):
         fp = workspace / "data" / rel_path
         fp.parent.mkdir(parents=True, exist_ok=True)
         fp.touch()
