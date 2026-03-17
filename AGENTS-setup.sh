@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ENV_NAME=able-workflow-copier
+ENV_FILE=environment-py312-dev.yaml
+MINIFORGE_ROOT="${HOME}/conda"
+MINIFORGE_SH="${HOME}/Miniforge3.sh"
+
+# Install Miniforge if needed
+if [ ! -x "${MINIFORGE_ROOT}/bin/conda" ]; then
+  wget -O "${MINIFORGE_SH}" \
+    "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+  bash "${MINIFORGE_SH}" -b -p "${MINIFORGE_ROOT}"
+fi
+
+source "${MINIFORGE_ROOT}/etc/profile.d/conda.sh"
+
+# Configure git to use GitHub token if provided
+if [[ -n "${GITHUB_USERNAME:-}" && -n "${GITHUB_PAT:-}" ]]; then
+  git config --global credential.helper 'store --file ~/.git-credentials'
+  printf 'https://%s:%s@github.com\n' "$GITHUB_USERNAME" "$GITHUB_PAT" > "${HOME}/.git-credentials"
+  chmod 600 "${HOME}/.git-credentials"
+  unset GITHUB_PAT
+  unset GITHUB_USERNAME
+fi
+
+# Create or update the environment
+if conda env list | awk 'NR>2 {print $1}' | grep -qx "${ENV_NAME}"; then
+  conda env update -n "${ENV_NAME}" -f "${ENV_FILE}" --prune
+else
+  conda env create -n "${ENV_NAME}" -f "${ENV_FILE}"
+fi
+
+# Activate it for the CURRENT setup shell
+conda activate "${ENV_NAME}"
+
+# Make future agent shells activate it automatically
+if ! grep -q 'Added by AGENTS-setup.sh' "${HOME}/.bashrc"; then
+  {
+    echo ''
+    echo '# Added by AGENTS-setup.sh'
+    echo 'source "$HOME/conda/etc/profile.d/conda.sh"'
+    echo "conda activate ${ENV_NAME}"
+  } >> "${HOME}/.bashrc"
+fi
+
+# Verify current shell really has the env
+python --version
+which python
+conda info --envs
+
+# Cache tox environments
+tox run --recreate --notest --skip-missing-interpreters false
+tox run --recreate --notest --skip-missing-interpreters false -e py312-dev
+
+# Generate examples in sandbox
+python -m scripts.sandbox_examples_generate
