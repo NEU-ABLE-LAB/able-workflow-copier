@@ -11,6 +11,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
   - `template/workflow/scripts/rules_conda_DOCS/dag_svg.py.jinja`
   - `template/tests/workflow/rules/test_snakemake_dag_svg.py`
   - `template/tests/workflow/scripts/rules_conda_DOCS/test_dag_svg.py`
+- Dry-run manifests now live under `template/data/tests/dry-run/`, use `include:` plus `touch:`, and are passed into `dag_svg.py` through Snakemake rule inputs instead of being derived inside the script.
 - Bump submodules to track their `main` branches.
 - Moved `example-answers-*.yml` into `example-answers/` directory.
 
@@ -26,6 +27,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Fixed
 
 - syntax in docs example (#42)
+- Updated contributor docs and post-copier guidance to describe the dry-run manifest layout and recursive includes.
 
 ## v0.1.3 - 2026-03-16
 
