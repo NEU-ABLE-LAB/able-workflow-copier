@@ -8,7 +8,7 @@
 ├── .github/
 │   ├── workflows/
 │   │   ├── github-labeler.yml  # (5)
-│   │   └── pr.yml  # (1)
+│   │   └── ci.yml  # (1)
 │   └── labels.yml  # (6)
 ├── .vscode  # (2)
 ├── able-workflow/  # (7)
