@@ -25,6 +25,8 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Fixed
 
+- syntax in docs example (#42)
+
 ## v0.1.3 - 2026-03-16
 
 ### Changed
