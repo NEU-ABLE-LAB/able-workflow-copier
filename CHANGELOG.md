@@ -14,10 +14,13 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Dry-run manifests now live under `template/data/tests/dry-run/`, use `include:` plus `touch:`, and are passed into `dag_svg.py` through Snakemake rule inputs instead of being derived inside the script.
 - Bump submodules to track their `main` branches.
 - Moved `example-answers-*.yml` into `example-answers/` directory.
+- Consolidated `.github/workflows/pr.yml` and `.github/workflows/main.yml` into `.github/workflows/ci.yml`, with Codecov secret usage guarded to pushes on `main`.
+- Updated CI badge links in `README.md` and `docs/docs/index.md` to reference `.github/workflows/ci.yml`.
 
 ### Added
 
 - Better comments in code
+- Added CI contribution docs pages at `docs/docs/contributing/ci.md` and `template/docs/docs/contributing/ci.md`.
 
 ### Removed
 

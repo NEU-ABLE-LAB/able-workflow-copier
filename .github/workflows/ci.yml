@@ -1,8 +1,14 @@
-name: tox Main Tests
+name: tox CI Tests
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tox:
     name: >-
@@ -45,7 +51,7 @@ jobs:
         run: tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
 
       - name: Build XML coverage
-        if: always()
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           python -Im pip install --quiet "coverage[toml]"
           # Merge every .cover/.* created by tox in the `.cover/` directory into one .coverage
@@ -56,8 +62,8 @@ jobs:
 
       - name: Upload coverage to Codecov
         # Upload even if the build or tests fail, so we can see partial coverage reports
-        # Only upload if CODECOV_TOKEN is set, to avoid errors in forks without the secret configured
-        if: ${{ always() && env.CODECOV_TOKEN != '' }}
+        # Only upload if CODECOV_TOKEN is set, to avoid errors in repos without the secret configured
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CODECOV_TOKEN != '' }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v5
@@ -69,8 +75,8 @@ jobs:
 
       - name: Upload test results to Codecov
         # Upload even if the build or tests fail, so we can see partial coverage reports
-        # Only upload if CODECOV_TOKEN is set, to avoid errors in forks without the secret configured
-        if: ${{ always() && env.CODECOV_TOKEN != '' }}
+        # Only upload if CODECOV_TOKEN is set, to avoid errors in repos without the secret configured
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CODECOV_TOKEN != '' }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v5

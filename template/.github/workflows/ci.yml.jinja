@@ -1,9 +1,16 @@
 name: test-and-build
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
+
+concurrency:
+  {% raw -%}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  {%- endraw %}
+  cancel-in-progress: true
+
 jobs:
   tox:
     {% raw -%}
@@ -50,36 +57,50 @@ jobs:
         run: tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
 
       - name: Build XML coverage
-        if: always()
         {% raw -%}
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        {%- endraw %}
         run: |
           python -Im pip install --quiet "coverage[toml]"
           # Merge every .cover/.* created by tox in the `.cover/` directory into one .coverage
           python -Im coverage combine .cover
           # Produce the XML file Codecov will look for
+          {% raw -%}
           python -Im coverage xml -i \
               -o .cover/coverage.${{ matrix.python-version }}.xml
-        {%- endraw %}
+          {%- endraw %}
 
 
       - name: Upload coverage to Codecov
-        if: always()
+        {% raw -%}
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CODECOV_TOKEN != '' }}
+        {%- endraw %}
+        env:
+          {% raw -%}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          {%- endraw %}
         uses: codecov/codecov-action@v5
         with:
           {% raw -%}
           files: .cover/coverage.${{ matrix.python-version }}.xml
           flags: py${{ matrix.python-version }}
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
           {%- endraw %}
 
       - name: Upload test results to Codecov
-        if: always()
+        {% raw -%}
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CODECOV_TOKEN != '' }}
+        {%- endraw %}
+        env:
+          {% raw -%}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          {%- endraw %}
         uses: codecov/test-results-action@v1
         with:
           # pick up every junit.*.xml written by tox in the `.junit/` directory
           files: .junit/junit.*.xml
           {% raw -%}
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ env.CODECOV_TOKEN }}
           {%- endraw %}
 
   build-test-artifacts:
