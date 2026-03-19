@@ -1,0 +1,35 @@
+"""Unit tests for workflow/scripts/rules_global/log_config.py."""
+
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+from types import SimpleNamespace
+
+
+def _load_module():
+    root = Path(__file__).parents[4]
+    script = root / "workflow/scripts/rules_global/log_config.py"
+    spec = importlib.util.spec_from_file_location("log_config", script)
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    assert spec and spec.loader
+    spec.loader.exec_module(module)  # type: ignore[arg-type]
+    return module
+
+
+def test_main_uses_indented_sequence_style(tmp_path: Path) -> None:
+    module = _load_module()
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    config_path = tmp_path / "config.yaml"
+
+    smk = SimpleNamespace(
+        log=SimpleNamespace(loguru=log_dir / "loguru.log", config=config_path),
+        config={"parent": {"child": "value", "items": ["one", "two"]}},
+    )
+
+    module.main(smk)
+
+    rendered = config_path.read_text(encoding="utf-8")
+    assert "parent:\n  child: value\n  items:\n    - one\n    - two\n" in rendered
+    assert "parent:\n  child: value\n  items:\n  - one\n  - two\n" not in rendered
