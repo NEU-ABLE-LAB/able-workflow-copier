@@ -20,6 +20,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
 
     # Save the Snakemake config to a YAML file
     yaml = YAML()
+    yaml.indent(mapping=2, sequence=4, offset=2)
     with open(smk.log.config, "w") as config_file:
         yaml.dump(smk.config, config_file)
 

@@ -2,6 +2,20 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## dev
+
+### Changed
+
+### Added
+
+- Added regression tests for YAML indentation handling in `able-workflow/module-copier/tasks/append_config_include.py` and template workflow scripts.
+
+### Removed
+
+### Fixed
+
+- Standardized ruamel YAML dump indentation (`mapping=2`, `sequence=4`, `offset=2`) for remaining YAML writers so sequence items stay indented under their parent keys.
+
 ## v0.1.4 - 2026-03-18
 
 ### Changed

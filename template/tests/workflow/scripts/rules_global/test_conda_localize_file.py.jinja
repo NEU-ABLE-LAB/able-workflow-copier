@@ -216,6 +216,18 @@ def test_comment_and_dash_on_same_line(tmp_path, clf_module):
     )
 
 
+def test_dependencies_sequence_style_is_indented(tmp_path, clf_module):
+    """Dependencies sequence remains indented under key after rewrite."""
+    smk = _fake_snakemake(tmp_path)
+    _write_yaml(Path(smk.input.src), deps=["python=3.12"])
+
+    clf_module.main(smk)
+
+    raw_text = Path(smk.output.dst).read_text(encoding="utf-8")
+    assert "\ndependencies:\n  - python=3.12\n" in raw_text
+    assert "\ndependencies:\n- python=3.12\n" not in raw_text
+
+
 def test_adjusts_mtime_and_warns_when_dst_is_older(tmp_path, clf_module):
     """When dst mtime is older than src mtime, mtime is bumped and warning logged."""
     smk = _fake_snakemake(tmp_path)

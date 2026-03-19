@@ -94,6 +94,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     # Read source YAML file
     yaml = YAML()
     yaml.preserve_quotes = True
+    yaml.indent(mapping=2, sequence=4, offset=2)
     env = yaml.load(src.read_text())
     if env is None:
         raise ValueError(f"Failed to load YAML from {src}")
