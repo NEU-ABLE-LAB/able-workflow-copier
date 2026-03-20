@@ -2,15 +2,19 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## dev
+## v0.1.5-dev
 
 ### Changed
+
+- Removed depreciated `tenacity` dependency
 
 ### Added
 
 - Added regression tests for YAML indentation handling in `able-workflow/module-copier/tasks/append_config_include.py` and template workflow scripts.
 - Added `template/scripts/copier-check-update.sh` to iterate over non-recursive `.yml` files in `.copier-answers/` and run `copier check-update --answer-file` for each one.
 - Added contributing docs for checking template updates at `docs/docs/contributing/updates.md`.
+- `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
+- `template/CHANGELOG.md`
 
 ### Removed
 
