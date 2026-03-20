@@ -7,6 +7,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Changed
 
 - Removed depreciated `tenacity` dependency
+- Updated development environment setup to use `conda_update_dev_runner` instead of updating all conda environments.
 
 ### Added
 
@@ -15,6 +16,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Added contributing docs for checking template updates at `docs/docs/contributing/updates.md`.
 - `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
 - `template/CHANGELOG.md`
+- Added `conda_update_dev_runner` instead of updating all conda enviroments.
 
 ### Removed
 

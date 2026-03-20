@@ -105,6 +105,24 @@ rule conda_update:
             environment=config["CONDA"]["ENVS_META"].values(),
         ),
 
+rule conda_update_dev_runner:
+    """
+    snakemake conda_update takes too long and takes up too much disk space to install all the conda 
+    environments when only the -workflow and -dev-runner envs are really useful for development.
+    Add rule conda_update_dev_runner
+    """
+    localrule: True
+    input:
+        expand(
+            str(
+                Path(
+                    Path(config["CONDA"]["LOCALIZED_DIR"])
+                    / f"{{environment}}"
+                ).with_suffix(".snakemake_conda_update_stamp")
+            ),
+            environment=[config["CONDA"]["ENVS"]["DEV_RUNNER"]],
+        ),
+    
 
 rule logs_to_watch:
     """
