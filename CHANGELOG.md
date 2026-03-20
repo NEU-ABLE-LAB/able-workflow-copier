@@ -9,6 +9,8 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Added
 
 - Added regression tests for YAML indentation handling in `able-workflow/module-copier/tasks/append_config_include.py` and template workflow scripts.
+- Added `template/scripts/copier-check-update.sh` to iterate over non-recursive `.yml` files in `.copier-answers/` and run `copier check-update --answer-file` for each one.
+- Added contributing docs for checking template updates at `docs/docs/contributing/updates.md`.
 
 ### Removed
 
