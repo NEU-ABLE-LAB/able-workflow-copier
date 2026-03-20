@@ -2,7 +2,7 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## v0.1.5-dev
+## dev
 
 ### Changed
 
@@ -15,6 +15,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Added contributing docs for checking template updates at `docs/docs/contributing/updates.md`.
 - `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
 - `template/CHANGELOG.md`
+- [Better Jinja](https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml) vscode extension recommendation
 
 ### Removed
 
