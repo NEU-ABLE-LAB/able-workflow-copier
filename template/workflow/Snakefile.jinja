@@ -21,10 +21,11 @@ from pathlib import Path
 import shutil
 
 from loguru import logger
-from snakemake.utils import validate
+from snakemake.utils import min_version, validate
 
 
 # --- VALIDATION -------------------------------------------------------------
+min_version("9.16.3")
 validate(config, "schemas/config.schema.yaml")
 
 

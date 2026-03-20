@@ -2,13 +2,17 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## dev
+## v0.1.5-dev
 
 ### Changed
+
+- Removed depreciated `tenacity` dependency
 
 ### Added
 
 - Added regression tests for YAML indentation handling in `able-workflow/module-copier/tasks/append_config_include.py` and template workflow scripts.
+- `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
+- `template/CHANGELOG.md`
 
 ### Removed
 
