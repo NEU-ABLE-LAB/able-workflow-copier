@@ -126,8 +126,6 @@ rule conda_update_dev_runner:
             ),
             environment=[config["CONDA"]["ENVS"]["DEV_RUNNER"]],
         ),
-    
-
 rule logs_to_watch:
     """
     Create a json list of all rules that have a log directive.
