@@ -302,3 +302,40 @@ def test_retries_after_sleep_if_future_mtime_is_clamped(
 
     log_text = _read_log(Path(smk.log.loguru))
     assert "sleeping" in log_text and "retrying" in log_text
+
+
+def test_handles_delayed_src_mtime_update_after_initial_check(
+    tmp_path, clf_module, monkeypatch
+):
+    """Handles src mtime jumps that appear shortly after the first comparison."""
+    smk = _fake_snakemake(tmp_path)
+    src = Path(smk.input.src)
+    _write_yaml(src, deps=["python=3.12"])
+
+    real_utime = os.utime
+    fake_clock = {"now": time.time()}
+    injected_jump = {"value": False}
+
+    base_mtime = fake_clock["now"]
+    real_utime(src, (base_mtime, base_mtime))
+
+    def _fake_time() -> float:
+        return fake_clock["now"]
+
+    def _fake_sleep(seconds: float) -> None:
+        fake_clock["now"] += seconds
+        if not injected_jump["value"]:
+            injected_jump["value"] = True
+            jumped_src_mtime = fake_clock["now"] + 1.0
+            real_utime(src, (jumped_src_mtime, jumped_src_mtime))
+
+    monkeypatch.setattr(clf_module.time, "time", _fake_time)
+    monkeypatch.setattr(clf_module.time, "sleep", _fake_sleep)
+
+    clf_module.main(smk)
+
+    dst = Path(smk.output.dst)
+    assert dst.stat().st_mtime >= src.stat().st_mtime
+
+    log_text = _read_log(Path(smk.log.loguru))
+    assert "Detected delayed input mtime update during stabilization window" in log_text
