@@ -6,7 +6,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Changed
 
-- Removed depreciated `tenacity` dependency
+- Removed deprecated `tenacity` dependency
 - Updated development environment setup to use `conda_update_dev_runner` instead of updating all conda environments.
 
 ### Added
