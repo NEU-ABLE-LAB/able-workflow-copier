@@ -107,9 +107,13 @@ rule conda_update:
 
 rule conda_update_dev_runner:
     """
-    snakemake conda_update takes too long and takes up too much disk space to install all the conda 
-    environments when only the -workflow and -dev-runner envs are really useful for development.
-    Add rule conda_update_dev_runner
+    Lightweight alternative to `conda_update` that only updates the DEV_RUNNER
+    conda environment from its localized YAML file.
+
+    The full `conda_update` rule installs/updates all configured environments,
+    which can be slow and consume significant disk space. This rule is intended
+    for development workflows where updating just the DEV_RUNNER environment
+    (``config["CONDA"]["ENVS"]["DEV_RUNNER"]``) is sufficient.
     """
     localrule: True
     input:
