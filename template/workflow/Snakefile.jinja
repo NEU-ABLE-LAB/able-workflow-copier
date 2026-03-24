@@ -21,11 +21,18 @@ from pathlib import Path
 import shutil
 
 from loguru import logger
+from packaging.version import Version
+import snakemake
 from snakemake.utils import min_version, validate
 
 
 # --- VALIDATION -------------------------------------------------------------
 min_version("9.16.3")
+if Version(snakemake.__version__) > Version("9.17.2"):
+    raise RuntimeError(
+        "Snakemake versions above 9.17.2 are currently unsupported by this "
+        "workflow."
+    )
 validate(config, "schemas/config.schema.yaml")
 
 
