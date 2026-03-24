@@ -45,7 +45,7 @@ runner = [
   # - `dependency-groups.snakemake`
   # - `./.pre-commit-config.yaml`
   # - `./workflow/Snakefile.jinja`
-  "snakemake>=9.16.3",
+  "snakemake>=9.16.3,<=9.17.2",
   # Add additional dependencies for new modules and ETL process here.
 ]
 
@@ -59,7 +59,7 @@ runner = [
 snakemake = [
   # This snakemake version should match the version in `project.optional-dependencies.runner`
   {# Also update snakemake version in `{{ package_name }}-py312-workflow.yaml` if modifying template -#}
-  "snakemake>=9.16.3",
+  "snakemake>=9.16.3,<=9.17.2",
 ]
 workflow = [
   { include-group = "snakemake" },
