@@ -36,6 +36,13 @@ for answers_yaml in ANSWERS_YAMLS:
     }
     answer_sets.append(answer_set)
 
+if not answer_sets:
+    msg = (
+        "No example answer sets discovered; expected at least one *.yml under "
+        f"{EXAMPLE_ANSWERS_DIR}."
+    )
+    raise RuntimeError(msg)
+
 
 # --- Fixtures ---------------------------------------------------------------
 @pytest.fixture(scope="session", params=answer_sets, ids=lambda p: p["id"])
