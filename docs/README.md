@@ -19,16 +19,6 @@ The following assumes that you have already set up the development environment.
 ./scripts/mkdocs_serve.sh
 ```
 
-### Serving ALL the `able-workflow` docs
-
-The following assumes that you cloned all the submodules in this repo
-
-```bash
-./scripts/mkdocs_serve_all.py
-```
-
-Logs for the local `mkdocs` servers for each of these processes can be found in `logs/mkdocs_serve_all/`
-
 <!--include-end-->
 
 ## More information
