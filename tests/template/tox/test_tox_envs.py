@@ -45,7 +45,7 @@ def _assert_template_repo_is_clean(template_root: Path) -> None:
     """Raise a usage error when the template repository has local changes."""
     try:
         status = subprocess.check_output(
-            ["git", "status", "--porcelain", "--ignore-submodules=none"],
+            ["git", "status", "--porcelain"],
             cwd=template_root,
             text=True,
         ).splitlines()
