@@ -853,6 +853,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -869,6 +887,91 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#checkinstall-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check/install conda
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-recommended-vscode-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install recommended VSCode extensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-up-vs-code-profile-and-multi-root-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set up VS Code profile and multi-root workspace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-development-environment-with-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create development environment with conda
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-pre-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install pre-commit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-the-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use the sandbox
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1131,6 +1234,80 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#checkinstall-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check/install conda
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-recommended-vscode-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install recommended VSCode extensions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-up-vs-code-profile-and-multi-root-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set up VS Code profile and multi-root workspace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-development-environment-with-conda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create development environment with conda
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-pre-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install pre-commit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-the-sandbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use the sandbox
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1151,9 +1328,7 @@
 
 <h1 id="development-environment-setup">Development Environment Setup<a class="headerlink" href="#development-environment-setup" title="Permanent link">&para;</a></h1>
 <p>The following instructions assume you are working on Linux (or with WSL on Windows) and have <a href="https://github.com/conda-forge/miniforge">conda</a> and <a href="https://code.visualstudio.com/download">vscode</a>.</p>
-<ol>
-<li>Check/install <code>conda</code></li>
-</ol>
+<h2 id="checkinstall-conda">Check/install <code>conda</code><a class="headerlink" href="#checkinstall-conda" title="Permanent link">&para;</a></h2>
 <p>Check that you have conda installed:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>conda<span class="w"> </span>info
 </span></code></pre></div>
@@ -1162,21 +1337,19 @@
 </span></code></pre></div>
 <p>If not, install <a href="https://github.com/conda-forge/miniforge">miniforge3</a>.</p>
 <ol>
-<li>
-<p>Download miniforge</p>
+<li>Download miniforge</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>wget<span class="w"> </span><span class="s2">&quot;https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-</span><span class="k">$(</span>uname<span class="k">)</span><span class="s2">-</span><span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="s2">.sh&quot;</span>
 </span></code></pre></div>
-</li>
-<li>
-<p>Run the install script</p>
+<ol>
+<li>Run the install script</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>bash<span class="w"> </span>Miniforge3-<span class="k">$(</span>uname<span class="k">)</span>-<span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span>.sh
 </span></code></pre></div>
 <p>The interactive installation will prompt you to initialize conda with your shell. Do NOT do this if you are on a SLURM HPC. If you are on your personal computer it should be fine.</p>
 <p>TODO-copier-package point to docs for more info.</p>
-</li>
-<li>
-<p>Install the recommended VSCode extensions for this project.:</p>
-</li>
+<h2 id="install-recommended-vscode-extensions">Install recommended VSCode extensions<a class="headerlink" href="#install-recommended-vscode-extensions" title="Permanent link">&para;</a></h2>
+<ol>
 <li>
 <p><strong>Open the Command Palette</strong>: On macOS: <code>Cmd+Shift+P</code> On Windows/Linux: <code>Ctrl+Shift+P</code>.</p>
 </li>
@@ -1186,24 +1359,35 @@
 <li>
 <p>Click the Install button for each recommended extension listed above.</p>
 </li>
-<li>
-<p>Create a development environment with conda</p>
-</li>
 </ol>
+<p>At minimum, install extensions for Python, YAML, Markdown, and GitHub Actions editing.</p>
+<h2 id="set-up-vs-code-profile-and-multi-root-workspace">Set up VS Code profile and multi-root workspace<a class="headerlink" href="#set-up-vs-code-profile-and-multi-root-workspace" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Open Command Palette and create/switch to a dedicated profile (for example, <code>ABLE Copiers</code>).</li>
+<li>Clone each copier repository into sibling folders (not nested submodules).</li>
+<li>In VS Code, run <code>File: Add Folder to Workspace...</code> and add each repository folder.</li>
+<li>Save the workspace as a <code>.code-workspace</code> file (for example, <code>able-workflow-copiers.code-workspace</code>).</li>
+<li>In profile settings, set the default Python environment for each workspace folder as needed.</li>
+</ol>
+<p>Example folder set:</p>
+<ul>
+<li><code>../able-workflow-copier</code></li>
+<li><code>../able-workflow-module-copier</code></li>
+<li><code>../able-workflow-etl-copier</code></li>
+<li><code>../able-workflow-rule-copier</code></li>
+</ul>
+<h2 id="create-development-environment-with-conda">Create development environment with conda<a class="headerlink" href="#create-development-environment-with-conda" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Create the environment (or update and prune if it already exists)</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>--name<span class="w"> </span>able-workflow-copier<span class="w"> </span>--file<span class="w"> </span>environment-py312-dev.yaml<span class="w"> </span>--prune
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>conda<span class="w"> </span>activate<span class="w"> </span>able-workflow-copier
 </span></code></pre></div>
 <p>Alternatively, run the script <code>scripts/conda_update.sh</code>.</p>
 <p>Configure the <code>able-workflow-copier</code> as the default python environment in the <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs">Python Environments VSCode extension</a>.</p>
-<ol>
-<li>Install pre-commit into the repo to run checks on every commit</li>
-</ol>
+<h2 id="install-pre-commit">Install pre-commit<a class="headerlink" href="#install-pre-commit" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">(</span>able-workflow-copier<span class="o">)</span><span class="w"> </span>pre-commit<span class="w"> </span>install
 </span></code></pre></div>
-<ol>
-<li>Play around in the sandbox. (The <code>sandbox/</code> directory is in <code>.gitignore</code> and is a good place to explore how to use the template.)</li>
-</ol>
+<h2 id="use-the-sandbox">Use the sandbox<a class="headerlink" href="#use-the-sandbox" title="Permanent link">&para;</a></h2>
+<p>The <code>sandbox/</code> directory is in <code>.gitignore</code> and is a good place to explore how to use the template.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>copier<span class="w"> </span>copy<span class="w"> </span>--trust<span class="w"> </span>--vcs-ref<span class="w"> </span>HEAD<span class="w"> </span>--pretend<span class="w"> </span><span class="s2">&quot;./&quot;</span><span class="w"> </span><span class="s2">&quot;sandbox/example&quot;</span>
 </span></code></pre></div>
 <ul>
@@ -1233,7 +1417,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 25, 2026</span>
   </span>
 
     
