@@ -1,0 +1,147 @@
+# Contributing to Snakemake Workflows
+
+This page covers workflow-layer changes under `workflow/` and `config/`.
+
+## Overview of Snakemake Workflow Files
+
+The tree below shows where workflow-layer contributions belong
+and how they relate to python-package implementation work.
+
+```text
+{{ project_name_slug }}/
+├── config/                         # (1)
+│   ├── config.yaml
+│   ├── <module>/config.yaml
+│   └── <module>/<etl>/config.yaml
+├── workflow/                       # (2)
+│   ├── Snakefile
+│   ├── envs/                       # (3)
+│   ├── profiles/                   # (4)
+│   ├── rules/                      # (5)
+│   ├── scripts/                    # (6)
+│   └── schemas/                    # (7)
+│       ├── config.schema.yaml
+│       └── <module>/<etl>/config.schema.yaml
+├── tests/                          # (8)
+│   └── workflow/
+│       ├── rules/                  # (9)
+│       └── scripts/                # (10)
+└── {{ package_name }}/             # (11)
+    └── <module>/<etl>/
+```
+
+1. `config/`: Committed configuration values used by the workflow.
+2. `workflow/`: Snakemake orchestration layer.
+3. `workflow/envs/`: Workflow-level conda environment files used by rules.
+4. `workflow/profiles/`: Snakemake execution profiles (for example `default/`
+   and `slurm/`).
+5. `workflow/rules/`: Rule definitions (`input`, `output`, `params`, etc.).
+6. `workflow/scripts/`: Rule helper scripts executed by Snakemake rules.
+7. `workflow/schemas/`: Schema validation for files in `config/`.
+8. `tests/workflow/`: Tests for workflow-level behavior.
+9. `tests/workflow/rules/`: Integration tests for Snakemake rules and DAG
+   behavior.
+10. `tests/workflow/scripts/`: Unit tests for rule scripts and workflow
+    utilities.
+11. `{{ package_name }}/...`: ETL implementation logic (python-package layer).
+
+## Creating new workflow steps
+
+For creating new modules, ETLs, or rules, prefer the copier templates rather
+than hand-creating files. See [Contributing Templated Code](templates/).
+
+## Modifying the workflow
+
+New workflow steps should be created with the [ABLE Workflow Copier templates](templates/). Modifications to existing workflow steps should be done carefully to ensure the following:
+
+1. Start by adding or updating rules under `workflow/rules/`.
+2. Then add or revise configuration keys in `config/.../config.yaml`.
+3. Mirror those config changes in the matching schema files under
+   `workflow/schemas/.../config.schema.yaml`.
+4. Keep schema `default` values aligned with the committed config values.
+5. Declare keys as `required` only when they are truly mandatory for all valid
+   uses of that config branch.
+
+### How ETL rules call python package submodules
+
+Workflow rules execute python ETL entrypoints through the shared RUNNER script
+template at `template/workflow/scripts/rules_conda_RUNNER/{{ package_name }}_rules.py.jinja`
+(rendered as `workflow/scripts/rules_conda_RUNNER/{{ package_name }}_rules.py`).
+
+Use this call chain:
+
+1. In a Snakemake rule, set `params.func` to a dotted callable path in
+   `{{ package_name }}` using `module.path:function_name` format.
+2. Set `script:` to the RUNNER script
+   (`workflow/scripts/rules_conda_RUNNER/{{ package_name }}_rules.py`).
+3. The RUNNER script imports `params.func`, configures logging, and calls the
+   function with `smk=smk`.
+4. The target function (typically a `run_smk` adapter) parses `smk.input`,
+   `smk.output`, `smk.params`, and `smk.wildcards`, then calls core ETL
+   implementation code.
+
+Example references:
+
+- `test_logging` in `template/workflow/rules/utils.smk.jinja` shows this
+  pattern with `params.func` and the RUNNER `script:` path.
+- Generated ETL rule templates in the ABLE Workflow ETL Copier use the same
+  pattern (for example
+   `able-workflow/etl-copier/template/workflow/rules/{% raw %}{{ module_type }}/{{ module_name }}/{{ etl_name }}{% endraw %}.smk.jinja`).
+
+## Config and Schemas
+
+This section describes how to maintain workflow configuration in a way that is
+clear for users and safe for optional modules/ETLs.
+
+### Keep schema and config paired
+
+For every committed config file in `config/`, keep a matching schema in
+`workflow/schemas/` at the same relative location.
+
+Examples:
+
+- `config/config.yaml` ↔ `workflow/schemas/config.schema.yaml`
+- `config/features/weather/config.yaml` ↔
+   `workflow/schemas/features/weather/config.schema.yaml`
+- `config/features/weather/daily_summary/config.yaml` ↔
+   `workflow/schemas/features/weather/daily_summary/config.schema.yaml`
+
+### Use `required` sparingly
+
+Use `required` only for keys that truly must exist for all valid uses of that
+part of the config hierarchy.
+
+Why: some users may use only part of the hierarchy (for example, one module but
+not another). Overusing `required` can force users to provide configuration parameters for rules they do not need; otherwise Snakemake will crash during DAG creation.
+
+### How `required` works in nested objects
+
+- A `required` list applies only to properties of the same object.
+- A nested `required` is only evaluated when that nested object exists.
+- If a parent object is itself required by its parent, then the nested
+   requirements for that branch become effectively mandatory.
+
+In practice:
+
+- Requiring a top-level key (for example `features`) makes that branch required.
+- Requiring `weather` under `features` makes that module required whenever
+   `features` is validated.
+- Requiring leaf settings should be reserved for settings that must always be
+   provided when that branch is used.
+
+### Committed config files should include defaults
+
+Committed config files should contain the same values as schema `default`
+values for clarity.
+
+Benefits:
+
+- Users can see effective defaults directly in `config/` without reading schema.
+- Reviews are clearer because intended runtime values are explicit.
+- Schema and config stay synchronized and easier to validate.
+
+When you change a default:
+
+1. Update the schema `default`.
+2. Update the committed config value to match.
+3. Update docs text if the behavior changed.

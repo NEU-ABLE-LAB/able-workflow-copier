@@ -1,0 +1,26 @@
+# Contributing Templated Code
+
+This project was created with the {% raw %}[ABLE Workflow Copier]({{ able_workflow_copier_docs }}){% endraw %} template.
+
+Each of the pages in this section provides information on each template applied and how to update it. You can also see the "answers" used to apply each template in the `.copier-answers/` directory. DO NOT EDIT THESE FILES MANUALLY.
+
+## How the copier repositories fit together
+
+New ETL steps are usually created by applying copier templates in layers:
+
+1. `able-workflow-copier` creates the project-level scaffold.
+2. `able-workflow-module-copier` adds dataset/feature/model module scaffolding.
+3. `able-workflow-etl-copier` adds an ETL process under a selected module.
+4. `able-workflow-rule-copier` can add standalone rules that are not ETL-based.
+
+This layered approach keeps project structure consistent and reduces hand-edited
+boilerplate.
+
+## Updating
+
+Update the project with changes to [`able-workflow-copier`]({% raw %}{{ able_workflow_copier_docs }}{{% endraw %}}) by running the following:
+
+```bash
+conda activate {{ package_name }}-py312-dev
+copier update --trust --answers-file ".copier-answers/project.yml"
+```

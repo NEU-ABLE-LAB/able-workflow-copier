@@ -2,7 +2,7 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## v0.1.5-dev
+## dev
 
 ### Changed
 
@@ -17,6 +17,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
 - `template/CHANGELOG.md`
 - Added `conda_update_dev_runner` helper rule for updating development conda environments.
+- [Better Jinja](https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml) vscode extension recommendation
 
 ### Removed
 

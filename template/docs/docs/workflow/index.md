@@ -2,6 +2,9 @@
 
 The data processing and reporting pipeline is orchestrated with [Snakemake](https://snakemake.readthedocs.io/).
 
+For instructions on how to modify workflow and ETL configuration files, see
+[Workflow Configuration](config.md).
+
 ## Directed Acyclic Graph (DAG)
 
 A **DAG (Directed Acyclic Graph)** is a fundamental concept in Snakemake that represents the structure and dependencies of your workflow. In this context:
