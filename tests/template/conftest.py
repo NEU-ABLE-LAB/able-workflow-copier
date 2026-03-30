@@ -1,4 +1,13 @@
+"""
+Pytest configuration for rendering template variants from example answers.
+
+This module mirrors the example-discovery style used in sibling template
+repositories and keeps a legacy ``answer_sets`` export for tox tests that still
+import it.
+"""
+
 from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, Dict, cast
 
 import pytest
@@ -10,6 +19,12 @@ from scripts.copie_helpers import run_copie_with_output_control
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_ANSWERS_DIR = REPO_ROOT / "example-answers"
 ANSWERS_YAMLS = sorted(EXAMPLE_ANSWERS_DIR.glob("*.yml"))
+
+
+@dataclass
+class Example:
+    name: str
+    answers: Dict[Any, Any]
 
 
 def _answers_id(answers_yaml: Path | None) -> str:
@@ -27,6 +42,28 @@ def read_answers_yaml(answers_yaml: Path) -> Dict[Any, Any]:
     yaml = YAML(typ="safe")
     with answers_yaml.open("r") as file:
         return cast(Dict[Any, Any], dict(yaml.load(file)))
+
+
+class _LazyExamples:
+    def __iter__(self):
+        for answers_yaml in ANSWERS_YAMLS:
+            try:
+                yield Example(
+                    name=answers_yaml.stem,
+                    answers=read_answers_yaml(answers_yaml),
+                )
+            except (FileNotFoundError, OSError, ValueError, TypeError) as exc:
+                pytest.fail(
+                    f"Failed to load answers YAML {answers_yaml}: {exc}",
+                    pytrace=False,
+                )
+
+
+EXAMPLES = _LazyExamples()
+
+
+# Backward-compatibility for tox tests that import `answer_sets`.
+answer_sets = [{"id": ex.name, "answers": ex.answers} for ex in EXAMPLES]
 
 
 answers_yaml_params = ANSWERS_YAMLS or [None]
@@ -59,28 +96,25 @@ def rendered(request, copie_session):
             pytrace=False,
         )
 
-    variant = {
-        "id": answers_yaml.stem,
-        "answers": answers,
-    }
+    variant = Example(name=answers_yaml.stem, answers=answers)
 
     if request.config.option.verbose >= 2:
-        logger.info(f"Rendering variant {variant['id']} with answers")
+        logger.info(f"Rendering variant {variant.name} with answers")
 
     result = run_copie_with_output_control(
         request.config,
         copie_session,
-        variant["answers"],
+        variant.answers,
     )
 
     if request.config.option.verbose >= 2:
-        logger.info(f"Copier successfully rendered variant {variant['id']}")
+        logger.info(f"Copier successfully rendered variant {variant.name}")
 
     # Basic smoke-tests
     if result.exit_code != 0 or result.exception:
         pytest.fail(
-            f"Copier failed for {variant['id']}: {result.exception}", pytrace=False
+            f"Copier failed for {variant.name}: {result.exception}", pytrace=False
         )
 
-    logger.debug(f"Rendered variant {variant['id']} at {result.project_dir}")
-    return result.project_dir, variant["id"]
+    logger.debug(f"Rendered variant {variant.name} at {result.project_dir}")
+    return result.project_dir, variant.name
