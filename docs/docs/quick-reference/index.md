@@ -1,5 +1,10 @@
 # Quick Reference
 
+??? note "Audience: Project Developers"
+
+    This section is for project developers applying this copier template to a project repository.
+    If you are maintaining the template itself, use this repository's contributing documentation instead.
+
 First, [setup the environment](setup.md).
 
 Apply this Copier template to create a new Snakemake workflow with an associated python package with the following commands:

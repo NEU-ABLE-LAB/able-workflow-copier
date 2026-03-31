@@ -2,6 +2,11 @@
 
 This page covers workflow-layer changes under `workflow/` and `config/`.
 
+??? note "Audience: Project Developers"
+
+   This page is for project developers maintaining the workflow implementation.
+   Workflow runners should usually use `config/config.local.yaml` or parent-workflow overrides instead of editing committed config or schema files.
+
 ## Overview of Snakemake Workflow Files
 
 The tree below shows where workflow-layer contributions belong
@@ -55,12 +60,13 @@ than hand-creating files. See [Contributing Templated Code](templates/).
 New workflow steps should be created with the [ABLE Workflow Copier templates](templates/). Modifications to existing workflow steps should be done carefully to ensure the following:
 
 1. Start by adding or updating rules under `workflow/rules/`.
-2. Then add or revise configuration keys in `config/.../config.yaml`.
+2. Update committed configuration files only when the workflow's versioned standalone defaults should change.
 3. Mirror those config changes in the matching schema files under
    `workflow/schemas/.../config.schema.yaml`.
-4. Keep schema `default` values aligned with the committed config values.
+4. Use schema `default` values and sparse `required` lists so the workflow remains safe to read when optional config branches are absent.
 5. Declare keys as `required` only when they are truly mandatory for all valid
    uses of that config branch.
+6. Add or update tests for invalid config, committed config validation, and imported or partial-config behavior when relevant.
 
 ### How ETL rules call python package submodules
 
@@ -106,6 +112,12 @@ Examples:
 - `config/features/weather/daily_summary/config.yaml` ↔
    `workflow/schemas/features/weather/daily_summary/config.schema.yaml`
 
+### Who should edit which config files
+
+- Workflow runners should usually leave committed config files alone and use `config/config.local.yaml` for local overrides.
+- Parent workflows that import this workflow should provide overrides from the parent workflow config instead of editing the child workflow repository.
+- Repository developers may update committed config files when changing the workflow's reproducible default behavior.
+
 ### Use `required` sparingly
 
 Use `required` only for keys that truly must exist for all valid uses of that
@@ -129,19 +141,16 @@ In practice:
 - Requiring leaf settings should be reserved for settings that must always be
    provided when that branch is used.
 
-### Committed config files should include defaults
+### Schema defaults keep optional branches safe
 
-Committed config files should contain the same values as schema `default`
-values for clarity.
+When `snakemake.utils.validate` runs, schema `default` values can populate missing keys. Use defaults together with sparse `required` lists so the Snakefile and included `.smk` files remain safe to parse when optional module or ETL config branches are absent, such as when this workflow is imported into a parent workflow.
 
-Benefits:
+### Committed config files are explicit project defaults
 
-- Users can see effective defaults directly in `config/` without reading schema.
-- Reviews are clearer because intended runtime values are explicit.
-- Schema and config stay synchronized and easier to validate.
+Committed config files document and version the standalone defaults used by the project, but they do not need to mechanically duplicate every schema default. The requirement is that committed config files validate against their schemas and match the intended standalone behavior documented for the project.
 
-When you change a default:
+When you change a committed default:
 
-1. Update the schema `default`.
-2. Update the committed config value to match.
-3. Update docs text if the behavior changed.
+1. Update the committed config value if standalone behavior changes.
+2. Update the matching schema `description`, `default`, and `required` entries as needed.
+3. Update docs and tests if the behavior changed.

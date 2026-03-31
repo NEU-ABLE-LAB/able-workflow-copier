@@ -15,3 +15,33 @@ A [copier](https://copier.readthedocs.io/en/stable/) template for generating a s
 - [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }})
 - [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
 - [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
+
+## Who These Docs Are For
+
+- **Template developers**: contributors maintaining
+  `able-workflow-copier` itself.
+
+  See the [Contributing](contributing/) section of this documentation
+  for information on how to fix bugs, add features, and maintain
+  these templates.
+
+- **Project developers**: people applying the template to scaffold
+  a new workflow project.
+
+  See the [Quick Reference](quick-reference/) section of this documentation
+  for information on how to use these templates to make starting your
+  next data science project faster.
+
+  See the [Overview](overview/) section of this documentation for
+  to understand the principals behind these templates, learn
+  best practices, and understand the key parts of the template.
+
+- **Project users and project consumers**: people who only need to run
+  or import a generated workflow should primarily use the generated
+  project's own documentation instead of this template repository.
+
+  Review your projects' documentation for specific.
+
+  See the [Overview](overview/) section of this documentation for
+  to understand the principals behind these templates, learn
+  best practices, and understand the key parts of the template.
