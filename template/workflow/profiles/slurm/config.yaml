@@ -1,6 +1,14 @@
 __use_yte__: true
 __definitions__:
   - from pathlib import Path
+  - |
+    def existing_configfiles(candidates):
+        return [candidate for candidate in candidates if Path(candidate).is_file()]
+__variables__:
+  configfile_candidates:
+    - "config/config.yaml"
+    # Load the local configuration file if it exists
+    - "config/config.local.yaml"
 
 # This SLURM snakemake profile is for running snakemake
 # on a HPC cluster with SLURM as scheduler.
@@ -15,8 +23,6 @@ software-deployment-method: conda
 use-conda: true
 
 # Configuration files
-configfile:
-  - "config/config.yaml"
-  # Load the local configuration file if it exists
-  - ?("config/config.local.yaml" if Path("config/config.local.yaml").is_file() else SKIP)
+?if existing_configfiles(configfile_candidates):
+  configfile: ?existing_configfiles(configfile_candidates)
   # TODO-copier-etl add SLURM config files
