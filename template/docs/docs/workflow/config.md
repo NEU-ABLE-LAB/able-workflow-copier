@@ -10,7 +10,7 @@ which loads `config/config.yaml` when that file is present and loads
     Workflow runners should usually leave committed config files unchanged and use `config/config.local.yaml` for machine-specific overrides.
 
     Repository developers may update committed config files and matching schemas when changing the project's reproducible default behavior.
-  
+
     Parent workflows that import this workflow should provide overrides from the parent workflow config instead of editing the child workflow repository.
 
 ## Configuration scopes
