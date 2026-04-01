@@ -37,6 +37,8 @@ Each committed config file should have a matching schema under `workflow/schemas
 
 The schema defines types, allowed structure, and default values. Schema defaults are the fail-safe that keep the Snakefile and included `.smk` files safe to read when optional config branches are absent, such as when the workflow is imported into a parent workflow.
 
+At workflow startup, `workflow/Snakefile` validates all discovered `workflow/schemas/**/config.schema.yaml` files before loading `rules/includes.smk`. Validation order is deterministic: shallower schema paths are validated before deeper paths, with lexical tie-breaking. This ensures default-value materialization is predictable across module and ETL config branches.
+
 ## Recommended update workflow
 
 When you change reusable workflow defaults as a repository developer:

@@ -85,7 +85,9 @@ Welcome! This section covers best practices and guidelines for contributing to t
 #### Dry-run manifests for tests and DAG creation
 
 The `dag_svg` rules and the dry-run test (`tests/workflow/rules/`) consume manifests from
-`data/tests/dry-run/`. These rules and tests `touch` (i.e., create dummy files in a temp `data/` directory) in the manifest, allowing `snakemake --dry-run` to assume these input files exist`
+`data/tests/dry-run/`. These rules and tests `touch` (i.e., create dummy files in a temp `data/` directory) files listed in the manifest, allowing `snakemake --dry-run` to assume these input files exist.
+
+Use `data/tests/dry-run/all.yaml` as the aggregate manifest for workflow-wide dry-run targets (for example `dag_svg_all` and `all_data`), and keep per-rule manifests as `data/tests/dry-run/<rule_name>.yaml` for individual rule dry-run tests.
 
 These manifest yaml files may include the following:
 
