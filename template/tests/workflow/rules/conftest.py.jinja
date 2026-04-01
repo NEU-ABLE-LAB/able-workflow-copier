@@ -9,29 +9,16 @@ from . import _snakemake
 
 
 # --- Helpers ----------------------------------------------------------------
-# --- Fixtures ---------------------------------------------------------------
-@pytest.fixture(
-    params=[
-        # "proj_root",
-        "workflow",
-    ]
-)
-def workspace(
+def _build_workspace(
     tmp_path_factory: pytest.TempPathFactory,
     request: pytest.FixtureRequest,
+    *,
+    copy_config: bool,
 ) -> Path:
-    """
-    One disposable Snakemake working directory.
-
-    The fixture is parameterised so every test is executed twice:
-
-    `request.param` can be either:
-    ─ `"proj_root"`: Snakefile at 〈tmp〉/Snakefile
-    ─ `"workflow"`:  Snakefile at 〈tmp〉/workflow/Snakefile
-    """
     snakefile_loc = request.param
     test_module = request.module.__name__
-    basename = f"{test_module}_{snakefile_loc}"
+    config_mode = "with_config" if copy_config else "empty_config"
+    basename = f"{test_module}_{snakefile_loc}_{config_mode}"
 
     tmp_path = tmp_path_factory.mktemp(
         basename=basename,
@@ -41,10 +28,9 @@ def workspace(
 
     repo_root = request.config.rootdir
 
-    # Copy the repo’s config
-    shutil.copytree(repo_root / "config", tmp_path / "config")
+    if copy_config:
+        shutil.copytree(repo_root / "config", tmp_path / "config")
 
-    # Decide where the local Snakefile and profiles lives
     if snakefile_loc == "proj_root":
         snakefile_dir = tmp_path
         shutil.copytree(
@@ -61,7 +47,6 @@ def workspace(
     else:
         raise ValueError(f"Unknown location: {snakefile_loc}")
 
-    # Minimal Snakefile that imports the real workflow
     (snakefile_dir / "Snakefile").write_text(
         textwrap.dedent(
             f"""\
@@ -74,8 +59,36 @@ def workspace(
         )
     )
 
-    # Localize the local package path in the conda environment yaml files
     verbose = request.config.getoption("verbose")
     _snakemake(tmp_path, ["conda_localize"], verbose=verbose)
 
     return tmp_path
+
+
+# --- Fixtures ---------------------------------------------------------------
+@pytest.fixture(
+    params=[
+        # "proj_root",
+        "workflow",
+    ]
+)
+def workspace(
+    tmp_path_factory: pytest.TempPathFactory,
+    request: pytest.FixtureRequest,
+) -> Path:
+    """One disposable Snakemake working directory with committed config."""
+    return _build_workspace(tmp_path_factory, request, copy_config=True)
+
+
+@pytest.fixture(
+    params=[
+        # "proj_root",
+        "workflow",
+    ]
+)
+def workspace_empty_config(
+    tmp_path_factory: pytest.TempPathFactory,
+    request: pytest.FixtureRequest,
+) -> Path:
+    """One disposable Snakemake working directory without committed config."""
+    return _build_workspace(tmp_path_factory, request, copy_config=False)
