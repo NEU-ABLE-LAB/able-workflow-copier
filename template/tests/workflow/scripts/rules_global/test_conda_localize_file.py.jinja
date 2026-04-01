@@ -257,10 +257,10 @@ def test_no_mtime_warning_when_dst_not_older(tmp_path, clf_module):
     assert "Adjusted output mtime to avoid filesystem clock skew" not in log_text
 
 
-def test_retries_after_sleep_if_future_mtime_is_clamped(
+def test_sleeps_before_correction_if_future_mtime_is_clamped(
     tmp_path, clf_module, monkeypatch
 ):
-    """Retry path handles filesystems that clamp future mtimes to current time."""
+    """First correction succeeds even when future mtimes are clamped to now."""
     smk = _fake_snakemake(tmp_path)
     src = Path(smk.input.src)
     _write_yaml(src, deps=["python=3.12"])
@@ -296,12 +296,13 @@ def test_retries_after_sleep_if_future_mtime_is_clamped(
 
     clf_module.main(smk)
 
-    assert sleep_calls, "Expected retry path to sleep before second utime"
+    assert sleep_calls, "Expected correction path to sleep before applying utime"
     dst = Path(smk.output.dst)
     assert dst.stat().st_mtime >= src.stat().st_mtime
 
     log_text = _read_log(Path(smk.log.loguru))
-    assert "sleeping" in log_text and "retrying" in log_text
+    assert "sleeping" in log_text
+    assert "retrying" not in log_text
 
 
 def test_handles_delayed_src_mtime_update_after_initial_check(

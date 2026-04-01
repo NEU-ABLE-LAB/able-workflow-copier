@@ -45,61 +45,98 @@ def _ensure_output_mtime_not_older_than_input(src: Path, dst: Path) -> None:
     - https://github.com/microsoft/WSL/issues/10006
     - https://github.com/microsoft/WSL/issues/8318
     """
-    src_mtime = src.stat().st_mtime
-    dst_mtime = dst.stat().st_mtime
-    if dst_mtime >= src_mtime:
+    wait_buffer_seconds = 1.0
+
+    def _correct_and_restat(
+        current_src_mtime: float,
+        current_dst_mtime: float,
+        *,
+        retry: bool,
+    ) -> tuple[float, float]:
+        """"
+        Wait until wall-clock time has safely passed the observed src mtime,
+        then apply a fresh current timestamp to dst and read both times again.
+        """
+        wait_seconds = max(current_src_mtime - time.time(), 0.0) + wait_buffer_seconds
+        if retry:
+            logger.warning(
+                "Output mtime still older than input after adjustment; "
+                f"sleeping {wait_seconds:.3f}s and retrying"
+            )
+        else:
+            logger.warning(
+                "Detected output mtime older than input; "
+                f"sleeping {wait_seconds:.3f}s before correction"
+            )
+        time.sleep(wait_seconds)
+
+        corrected_mtime = time.time()
+        os.utime(dst, (corrected_mtime, corrected_mtime))
+        logger.warning(
+            "Adjusted output mtime to avoid filesystem clock skew: "
+            f"dst ({current_dst_mtime:.6f}) < src ({current_src_mtime:.6f}); "
+            f"set dst mtime to {corrected_mtime:.6f}"
+        )
+        return src.stat().st_mtime, dst.stat().st_mtime
+
+    def _stabilize_recent_observation(
+        current_src_mtime: float,
+        current_dst_mtime: float,
+    ) -> tuple[float, float]:
+        """Read timestamps again once when times are very close.
+
+        This gives delayed metadata updates a short chance to settle.
+        """
+        if current_dst_mtime < current_src_mtime:
+            # Output is already older than input; keep original values for correction.
+            return current_src_mtime, current_dst_mtime
+
         now = time.time()
         recent_src_seconds = 2.0
         close_mtime_gap_seconds = 0.5
         if (
-            src_mtime < now - recent_src_seconds
-            or (dst_mtime - src_mtime) > close_mtime_gap_seconds
+            current_src_mtime < now - recent_src_seconds
+            or (current_dst_mtime - current_src_mtime) > close_mtime_gap_seconds
         ):
-            return
+            # Observation is not in the narrow "possibly delayed metadata" window.
+            return current_src_mtime, current_dst_mtime
 
         settle_seconds = 0.1
         time.sleep(settle_seconds)
 
         settled_src_mtime = src.stat().st_mtime
         settled_dst_mtime = dst.stat().st_mtime
-        if settled_dst_mtime >= settled_src_mtime:
+        if settled_dst_mtime < settled_src_mtime:
+            logger.warning(
+                "Detected delayed input mtime update during stabilization window: "
+                f"dst ({settled_dst_mtime:.6f}) < src ({settled_src_mtime:.6f}); "
+                "continuing with corrective mtime bump"
+            )
+        # Return the post-settle timestamps, whether improved or still skewed.
+        return settled_src_mtime, settled_dst_mtime
+
+    # First observation from filesystem metadata.
+    src_mtime = src.stat().st_mtime
+    dst_mtime = dst.stat().st_mtime
+
+    # If timestamps are very close, read them again once before deciding to fix.
+    src_mtime, dst_mtime = _stabilize_recent_observation(src_mtime, dst_mtime)
+
+    # Try corrective bump at most twice: first attempt and one retry.
+    for retry in (False, True):
+        if dst_mtime >= src_mtime:
             return
-
-        logger.warning(
-            "Detected delayed input mtime update during stabilization window: "
-            f"dst ({settled_dst_mtime:.6f}) < src ({settled_src_mtime:.6f}); "
-            "continuing with corrective mtime bump"
+        src_mtime, dst_mtime = _correct_and_restat(
+            src_mtime,
+            dst_mtime,
+            retry=retry,
         )
-        src_mtime = settled_src_mtime
-        dst_mtime = settled_dst_mtime
 
-    safe_mtime = max(src_mtime, time.time()) + 1.0
-    os.utime(dst, (safe_mtime, safe_mtime))
-    logger.warning(
-        "Adjusted output mtime to avoid filesystem clock skew: "
-        f"dst ({dst_mtime:.6f}) < src ({src_mtime:.6f}); "
-        f"set dst mtime to {safe_mtime:.6f}"
-    )
-
-    updated_dst_mtime = dst.stat().st_mtime
-    if updated_dst_mtime >= src_mtime:
-        return
-
-    wait_seconds = max(src_mtime - time.time(), 0.0) + 1.0
-    logger.warning(
-        "Output mtime still older than input after adjustment; "
-        f"sleeping {wait_seconds:.3f}s and retrying"
-    )
-    time.sleep(wait_seconds)
-
-    fallback_mtime = max(src_mtime, time.time()) + 1.0
-    os.utime(dst, (fallback_mtime, fallback_mtime))
-
-    final_dst_mtime = dst.stat().st_mtime
-    if final_dst_mtime < src_mtime:
+    # Keep this warning non-fatal so workflow logs retain diagnostics.
+    if dst_mtime < src_mtime:
         logger.warning(
             "Output mtime remains older than input after retry: "
-            f"dst ({final_dst_mtime:.6f}) < src ({src_mtime:.6f})"
+            f"dst ({dst_mtime:.6f}) < src ({src_mtime:.6f})"
         )
 
 
