@@ -12,10 +12,41 @@
 workflow for data processing, feature extraction, and modeling using the
 `{{ package_name }}` python package.
 Built with [`Copier`](https://copier.readthedocs.io/en/stable/) from the
-[`able-workflow-copier`]({% raw %}{{ able_workflow_rule_copier_docs }}{% endraw %})
+[`able-workflow-copier`]({% raw %}{{ able_workflow_copier_docs }}{% endraw %})
 template.
 
 ---
+
+## Who This Documentation Is For
+
+- **Project developers**: contributors maintaining this repository,
+	adding modules, ETL processes, and rules, and updating
+	template-generated files.
+
+	See the [Contributing](contributing/) section of this documentation
+	for information on how to change workflow code, update generated
+	template layers, and keep tests and docs in sync.
+
+	See the [Overview](overview/) section of this documentation to
+	understand the project structure, design principles, and key parts
+	of the generated workflow.
+
+- **Project users**: people who run the workflow from this repository
+	against their own data.
+
+	See the [Setup](setup/) and [Workflow](workflow/) sections of this
+	documentation for information on installing the project, configuring
+	local runs, and using `config/config.local.yaml` for machine-specific
+	overrides.
+
+- **Project consumers**: people who import this workflow as a
+	Snakemake module or import Python package components such as
+	`schema` and `extract` into an outer project.
+
+	See the [Workflow](workflow/) section of this documentation for
+	configuration and execution details, and review the relevant module,
+	dataset, feature, or model pages for the interfaces exposed by this
+	project.
 
 TODO-copier-package Finish writing docs intro page
 

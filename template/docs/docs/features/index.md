@@ -60,7 +60,8 @@ workflow/
 ├── schemas/
 │   └── features/
 │       └── {{ module_name }}/
-│           └── {{ etl_name }}.config.schema.yaml  # Config validation
+│           └── {{ etl_name }}/
+│               └── config.schema.yaml  # Config validation
 └── envs/
     └── *.yaml                  # Conda environment specifications
 ```
@@ -79,8 +80,17 @@ This creates a natural data processing pipeline where raw data flows through dat
 
 Feature ETL processes have associated configuration files for parameters specific to feature engineering:
 
-- **`config/features/{{ module_name }}/{{ etl_name }}.config.yaml`**: Feature-specific parameters (scaling factors, encoding mappings, selection criteria)
-- **`workflow/schemas/features/{{ module_name }}/{{ etl_name }}.config.schema.yaml`**: Configuration validation schema
+- **`config/features/{{ module_name }}/{{ etl_name }}/config.yaml`**:
+    Feature-specific parameters (scaling factors, encoding mappings,
+    selection criteria)
+- **`workflow/schemas/features/{{ module_name }}/{{ etl_name }}/config.schema.yaml`**:
+    Configuration validation schema
+
+When modifying feature configuration:
+
+1. Update the committed config file under `config/features/...`.
+2. Update the matching schema under `workflow/schemas/features/...`.
+3. Keep schema `default` values synchronized with committed config values.
 
 Common feature configuration parameters include:
 
@@ -89,6 +99,10 @@ Common feature configuration parameters include:
 - Scaling and normalization parameters
 - Time window specifications for temporal features
 - Categorical encoding strategies
+
+For schema authoring guidance (especially when to use `required` and how nested
+`required` behaves), see
+[Contributing → Config and Schemas](../contributing/workflow.md#config-and-schemas).
 
 ## Navigation Structure
 

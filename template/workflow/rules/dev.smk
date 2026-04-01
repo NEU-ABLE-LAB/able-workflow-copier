@@ -105,7 +105,27 @@ rule conda_update:
             environment=config["CONDA"]["ENVS_META"].values(),
         ),
 
+rule conda_update_dev_runner:
+    """
+    Lightweight alternative to `conda_update` that only updates the DEV_RUNNER
+    conda environment from its localized YAML file.
 
+    The full `conda_update` rule installs/updates all configured environments,
+    which can be slow and consume significant disk space. This rule is intended
+    for development workflows where updating just the DEV_RUNNER environment
+    (``config["CONDA"]["ENVS"]["DEV_RUNNER"]``) is sufficient.
+    """
+    localrule: True
+    input:
+        expand(
+            str(
+                Path(
+                    Path(config["CONDA"]["LOCALIZED_DIR"])
+                    / f"{{environment}}"
+                ).with_suffix(".snakemake_conda_update_stamp")
+            ),
+            environment=[config["CONDA"]["ENVS"]["DEV_RUNNER"]],
+        ),
 rule logs_to_watch:
     """
     Create a json list of all rules that have a log directive.

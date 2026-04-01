@@ -8,7 +8,7 @@ type: Task
 
 ---
 
-Describe the task to be completed and how it applies to the project, module, etl, and/or rule templates. 
+Describe the task to be completed and how it applies to the project, module, etl, and/or rule templates.
 
 - [ ] Create sub-issue in this repo
   - [ ] Create a branch for that sub-issue

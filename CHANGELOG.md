@@ -2,11 +2,12 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## v0.1.5-dev
+## dev
 
 ### Changed
 
-- Removed depreciated `tenacity` dependency
+- Removed deprecated `tenacity` dependency
+- Updated development environment setup to use `conda_update_dev_runner` instead of updating all conda environments.
 
 ### Added
 
@@ -15,6 +16,8 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Added contributing docs for checking template updates at `docs/docs/contributing/updates.md`.
 - `min_version("9.16.3")` to `template/workflow/Snakefile.jinja`
 - `template/CHANGELOG.md`
+- Added `conda_update_dev_runner` helper rule for updating development conda environments.
+- [Better Jinja](https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml) vscode extension recommendation
 
 ### Removed
 

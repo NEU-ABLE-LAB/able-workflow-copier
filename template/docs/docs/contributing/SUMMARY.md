@@ -1,8 +1,9 @@
 # Navigation outline for literate-nav
 
-- [Configuring VSCode](vscode.md)
-- [Templates](templates/)
+- [Development Environment](vscode.md)
+- [Templates for Contributing](templates/)
+- [Snakemake Workflows](workflow.md)
+- [Python Source](python-package.md)
 - [Testing](tests.md)
-- [CI Workflows](ci.md)
-- [ETL processes](etl.md)
+- [CI Workflow](ci.md)
 - [Documentation](docs.md)

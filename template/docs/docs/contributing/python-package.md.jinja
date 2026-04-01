@@ -1,0 +1,30 @@
+# Contributing to the python package
+
+This page covers implementation work inside the `{{ package_name }}` package.
+
+## What belongs in the package layer
+
+Use python-package contributions for:
+
+- ETL implementation modules (`extract.py`, `transform.py`, `load.py`).
+- Shared business logic, data transformations, and utility functions.
+- Dataframe schema models used by package code.
+
+These changes are separate from workflow-layer concerns like Snakemake rules,
+`config/`, and `workflow/schemas/`.
+
+## Typical package change process
+
+1. Add or update code in `{{ package_name }}/...`.
+2. Add or update tests under `tests/...`.
+3. If behavior requires new configuration, coordinate with workflow updates:
+   - add/update committed config values in `config/.../config.yaml`, and
+   - update matching schema files in `workflow/schemas/.../config.schema.yaml`.
+
+## Working with ETL scaffolding
+
+When creating a new ETL process, prefer generating the boilerplate with
+`able-workflow-etl-copier` and then implementing package logic in the generated
+python modules.
+
+For template-level guidance, see [Contributing Templated Code](templates/).

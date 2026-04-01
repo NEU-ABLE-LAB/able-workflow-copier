@@ -11,17 +11,16 @@
 │   │   └── ci.yml  # (1)
 │   └── labels.yml  # (6)
 ├── .vscode  # (2)
-├── able-workflow/  # (7)
 ├── docs/  # (3)
 │   └── docs/  #(4)
-├── extensions/  # (8)
-├── hooks/  # (9)
-├── includes/  # (15)
-├── schemas/  # (10)
-├── scripts/  # (11)
-├── tasks/  # (14)
-├── template/  # (12)
-├── tests/  # (13)
+├── extensions/  # (7)
+├── hooks/  # (8)
+├── includes/  # (14)
+├── schemas/  # (9)
+├── scripts/  # (10)
+├── tasks/  # (13)
+├── template/  # (11)
+├── tests/  # (12)
 ```
 
 1. GitHub action for pull requests
@@ -30,15 +29,14 @@
 4. Documentation markdown and assets
 5. GitHub action to maintain consistient GitHub issue labels and colors across projects
 6. Configuration file for `github-labeler` GH action
-7. Submodules to other `able-workflow-*-copier` projects
-8. `jinja2` extensions to be used by `copier`
-9. `pre-commit` hook scripts
-10. Custom json/yaml schemas for validating Copier answers
-11. Helper scripts for development
-12. The Copier template to be generated
-13. pytest tests to be run. SEE: `tox.ini`
-14. Task scripts run by Copier after template generation.
-15. Copier yaml files that are included in `copier.yml`
+7. `jinja2` extensions to be used by `copier`
+8. `pre-commit` hook scripts
+9. Custom json/yaml schemas for validating Copier answers
+10. Helper scripts for development
+11. The Copier template to be generated
+12. pytest tests to be run. SEE: `tox.ini`
+13. Task scripts run by Copier after template generation.
+14. Copier yaml files that are included in `copier.yml`
 
 ## The `able-workflow` project template tree
 
