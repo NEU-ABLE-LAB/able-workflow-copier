@@ -145,6 +145,8 @@ In practice:
 
 When `snakemake.utils.validate` runs, schema `default` values can populate missing keys. Use defaults together with sparse `required` lists so the Snakefile and included `.smk` files remain safe to parse when optional module or ETL config branches are absent, such as when this workflow is imported into a parent workflow.
 
+The base `workflow/Snakefile` performs schema validation before any rule includes are loaded. It validates all `workflow/schemas/**/config.schema.yaml` files in deterministic order (shallower paths first, then lexical path order) so default-value materialization remains stable as modules and ETLs are added.
+
 ### Committed config files are explicit project defaults
 
 Committed config files document and version the standalone defaults used by the project, but they do not need to mechanically duplicate every schema default. The requirement is that committed config files validate against their schemas and match the intended standalone behavior documented for the project.

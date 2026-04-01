@@ -33,7 +33,23 @@ if Version(snakemake.__version__) > Version("9.17.2"):
         "Snakemake versions above 9.17.2 are currently unsupported by this "
         "workflow."
     )
-validate(config, "schemas/config.schema.yaml")
+
+
+# --- PATHS ------------------------------------------------------------------
+WORKFLOW_BASE = Path(workflow.current_basedir)
+logger.debug(f"WORKFLOW_BASE: {WORKFLOW_BASE}")
+
+
+def _schema_sort_key(schema_path: Path) -> tuple[int, str]:
+    relative = schema_path.relative_to(WORKFLOW_BASE / "schemas")
+    return (len(relative.parts), relative.as_posix())
+
+
+for schema_path in sorted(
+    (WORKFLOW_BASE / "schemas").rglob("config.schema.yaml"),
+    key=_schema_sort_key,
+):
+    validate(config, schema_path)
 
 
 # --- CONSTANTS ---------------------------------------------------------------
@@ -42,10 +58,6 @@ RE_VALID_FNAME_STEM = r"[^/\x00]+"
 # Any valid SQL table name
 RE_VALID_SQL_TABLE = r"^(?:[A-Za-z_][A-Za-z0-9_]*|\"[^\"]+\")$"
 
-
-# --- PATHS ------------------------------------------------------------------
-WORKFLOW_BASE = Path(workflow.current_basedir)
-logger.debug(f"WORKFLOW_BASE: {WORKFLOW_BASE}")
 
 LOG_DIR = Path(config["LOG_DIR"])
 REPORTS_DIR = Path(config["REPORTS_DIR"])
