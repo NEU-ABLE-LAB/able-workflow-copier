@@ -47,10 +47,10 @@ If you haven't already, initialize a git repository in the project directory:
 
 #### Create conda development environment
 
-Use the `conda_update` Snakemake rule to create all the development conda ennvironments.
+Use the `conda_update_dev_runner` Snakemake rule to create the primary development conda ennvironment.
 
    ```bash
-   snakemake --cores 1 conda_update
+   snakemake --cores 1 conda_update_dev_runner
    ```
 
 Then activate the main development environment:

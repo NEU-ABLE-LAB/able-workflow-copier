@@ -45,13 +45,10 @@ For a complete list of options, run `snakemake --help` or consult the [Snakemake
 
 - `conda_localize` rules modify the environment YAML files so that they also install the project's python package using a full path.
 
-- `conda_update` rule create local named conda environments for development purposes. Running `snakemake conda_update` builds all the conda environments. To only build a desired conda environment, tell snakemake to target an environment file, but replace `.yaml` with `.snakemake_conda_update_stamp`
-
-  To create just the `{{ package_name }}-py312-dev-runner` conda environment from the localized environment file `workflow/envs/localized/{{ package_name }}-py312-dev-runner.yaml`, run:
-
-  ```bash
-  snakemake `workflow/envs/localized/{{ package_name }}-py312-dev-runner.snakemake_conda_update_stamp`
-  ```
+- `conda_update_dev_runner` rule create the local named conda
+  environment for development purposes. To build more specific
+  conda environments, tell snakemake to target an environment
+  file, but replace `.yaml` with `.snakemake_conda_update_stamp`
 
 ??? info "`dev.smk`"
 
