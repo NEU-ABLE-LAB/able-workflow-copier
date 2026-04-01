@@ -26,5 +26,12 @@
         "titleBar.inactiveBackground": "#a81b2c99",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.remoteColor": "#a81b2c"
+    "peacock.remoteColor": "#a81b2c",
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:conda",
+            "packageManager": "ms-python.python:conda"
+        }
+    ]
 }
