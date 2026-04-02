@@ -8,6 +8,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 - Removed deprecated `tenacity` dependency
 - Updated development environment setup to use `conda_update_dev_runner` instead of updating all conda environments.
+- Generated project tox `workflow-rules` tests have access to the core package deps for schema validation and extract functions
 
 ### Added
 
