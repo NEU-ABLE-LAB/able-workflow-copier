@@ -58,6 +58,7 @@ The ability to run across computing environments is one of the main reasons thes
 - [Prefect](https://www.prefect.io/) was not a good fit because even self-hosted deployments are built around a server backed by a database, and many deployment patterns also rely on workers and work pools.
 - [Dagster](https://dagster.io/) was not a good fit because it is designed around a richer orchestration stack with a webserver, daemon processes, and persistent run and event-log storage.
 - [Joblib](https://joblib.readthedocs.io/) was not chosen because it is a filesystem-based caching tool for Python functions, not a full workflow engine for expressing and running a large dependency graph.
+- TODO discuss [Nextflow](https://nf-co.re/docs/nf-core-tools/pipelines/create)
 
 In other words, many of these tools are less convenient when the same workflow needs to run both on a standalone PC and in a shared HPC environment without depending on always-on infrastructure. That leaves Snakemake as the best fit here because it can express a real file-based workflow DAG while still keeping workflow state closely tied to the filesystem instead of to always-on infrastructure.
 
