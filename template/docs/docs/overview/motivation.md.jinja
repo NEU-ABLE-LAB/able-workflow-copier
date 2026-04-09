@@ -1,0 +1,25 @@
+# Key Design Choices
+
+This project inherits a few important design choices from the ABLE Workflow
+template suite. The short version is below. For the full rationale behind these
+choices, see [Features in the template docs]({% raw %}{{ able_workflow_copier_docs }}{% endraw %}/overview/features/).
+
+## Workflow orchestration
+
+The workflow layer uses **Snakemake** so each step can declare its inputs, outputs, dependencies, and execution environment explicitly. That makes the project easier to rerun, debug, and extend than a loose collection of scripts.
+
+## Reusable package code
+
+The Python package lives next to the workflow so reusable logic, schemas, extraction helpers, and tests can evolve with the workflow code that depends on them.
+
+## Durable interfaces
+
+This project leans toward explicit schemas, extraction helpers, and durable file formats so downstream code depends on documented interfaces rather than fragile file internals.
+
+## Isolated environments
+
+Dependencies are intended to stay close to the workflow steps that need them. That reduces hidden coupling and makes it easier to understand what each part of the project requires.
+
+## Reviewable engineering defaults
+
+Tests, typing, linting, docs, and CI are part of the intended project structure from the start. They are there to make changes easier to review and regressions easier to catch.

@@ -1,0 +1,20 @@
+# Project Structure
+
+This project keeps workflow orchestration, reusable package code, tests, documentation, and configuration in one repository. The goal is to make the project easier to run day to day while still keeping the important interfaces explicit enough to review, validate, and extend.
+
+## What lives together here
+
+- The workflow layer defines the processing steps, dependencies, and execution order.
+- The Python package holds reusable logic, schemas, extraction helpers, and other code that should not be buried inside workflow rules.
+- The docs explain how to set up, run, maintain, and extend the project.
+- The test and CI configuration help catch regressions before they quietly affect outputs.
+
+## Why that matters locally
+
+Project contributors can make workflow, package, and documentation changes in one place instead of splitting the work across multiple repositories with unclear boundaries.
+
+Project users can usually stay focused on the [Setup](../setup/) and [Workflow](../workflow/) sections while trusting that the project structure supports reproducible runs.
+
+Project integrators can identify which parts of the package or workflow are intended for reuse without reverse-engineering a pile of scripts.
+
+For the broader rationale behind this project structure, see the [ABLE Workflow template overview]({% raw %}{{ able_workflow_copier_docs }}{% endraw %}/overview/).
