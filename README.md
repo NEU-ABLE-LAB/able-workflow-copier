@@ -70,7 +70,7 @@ The following instructions assume you are working on Linux (or with WSL on Windo
    conda activate able-workflow-copier
    ```
 
-   Alternatively, run the script `scripts/conda_update.sh`.
+   `environment-py312-dev.yaml` is checked in. If you change dependency metadata in `pyproject.toml`, regenerate it with `./hooks/pyproject2conda.py pyproject.toml` before re-running the update command.
 
    Configure the `able-workflow-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
