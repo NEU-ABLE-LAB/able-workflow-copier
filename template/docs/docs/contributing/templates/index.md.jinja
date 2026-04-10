@@ -1,6 +1,6 @@
 # Contributing Templated Code
 
-This project was created with the {% raw %}[ABLE Workflow Copier]({{ able_workflow_copier_docs }}){% endraw %} template.
+This project was created with the [ABLE Workflow Copier]({% raw %}{{ able_workflow_copier_docs }}{% endraw %}) template.
 
 ??? note "Audience: Project Contributors"
 
@@ -32,10 +32,10 @@ Generate templated code for a new module (e.g., under `datasets/`, `features/`, 
 
 ```bash
 conda activate {{ package_name }}-py312-dev
-copier copy --trust {{ able_workflow_module_copier_repo }}.git ./
+copier copy --trust {% raw %}{{ able_workflow_module_copier_repo }}{% endraw %}.git ./
 ```
 
-For more details, see the full [`able-workflow-module-copier` documentation]({{ able_workflow_module_copier_docs }})
+For more details, see the full [`able-workflow-module-copier` documentation]({% raw %}{{ able_workflow_module_copier_docs }}{% endraw %})
 
 ### New ETL step within an existing module
 
@@ -43,10 +43,10 @@ Generate templated code for a new ETL step under an existing module with the fol
 
 ```bash
 conda activate {{ package_name }}-py312-dev
-copier copy --trust {{ able_workflow_etl_copier_repo }}.git ./
+copier copy --trust {% raw %}{{ able_workflow_etl_copier_repo }}{% endraw %}.git ./
 ```
 
-For more details, see the full [`able-workflow-etl-copier` documentation]({{ able_workflow_etl_copier_docs }})
+For more details, see the full [`able-workflow-etl-copier` documentation]({% raw %}{{ able_workflow_etl_copier_docs }}{% endraw %})
 
 ### New standalone rule that is not part of an ETL process
 
@@ -54,10 +54,10 @@ Generate templated code for a new standalone Snakemake rule with the following c
 
 ```bash
 conda activate {{ package_name }}-py312-dev
-copier copy --trust {{ able_workflow_rule_copier_repo }}.git ./
+copier copy --trust {% raw %}{{ able_workflow_rule_copier_repo }}{% endraw %}.git ./
 ```
 
-For more details, see the full [`able-workflow-rule-copier` documentation]({{ able_workflow_rule_copier_docs }})
+For more details, see the full [`able-workflow-rule-copier` documentation]({% raw %}{{ able_workflow_rule_copier_docs }}{% endraw %})
 
 ## Updating
 
