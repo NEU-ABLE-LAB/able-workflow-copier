@@ -87,7 +87,7 @@ commands = {envpython} -m mypy
 
 [testenv:py{311,312}-workflow-rules]
 description = Snakemake rule integration tests. Requires network connection to build snakemake conda environment caches
-package = skip
+package = editable
 extras =
 dependency_groups = workflow,test
 setenv =
