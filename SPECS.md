@@ -219,7 +219,6 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
-├── snakefmt.toml
 └── tox.ini
 ```
 
