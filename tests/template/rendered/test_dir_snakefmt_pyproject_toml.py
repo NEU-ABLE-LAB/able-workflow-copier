@@ -7,6 +7,7 @@ def test_snakefmt_uses_pyproject_toml(rendered):
     pyproject = (project_dir / "pyproject.toml").read_text(encoding="utf-8")
     assert "[tool.snakefmt]" in pyproject
     assert "line_length = 79" in pyproject
+    assert "include = '\\.smk$|^Snakefile$'" in pyproject
 
     tox_ini = (project_dir / "tox.ini").read_text(encoding="utf-8")
     assert "snakefmt --config pyproject.toml --check --diff workflow/" in tox_ini
