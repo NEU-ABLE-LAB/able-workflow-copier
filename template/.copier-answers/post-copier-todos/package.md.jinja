@@ -6,7 +6,7 @@ This issue is for tracking the development of the {{ project_name }} project cop
 
 ### Environment Setup
 
-1. **Install minimal dependencies**: See `README.md` for adding the `{{ package_name }}-py312-workflow` Conda environment.
+1. **Install minimal dependencies**: Open `README.md` in the project root and follow the directions to create the `{{ package_name }}-py312-workflow` Conda environment.
 
 2. **Localize Conda environments**: Run the `conda_localize` rule to set up the Snakemake environment files:
 
@@ -20,7 +20,7 @@ This issue is for tracking the development of the {{ project_name }} project cop
    snakemake docs_serve
    ```
 
-4. Open the documentation in your browser and follow the instructions for setting up the development environment on the *Contributing* page.
+4. Open the documentation in your browser and follow the development-environment instructions on the *Contributing* page.
 
 ### Development Environment
 
@@ -47,10 +47,10 @@ If you haven't already, initialize a git repository in the project directory:
 
 #### Create conda development environment
 
-Use the `conda_update` Snakemake rule to create all the development conda ennvironments.
+Use the `conda_update_dev_runner` Snakemake rule to create the primary development conda ennvironment.
 
    ```bash
-   snakemake --cores 1 conda_update
+   snakemake --cores 1 conda_update_dev_runner
    ```
 
 Then activate the main development environment:
@@ -59,9 +59,17 @@ Then activate the main development environment:
    conda activate {{ package_name }}-py312-dev-runner
    ```
 
+#### Install pre-commit
+
+Install the repo hooks so formatting and lint checks run before each commit.
+
+   ```bash
+   pre-commit install
+   ```
+
 ### Project Development
 
-**Add a module**: Use the [`able-workflow-module`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier/) template to create a new module for your project.
+**Add a module**: Use the [ABLE Workflow Module template docs](https://NEU-ABLE-LAB.github.io/able-workflow-module-copier/) to create a new module for your project.
 
 ### Aspirational to-do's
 
@@ -72,14 +80,14 @@ These might be converted to issues to address throughout the life of the project
 #### Online tools
 
 - [ ] Configure [codecov](https://about.codecov.io/) for the repository.
-  - [ ] TODO explain how to do this.
+   - [ ] Enable the repository in Codecov and confirm the default branch is being tracked.
   - [ ] Update the codecov badge in `README.md` with the correct URL.
   - [ ] Update the codecov badge in `docs/docs/index.md` with the correct URL.
 - [ ] Host the documentation on a public server (e.g. [github pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#next-steps))
-  - [ ] TODO explain how to do this.
+   - [ ] Configure the docs publishing workflow and enable GitHub Pages for the repository.
 
 #### Documentation
 
 - [ ] Add citation to the README.md with a public GitHub repository and/or DOI.
-    - [ ] TODO explain how to get a DOI for a GitHub repo.
+      - [ ] If you want a DOI, connect the repository to Zenodo and create a release-backed archive.
 - [ ] Update `docs/docs/_images/logo.png` with your project logo in [`README.md`].

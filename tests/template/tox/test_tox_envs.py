@@ -9,16 +9,19 @@ gets its own, independent pytest test.
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Iterator
 
 import pytest
 from copier import run_copy
 from loguru import logger
+from plumbum import local
 
 from scripts.copie_helpers import run_copie_with_output_control
 from .conftest import answer_sets
@@ -72,6 +75,64 @@ def _assert_template_repo_is_clean(template_root: Path) -> None:
         "Dirty entries:\n"
         f"{shown}{suffix}"
     )
+
+
+def _skip_collection_when_template_repo_dirty(
+    metafunc: pytest.Metafunc, template_root: Path
+) -> bool:
+    # TODO Assess if throwing errors on a dirty repo is necessary and if so,
+    #      if throwing an error in CI vs warning otherwise is the cleanest way to handle it.
+    #      The main motivation is to avoid VS Code's test explorer from inventing a
+    #      [NOTSET] node when running these tests locally against a dirty template repo,
+    #      which is common during template development.
+    try:
+        _assert_template_repo_is_clean(template_root)
+    except pytest.UsageError as exc:
+        # Local template development commonly runs these tests against a dirty
+        # worktree. Keep collecting real tox envs in that case so VS Code does
+        # not invent an empty-parameter [NOTSET] node. CI can stay strict.
+        if os.environ.get("CI"):
+            raise
+        logger.warning(str(exc))
+
+    return False
+
+
+@contextmanager
+def _python_bin_on_path() -> Iterator[None]:
+    """Ensure Copier task subprocesses can resolve tools from this Python env."""
+    python_bin = str(Path(sys.executable).resolve().parent)
+    original_path = os.environ.get("PATH")
+    # Copier task execution goes through plumbum's environment wrapper rather
+    # than reading os.environ directly, so updating only PATH in this process
+    # would still leave task subprocesses unable to find CLIs like snakefmt.
+    original_local_path = local.env.get("PATH")
+    path_entries = (original_path or "").split(os.pathsep) if original_path else []
+
+    if python_bin in path_entries:
+        yield
+        return
+
+    patched_path = (
+        os.pathsep.join([python_bin, *path_entries]) if path_entries else python_bin
+    )
+    os.environ["PATH"] = patched_path
+    local.env["PATH"] = patched_path
+
+    try:
+        yield
+    finally:
+        if original_path is None:
+            os.environ.pop("PATH", None)
+        else:
+            os.environ["PATH"] = original_path
+
+        # Restore plumbum's separate env mapping as well so the temporary PATH
+        # change does not leak into later Copier task runs in this test session.
+        if original_local_path is None:
+            local.env.pop("PATH", None)
+        else:
+            local.env["PATH"] = original_local_path
 
 
 def _bootstrap_git_repo(path: Path) -> None:
@@ -132,7 +193,8 @@ def pytest_generate_tests(metafunc):
             metafunc.config, "_env_matrix_cache", {}
         )
         template_root = Path(__file__).resolve().parents[3]
-        _assert_template_repo_is_clean(template_root)
+        if _skip_collection_when_template_repo_dirty(metafunc, template_root):
+            return
         template_ref = _template_head_ref(template_root)
 
         for entry in answer_sets:
@@ -143,15 +205,16 @@ def pytest_generate_tests(metafunc):
 
                 tmpdir: Path = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
                 try:
-                    run_copy(
-                        src_path=str(template_root),
-                        dst_path=str(tmpdir),
-                        data=entry["answers"],
-                        vcs_ref=template_ref,
-                        defaults=True,
-                        quiet=True,
-                        unsafe=True,
-                    )
+                    with _python_bin_on_path():
+                        run_copy(
+                            src_path=str(template_root),
+                            dst_path=str(tmpdir),
+                            data=entry["answers"],
+                            vcs_ref=template_ref,
+                            defaults=True,
+                            quiet=True,
+                            unsafe=True,
+                        )
                     envs = subprocess.check_output(
                         ["tox", "-qq", "-l"], cwd=tmpdir, text=True
                     ).splitlines()

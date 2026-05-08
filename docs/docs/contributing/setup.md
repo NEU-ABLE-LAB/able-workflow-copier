@@ -32,7 +32,7 @@ If not, install [miniforge3](https://github.com/conda-forge/miniforge).
 
    The interactive installation will prompt you to initialize conda with your shell. Do NOT do this if you are on a SLURM HPC. If you are on your personal computer it should be fine.
 
-   TODO-copier-package point to docs for more info.
+   For the setup flow aimed at project contributors, see the project-template [Quick Reference](../quick-reference/setup.md).
 
 ## Install recommended VSCode extensions
 

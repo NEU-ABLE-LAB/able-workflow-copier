@@ -1,6 +1,6 @@
 # Navigation outline for literate-nav
 
-- [ABLE Workflow](overview/)
+- [Overview](overview/)
 - [Project Template](index.md)
   - [Quick Reference](quick-reference/)
   - [Contributing](contributing/)
