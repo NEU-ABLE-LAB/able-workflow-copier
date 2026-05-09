@@ -23,7 +23,7 @@
     
     
       
-        <title>ABLE Workflow - ABLE Workflow Copier</title>
+        <title>Overview - ABLE Workflow Copier</title>
       
     
     
@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#package-workflow" class="md-skip">
+        <a href="#what-is-the-able-workflow" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ABLE Workflow
+              Overview
             
           </span>
         </div>
@@ -254,7 +254,7 @@
   
     
   
-  ABLE Workflow
+  Overview
 
       </a>
     </li>
@@ -418,7 +418,7 @@
   <span class="md-ellipsis">
     
   
-    ABLE Workflow
+    Overview
   
 
     
@@ -440,7 +440,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ABLE Workflow
+    Overview
   
 
           </label>
@@ -481,14 +481,14 @@
   
   
     <li class="md-nav__item">
-      <a href="motivation/" class="md-nav__link">
+      <a href="features/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motivation
+    Features
   
 
     
@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="whitespace/" class="md-nav__link">
+      <a href="inspiration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Similar Projects
+    Inspiration
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="tree/" class="md-nav__link">
+      <a href="template-output/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Directory Tree
+    Template Output
   
 
     
@@ -1108,6 +1108,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1116,63 +1118,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#package-workflow" class="md-nav__link">
+  <a href="#who-should-use-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Package &amp; Workflow
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Package &amp; Workflow">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#foundation-opinions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Foundation opinions
+        Who should use it?
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#snakemake" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#about-this-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Snakemake
+        About this Overview
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#etl-processes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ETL processes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bigpicture-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Big‑picture architecture
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1196,141 +1159,33 @@
   
 
 
-  <h1>ABLE Workflow</h1>
-
-<h2 id="package-workflow">Package &amp; Workflow<a class="headerlink" href="#package-workflow" title="Permanent link">&para;</a></h2>
-<p>Welcome to the <strong>ABLE Workflow template</strong> code‑base – an opinionated template for data‑centric Python projects that need a <strong>repeatable ETL pipeline, isolated run‑time environments, and a fully typed, continuously‑tested code‑base</strong>. The layout you see here was pioneered in the Automation for the Built and Living Environment <a href="https://www.thisismikekane.com">ABLE lab</a> and will be reused in several up‑coming repos. This page summarises the key concepts and opinions that drove the development of this template.</p>
-<h3 id="foundation-opinions">Foundation opinions<a class="headerlink" href="#foundation-opinions" title="Permanent link">&para;</a></h3>
-<p>This work started with a foundation and shared opinions of the <a href="https://cookiecutter-data-science.drivendata.org/">Cookiecutter Data Science</a> project template:</p>
-<ol>
-<li>Data analysis is a directed acyclic graph</li>
-</ol>
-<p><em>Don't ever edit your raw data. Especially not manually. And especially not in Excel.</em></p>
-<ol>
-<li>Raw data is immutable</li>
-</ol>
-<p><em>Data analysis is a directed acylcic graph (DAG)</em></p>
+<h1 id="what-is-the-able-workflow">What is the ABLE Workflow?<a class="headerlink" href="#what-is-the-able-workflow" title="Permanent link">&para;</a></h1>
+<p>The ABLE Workflow is a suite of templates for generating a reproducible data science, machine learning, or simulation project. The projects include a Python package, conda environments, tests, and documentation. This template suite helps teams go from a project idea to a working, maintainable, documented, and reproducible workflow with less setup and fewer one-off decisions.</p>
+<p>These templates aim to generate projects that that make it easier to follow best pratices:</p>
 <ul>
-<li>✅ <strong>Do</strong> write code that moves the raw data through a pipeline to your final analysis.</li>
-<li>✅ <strong>Do</strong> serialize or cache the intermediate outputs of long-running steps.</li>
-<li>✅ <strong>Do</strong> make it possible (and ideally, documented and automated) for anyone to reproduce your final data products with only the code in ABLE Workflow template package and the data in <code>data/raw/</code> (and <code>data/external/</code>).</li>
-<li>⛔ <strong>Don't</strong> ever edit your raw data, especially not manually, and especially not in Excel. This includes changing file formats or fixing errors that might break a tool that's trying to read your data file.</li>
-<li>⛔ <strong>Don't</strong> overwrite your raw data with a newly processed or cleaned version.</li>
-<li>
-<p>⛔ <strong>Don't</strong> save multiple versions of the raw data.</p>
-</li>
-<li>
-<p>Data should (mostly) <em>not</em> be kept in source control</p>
-</li>
-<li>
-<p>Notebooks are for exploration and communication, source files are for repetition</p>
-</li>
+<li>Rebuild data products from source data and code.</li>
+<li>Treat tests, typing, formatting, docs, environments, and CI as part of the project.</li>
+<li>Keep reusable package code and workflow code together during development.</li>
+<li>Keep one project shape across local and shared computing environments.</li>
+<li>Design workflows so other workflows can extend them.</li>
+<li>Publish stable interfaces with schemas and extraction helpers.</li>
 </ul>
-<p><em>Source code is superior for replicability because it is more portable, can be tested more easily, and is easier to code review.</em></p>
-<ol>
-<li>
-<p>Build from the environment up</p>
-</li>
-<li>
-<p>Keep secrets and configuration out of version control</p>
-</li>
-</ol>
-<h3 id="snakemake">Snakemake<a class="headerlink" href="#snakemake" title="Permanent link">&para;</a></h3>
-<p>Cookiecutter Data Science uses <a href="https://www.gnu.org/software/make/">GNU Make</a> to determine the relationships between each analysis/modeling step with <code>rules</code> (e.g., run process <code>A</code> with inputs <code>x</code> and <code>y</code>) and <code>targets</code> (e.g., to produce output <code>z</code>). While <code>make</code> is the defacto standard for building software from a DAG of source files. However, you'll spend a longer time explaining its terse verses written in invisible white spaces than you will explain your machine-learning model to the next person working on your project.</p>
-<p><strong>Snakemake</strong> to the rescue: a workflow management system is a tool to create reproducible and scalable data analyses. Workflows are described via a human readable, Python based language. They can be seamlessly scaled to server, cluster, grid and cloud environments, without the need to modify the workflow definition. Snakemake workflows can entail a description of required software, which will be automatically deployed to any execution environment.</p>
-<p>Snakemake's <a href="https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows_by_stars.html">common use cases</a> seem to imply that Snakemake was developed with the assumption that the data analsys and modeling processes executed by each <code>rule</code> can be succinctly written in a single <a href="https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#python">python script</a>, in a Jupyter notebook (see opinion 4 above) and/or use standard domain specific command-line tools (e.g., <a href="https://bio-bwa.sourceforge.net/bwa.shtml"><code>bwa</code></a> for genomic analys.)</p>
-<p>However, for exploratory data analysis and machine learning, each analysis step can be 100-1,000s of lines of custom code that should be well formatted, typed, and tested.</p>
-<p>The "pure-snakemake" way to achieve this would be to keep your python source code and unit-tests [<code>https://www.github.com/YOUR_ORG/YOUR_PYTHON_PACKAGE</code>] and snakemake workflow and integration tests [<code>https://www.github.com/YOUR_ORG/YOUR_PYTHON_PACKAGE</code>] in separate git repositories. For every source code change you want to test while you simultaneously debug your source code and workflow, you have to do the following:</p>
+<h2 id="who-should-use-it">Who should use it?<a class="headerlink" href="#who-should-use-it" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Commit that change to the <code>YOUR_PYTHON_PACKAGE</code> repo</li>
-<li>Push it to GitHub</li>
-<li>Pull that into a separate project on your machine</li>
-<li>Run the test on your machine</li>
+<li><strong>You want to run complex Python code in your Snakemake workflow</strong>: Use this template suite if you already use Snakemake but need more reusable Python code, schemas, tests, and packaging structure than belongs in one script per rule.</li>
+<li><strong>Your Jupyter notebook is getting out of control</strong>: Use it if your project has outgrown very large notebooks and you want a workflow that is easier to test, rerun, review, and maintain over time.</li>
+<li><strong>CookieCutter Datascience Users</strong>: Use it if you like project templates such as Cookiecutter Data Science but want easier workflow authoring (<em>no more fighting whitespace</em>), generated documentation, and more explicit engineering defaults.</li>
 </ul>
-<p>This can become very tedious (and embarassing in public repositories) if you are debugging a missed comma or trying to understand an algorithm. While separating the python source code and snakemake workflow may be the ideal solution (similar to the separation of integrations and their communication wrappers in <a href="https://developers.home-assistant.io/docs/development_checklist/">Home Assistant integrations</a>), an approach for faster development iterations is proposed.</p>
-<h3 id="etl-processes">ETL processes<a class="headerlink" href="#etl-processes" title="Permanent link">&para;</a></h3>
-<p><strong>ETL</strong> stands for <strong>Extract, Transform, Load</strong> – the atomic logic within each node of the workflow DAG.</p>
+<h2 id="about-this-overview">About this Overview<a class="headerlink" href="#about-this-overview" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Extract:</strong> Read raw data from its source (CSV files, databases, APIs, Excel sheets, etc.)</li>
-<li><strong>Transform:</strong> Clean, validate, aggregate, reshape, extract features, or build models from the data</li>
-<li><strong>Load:</strong> Write the processed data to its destination (parquet files, databases, data warehouses, etc.)</li>
+<li>Use <a href="best-practices/">Best Practices</a> for the design principles the template is built around.</li>
+<li>Use <a href="features/">Features</a> for the tool-level rationale, implementation details, and major tradeoffs.</li>
+<li>Use <a href="inspiration/">Inspiration</a> for the adjacent projects, templates, and ecosystem gaps that helped shape the suite.</li>
+<li>Use <a href="template-output/">Template Output</a> to compare the template repository structure with the generated project structure.</li>
 </ul>
-<p>In this architecture, <strong>each ETL process is atomic</strong> – it performs one specific data transformation step with clearly defined inputs and outputs. This atomic approach has several advantages:</p>
-<ul>
-<li><strong>Reproducibility:</strong> Each step can be re-run independently if needed</li>
-<li><strong>Debugging:</strong> You can isolate issues to specific transformation steps</li>
-<li><strong>Caching:</strong> Intermediate outputs can be cached to avoid re-processing expensive steps</li>
-<li><strong>Parallelization:</strong> Independent ETL processes can run simultaneously</li>
-<li><strong>Testing:</strong> Each process can be unit-tested in isolation</li>
-</ul>
-<p>Workflow (i.e., Snakemake) rules have many-to-one relationship with ETL processes: A rule may only call one ETL process, but an ETL process may be applied by many rules.</p>
-<p>In the proposed architecture, each ETL process is an python module that takes the Snakemake rules directives (e.g., <code>input:</code>, <code>output:</code>, etc.) and executes the rule. These ETL modules are organized in parent modules, that are organized by whether they produce <code>datasets</code>, <code>features</code>, or <code>models</code>. All of these are encapsulated in a single python package that sits next to the <code>workflow/</code> directory.</p>
-<div class="admonition warning">
-<p class="admonition-title">Installing local source code with conda</p>
-<p>From here, it might seem that an conda environment YAML file can be written that includes <code>pip: -e ./</code> to install the package relative to the current direcotry. However, when Snakemake creates environments specified by the environment YAML files in the <code>conda:</code> directive, the YAML file is cached <strong><em>without any of the source code</em></strong>.</p>
-<p>When Snakemake calls conda, conda runs the <code>pip install</code> command relative the the CWD of the cached YAML file, <strong><em>not</em></strong> relative to the project root with the packag source code.</p>
-<p>This could bring the architecture back to writing everything in a python script, where python will cache the python file specified in the <code>script:</code> directive.</p>
-</div>
-<p>In the propoposed method, the workflow and package are shipped in the same repository with environment.yaml files that <strong><em>do not</em></strong> install the local package as a dependency. After cloning the repo, the user <strong><em>must first</em></strong> run <code>snakemake conda_localize</code> which appends the <code>pip: -e /full/path/to/repo/</code> so that no matter the CWD, the local package is installed in the localized conda environment. Multiple versions of the same project can be installed with different editable versions of the package since Snakemake caches the environments by the hash of the contents of the YAML file, which would be different with different full paths to the different local project directories.</p>
-<div class="admonition warning">
-<p class="admonition-title">The following must be satisfied</p>
-<p>For this to work, the follow must be satisfied:</p>
-<ol>
-<li>
-<p><code>snakemake conda_localize</code> after every time the project is cloned into a new directory</p>
-</li>
-<li>
-<p>All jobs are executed by workers with a <strong>shared file system</strong>. Therefor, this approach WILL NOT work in containerized workflows or decentralized workflows where each worker only mounts part of the root file system.</p>
-</li>
-</ol>
-</div>
-<details class="question">
-<summary>Snakemake wrappers and the future</summary>
-<p><a href="https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#wrappers">Snakemake Wrappers</a> enable reusable wrapper scripts (e.g. around command line tools). Since the entire wrapper is cached, it <strong><em>may</em></strong> be possible to ensure that conda or another <a href="https://github.com/snakemake/snakemake-interface-software-deployment-plugins">software deployment plugin</a> set the CWD into the cached wrapper directory before telling conda to create the environment. Since wrappers can be specified with relative paths, it should then be possible to ship the package source and workflow in the same repo and remove the two necessary conditions above.</p>
-</details>
-<h3 id="bigpicture-architecture">Big‑picture <strong>architecture</strong><a class="headerlink" href="#bigpicture-architecture" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Layer</th>
-<th>Tooling</th>
-<th>What lives here</th>
-<th>Why it matters</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Package</strong></td>
-<td><code>weh_interviews/</code></td>
-<td>Pure Python code that converts raw Excel sheets to tidy parquet. Extras (e.g. <code>runner</code>) hold <em>optional</em> dependencies that are <strong>only</strong> needed for that sub‑module.</td>
-<td>Keeps the core install light and lets other repos depend on the parquet output without pulling in every heavy library.</td>
-</tr>
-<tr>
-<td><strong>Workflow</strong></td>
-<td><strong>Snakemake</strong></td>
-<td>Declarative DAG of ETL steps (each a rule). Every rule points at a dedicated <em>Conda</em> YAML generated from <em>pyproject.toml</em> so each step runs in the <strong>minimal</strong> environment it really needs.</td>
-<td>Re‑running is deterministic, parallel, and cache‑aware. You never “just run a script”.</td>
-</tr>
-<tr>
-<td><strong>Environments</strong></td>
-<td><code>pyproject‑to‑conda</code>, <code>conda‑inject</code>, <code>snakemake conda localize</code></td>
-<td>Generates per‑rule YAMLs from the dependency <strong>groups</strong> defined in <em>pyproject.toml</em>. The <code>conda localize</code> helper then pip‑installs <strong>your local clone</strong> into each env so rules can <code>import weh_interviews</code>.</td>
-<td>Makes CI and HPC jobs reproducible <strong>without</strong> uploading the package to PyPI/GH packages.</td>
-</tr>
-<tr>
-<td><strong>Quality‑gate</strong></td>
-<td>pre‑commit (Black, Ruff), MyPy, Pytest, Tox</td>
-<td>Auto‑formatting, linting, type‑checking and unit tests. Tox spins up <strong>matrix</strong> envs so optional extras are tested as well.</td>
-<td>You get immediate feedback locally and in CI before code lands on <code>main</code>.</td>
-</tr>
-<tr>
-<td><strong>Docs</strong></td>
-<td>MkDocs + mkdocstrings</td>
-<td>API reference is built from the type‑hinted docstrings, narrative docs live under <code>docs/</code>.</td>
-<td>“Docs as code” – updated on every push.</td>
-</tr>
-</tbody>
-</table>
+<p>If you are trying to scaffold or update a project right now, go back to
+<a href="../quick-reference/">Quick Reference</a>. If you are trying to understand why the
+project looks the way it does, keep reading in this section.</p>
 
 
 
@@ -1351,7 +1206,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 8, 2026</span>
   </span>
 
     

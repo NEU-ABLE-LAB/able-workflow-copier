@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="overview/tree/">
+        <link rel="prev" href="overview/template-output/">
       
       
         <link rel="next" href="quick-reference/">
@@ -254,7 +254,7 @@
   
     
   
-  ABLE Workflow
+  Overview
 
       </a>
     </li>
@@ -415,7 +415,7 @@
   <span class="md-ellipsis">
     
   
-    ABLE Workflow
+    Overview
   
 
     
@@ -437,7 +437,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ABLE Workflow
+    Overview
   
 
           </label>
@@ -478,14 +478,14 @@
   
   
     <li class="md-nav__item">
-      <a href="overview/motivation/" class="md-nav__link">
+      <a href="overview/features/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Motivation
+    Features
   
 
     
@@ -506,14 +506,14 @@
   
   
     <li class="md-nav__item">
-      <a href="overview/whitespace/" class="md-nav__link">
+      <a href="overview/inspiration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Similar Projects
+    Inspiration
   
 
     
@@ -534,14 +534,14 @@
   
   
     <li class="md-nav__item">
-      <a href="overview/tree/" class="md-nav__link">
+      <a href="overview/template-output/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Directory Tree
+    Template Output
   
 
     
@@ -686,10 +686,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview-of-able-workflow-copier-templates" class="md-nav__link">
+  <a href="#start-here" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview of ABLE Workflow copier templates
+        Start Here
       
     </span>
   </a>
@@ -697,10 +697,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#who-these-docs-are-for" class="md-nav__link">
+  <a href="#template-ecosystem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Who These Docs Are For
+        Template Ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#who-is-this-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who Is This For?
       
     </span>
   </a>
@@ -1195,10 +1206,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview-of-able-workflow-copier-templates" class="md-nav__link">
+  <a href="#start-here" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview of ABLE Workflow copier templates
+        Start Here
       
     </span>
   </a>
@@ -1206,10 +1217,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#who-these-docs-are-for" class="md-nav__link">
+  <a href="#template-ecosystem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Who These Docs Are For
+        Template Ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#who-is-this-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who Is This For?
       
     </span>
   </a>
@@ -1243,41 +1265,35 @@
 <a href="https://common-changelog.org"><img alt="Common Changelog" src="https://common-changelog.org/badge.svg" /></a>
 <a href="https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier"><img alt="codecov" src="https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier/graph/badge.svg?token=8BX19PLPQ8" /></a>
 <a href="https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/ci.yml"><img alt="tox Main Tests" src="https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/ci.yml/badge.svg" /></a></p>
-<p>A <a href="https://copier.readthedocs.io/en/stable/">copier</a> template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.</p>
-<h2 id="overview-of-able-workflow-copier-templates">Overview of ABLE Workflow copier templates<a class="headerlink" href="#overview-of-able-workflow-copier-templates" title="Permanent link">&para;</a></h2>
+<p>The ABLE Workflow is a suite of templates for generating a reproducible data science, machine learning, or simulation project. The proejcts include a Python package, conda environments, tests, and documentation. This template suite helps teams go from a project idea to a working, maintainable, documented, and reproducible workflow with less setup and fewer one-off decisions.</p>
+<p>Learn if the <a href="overview/#who-should-use-it">ABLE Workflow is right for you</a>.</p>
+<h2 id="start-here">Start Here<a class="headerlink" href="#start-here" title="Permanent link">&para;</a></h2>
+<ol>
+<li>If you want to scaffold a new project, start with
+   <a href="quick-reference/">Quick Reference</a>.</li>
+<li>If you want to learn more about the design decisions behind these
+   templates and how they can help you, go to <a href="overview/">Overview</a>.</li>
+<li>If you want to help maintain and improve these templates,
+   go to <a href="contributing/">Contributing</a>.</li>
+<li>If you only need to run or import a generated workflow,
+   use that generated project's own documentation instead of
+   this template repository. Go to <a href="overview/">Overview</a>
+   if you want to understand why that project was structured
+   the way it was.</li>
+</ol>
+<h2 id="template-ecosystem">Template Ecosystem<a class="headerlink" href="#template-ecosystem" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="https://neu-able-lab.github.io/able-workflow-copier"><code>able-workflow-copier</code></a></li>
-<li><a href="https://neu-able-lab.github.io/able-workflow-module-copier"><code>able-workflow-module-copier</code></a></li>
-<li><a href="https://neu-able-lab.github.io/able-workflow-etl-copier"><code>able-workflow-etl-copier</code></a></li>
-<li><a href="https://neu-able-lab.github.io/able-workflow-rule-copier"><code>able-workflow-rule-copier</code></a></li>
+<li><a href="https://neu-able-lab.github.io/able-workflow-copier"><code>able-workflow-copier</code></a>: creates the base project with the workflow, package, docs, tests, and environment scaffolding.</li>
+<li><a href="https://neu-able-lab.github.io/able-workflow-module-copier"><code>able-workflow-module-copier</code></a>: adds a datasets, features, or models module inside an existing project.</li>
+<li><a href="https://neu-able-lab.github.io/able-workflow-etl-copier"><code>able-workflow-etl-copier</code></a>: adds an ETL process inside an existing module.</li>
+<li><a href="https://neu-able-lab.github.io/able-workflow-rule-copier"><code>able-workflow-rule-copier</code></a>: adds an individual Snakemake rule and its associated tests and docs.</li>
 </ul>
-<h2 id="who-these-docs-are-for">Who These Docs Are For<a class="headerlink" href="#who-these-docs-are-for" title="Permanent link">&para;</a></h2>
+<h2 id="who-is-this-for">Who Is This For?<a class="headerlink" href="#who-is-this-for" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Template developers</strong>: contributors maintaining
-  <code>able-workflow-copier</code> itself.</li>
+<li><strong>Project developers</strong> use this repo to create a new workflow project and should usually start with <a href="quick-reference/">Quick Reference</a>.</li>
+<li><strong>Template contributors</strong> use this repo to maintain and improve the template suite and should usually start with <a href="contributing/">Contributing</a>.</li>
+<li><strong>Project users and project integrators</strong> should primarily use the generated project's documentation, but may use this to understand the project's <a href="overview/best-practices/">design principals</a>.</li>
 </ul>
-<p>See the <a href="contributing/">Contributing</a> section of this documentation
-  for information on how to fix bugs, add features, and maintain
-  these templates.</p>
-<ul>
-<li><strong>Project developers</strong>: people applying the template to scaffold
-  a new workflow project.</li>
-</ul>
-<p>See the <a href="quick-reference/">Quick Reference</a> section of this documentation
-  for information on how to use these templates to make starting your
-  next data science project faster.</p>
-<p>See the <a href="overview/">Overview</a> section of this documentation for
-  to understand the principals behind these templates, learn
-  best practices, and understand the key parts of the template.</p>
-<ul>
-<li><strong>Project users and project consumers</strong>: people who only need to run
-  or import a generated workflow should primarily use the generated
-  project's own documentation instead of this template repository.</li>
-</ul>
-<p>Review your projects' documentation for specific.</p>
-<p>See the <a href="overview/">Overview</a> section of this documentation for
-  to understand the principals behind these templates, learn
-  best practices, and understand the key parts of the template.</p>
 
 
 
@@ -1298,7 +1314,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 8, 2026</span>
   </span>
 
     
