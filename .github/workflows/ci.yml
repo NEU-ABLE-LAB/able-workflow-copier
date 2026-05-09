@@ -37,12 +37,12 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v4
         with:
-        activate-environment: able-workflow-copier
-        channels: conda-forge, bioconda
-        channel-priority: strict
-        conda-remove-defaults: "true"
-        environment-file: environment-py312-dev.yaml
-        miniforge-version: latest
+          activate-environment: able-workflow-copier
+          channels: conda-forge, bioconda
+          channel-priority: strict
+          conda-remove-defaults: "true"
+          environment-file: environment-py312-dev.yaml
+          miniforge-version: latest
 
       - name: Setup test suite
         run: tox run-parallel --parallel auto --parallel-no-spinner --notest --skip-missing-interpreters false
