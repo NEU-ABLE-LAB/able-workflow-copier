@@ -1,0 +1,10 @@
+# Development Practices
+
+This project inherits [ABLE Workflow template]({% raw %}{{ able_workflow_copier_docs }}{% endraw %}/overview/best-practices/) best practices.They are meant to make the project easier to rerun, review, and extend, not to force every project into the same exact workflow.
+
+- Keep workflow steps explicit and reproducible.
+- Prefer reusable package code over one-off workflow scripts when logic needs to be shared.
+- Validate data contracts instead of relying on implicit assumptions.
+- Keep environments declared so other people can rerun the project without reconstructing dependencies manually.
+- Keep tests, typing, linting, and docs aligned with code changes.
+- Use CI and code review to catch regressions before they spread.
