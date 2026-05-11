@@ -52,7 +52,7 @@ dependency_groups = lint
 commands =
     {envpython} -m black --check --diff ./
     {envpython} -m ruff check --diff ./
-    {envpython} -m snakefmt --config snakefmt.toml --check --diff workflow/
+    {envpython} -m snakefmt --config pyproject.toml --check --diff workflow/
 
 
 [testenv:py{311,312}-package-unit-{core,runner}]

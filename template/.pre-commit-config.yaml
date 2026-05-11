@@ -42,7 +42,7 @@ repos:
     hooks:
       - id: snakefmt
         args: [
-          "--config", "snakefmt.toml",
+          "--config", "pyproject.toml",
           "workflow/",
         ]
 

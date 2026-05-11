@@ -169,7 +169,7 @@ _tasks:
       if [ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]; then black --exclude "^$" ./; else black ./; fi
     when: "{{ format_code }}"
   - command: >-
-      snakefmt --config snakefmt.toml workflow/
+      snakefmt --config pyproject.toml workflow/
     when: "{{ format_code }}"
 
 _message_after_copy: |
