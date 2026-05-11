@@ -7,41 +7,33 @@
 [![codecov](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier/graph/badge.svg?token=8BX19PLPQ8)](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-copier)
 [![tox Main Tests](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/ci.yml/badge.svg)](https://github.com/NEU-ABLE-LAB/able-workflow-copier/actions/workflows/ci.yml)
 
-A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow with an associated python package for implementing dataset transformation, feature extraction, and modeling.
+The ABLE Workflow is a suite of templates for generating a reproducible data science, machine learning, or simulation project. The proejcts include a Python package, conda environments, tests, and documentation. This template suite helps teams go from a project idea to a working, maintainable, documented, and reproducible workflow with less setup and fewer one-off decisions.
 
-## Overview of ABLE Workflow copier templates
+Learn if the [ABLE Workflow is right for you](overview/index.md#who-should-use-it).
 
-- [`able-workflow-copier`]({{ able_workflow_copier_docs }})
-- [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }})
-- [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
-- [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
+## Start Here
 
-## Who These Docs Are For
+1. If you want to scaffold a new project, start with
+   [Quick Reference](quick-reference/).
+2. If you want to learn more about the design decisions behind these
+   templates and how they can help you, go to [Overview](overview/).
+3. If you want to help maintain and improve these templates,
+   go to [Contributing](contributing/).
+4. If you only need to run or import a generated workflow,
+   use that generated project's own documentation instead of
+   this template repository. Go to [Overview](overview/)
+   if you want to understand why that project was structured
+   the way it was.
 
-- **Template developers**: contributors maintaining
-  `able-workflow-copier` itself.
+## Template Ecosystem
 
-  See the [Contributing](contributing/) section of this documentation
-  for information on how to fix bugs, add features, and maintain
-  these templates.
+- [`able-workflow-copier`]({{ able_workflow_copier_docs }}): creates the base project with the workflow, package, docs, tests, and environment scaffolding.
+- [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }}): adds a datasets, features, or models module inside an existing project.
+- [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }}): adds an ETL process inside an existing module.
+- [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }}): adds an individual Snakemake rule and its associated tests and docs.
 
-- **Project developers**: people applying the template to scaffold
-  a new workflow project.
+## Who Is This For?
 
-  See the [Quick Reference](quick-reference/) section of this documentation
-  for information on how to use these templates to make starting your
-  next data science project faster.
-
-  See the [Overview](overview/) section of this documentation for
-  to understand the principals behind these templates, learn
-  best practices, and understand the key parts of the template.
-
-- **Project users and project consumers**: people who only need to run
-  or import a generated workflow should primarily use the generated
-  project's own documentation instead of this template repository.
-
-  Review your projects' documentation for specific.
-
-  See the [Overview](overview/) section of this documentation for
-  to understand the principals behind these templates, learn
-  best practices, and understand the key parts of the template.
+- **Project developers** use this repo to create a new workflow project and should usually start with [Quick Reference](quick-reference/).
+- **Template contributors** use this repo to maintain and improve the template suite and should usually start with [Contributing](contributing/).
+- **Project users and project integrators** should primarily use the generated project's documentation, but may use this to understand the project's [design principals](overview/best-practices.md).

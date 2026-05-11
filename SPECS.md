@@ -71,7 +71,6 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 │   │   │   ├── index.md
 │   │   │   ├── motivation.md
 │   │   │   ├── SUMMARY.md
-│   │   │   └── whitespace.md
 │   │   ├── setup/
 │   │   │   ├── index.md
 │   │   │   ├── linux.md
@@ -219,7 +218,6 @@ Create a `post-copy` hook to copier that creates a github issue for the user to 
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
-├── snakefmt.toml
 └── tox.ini
 ```
 

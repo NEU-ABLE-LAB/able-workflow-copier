@@ -120,7 +120,7 @@ conda_update_workflow_env:
     Whether to create/update the conda environment for the workflow.
     Disable this whenever running `copier update`. If you would like to update
     the conda environment after updating the template, run
-    `snakemake --cores 1 conda_update`
+    `snakemake --cores 1 conda_update_dev_runner`
   default: false
   when: false # This feature will be depreciated in the future.
 
@@ -169,7 +169,7 @@ _tasks:
       if [ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]; then black --exclude "^$" ./; else black ./; fi
     when: "{{ format_code }}"
   - command: >-
-      snakefmt --config snakefmt.toml workflow/
+      snakefmt --config pyproject.toml workflow/
     when: "{{ format_code }}"
 
 _message_after_copy: |

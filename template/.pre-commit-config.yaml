@@ -42,23 +42,23 @@ repos:
     hooks:
       - id: snakefmt
         args: [
-          "--config", "snakefmt.toml",
+          "--config", "pyproject.toml",
           "workflow/",
         ]
 
   # --- static typing --------------------------------------------------------
-  - repo: https://github.com/pre-commit/mirrors-mypy        # maintained mirror :contentReference[oaicite:2]{index=2}
-    rev: "v1.15.0"
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy (tox)
+        language: python
+        entry: tox
         exclude: "^(tests/)|(docs/)|(workflow/)"
+        pass_filenames: false
+        args:
+          - -e
+          - py312-typecheck-runner
         additional_dependencies:
-          - loguru==0.7.2
-          - pandas==2.2.3
-          - pandas-stubs==2.2.3.250527
-          - pandera[mypy,pandas]==0.24
-          - pydantic[mypy]==2.11.4
-          - types-tqdm==4.67.0.20250516
-          - types-openpyxl==3.1.5.20250516
-          - typing-extensions==4.13.2
-          - typer==0.15.3
+          - tox==4.25.0
+          - tox-gh-actions==3.3.0
+          - tox-uv==1.25.0
