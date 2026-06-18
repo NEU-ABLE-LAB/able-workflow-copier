@@ -130,7 +130,7 @@ def _python_bin_on_path() -> Iterator[None]:
         # Restore plumbum's separate env mapping as well so the temporary PATH
         # change does not leak into later Copier task runs in this test session.
         if original_local_path is None:
-            local.env.pop("PATH", None)
+            local.env.pop("PATH", "")
         else:
             local.env["PATH"] = original_local_path
 
