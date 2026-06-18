@@ -9,7 +9,7 @@ repos:
         additional_dependencies:
           - snakemake>=9.16.3,<=9.17.2
           - loguru>=0.7.2
-          - pyproject2conda>=0.19.1
+          - pyproject2conda==0.22.1
         files: >-
           (?i)(^pyproject\.toml$|{{ package_name }}-py\d+-(workflow|tox)\.yaml$)
         pass_filenames: true

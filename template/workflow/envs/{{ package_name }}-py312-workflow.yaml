@@ -14,5 +14,5 @@ dependencies:
   - json5>=0.12.0
   - loguru>=0.7.2
   - pandas>=2.2.3
-  - pyproject2conda>=0.19.1
+  - pyproject2conda=0.22.1
   - ruamel.yaml>=0.18.6
